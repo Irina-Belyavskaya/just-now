@@ -2,6 +2,7 @@
   "expo": {
     "name": "JUST_NOW",
     "slug": "JUST_NOW",
+    "scheme": "just_now",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +25,14 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+
+      
+    ]
   }
 }

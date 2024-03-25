@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground, SafeAreaView } from 'react-native';
 import { useFonts, Raleway_700Bold } from '@expo-google-fonts/raleway';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
 
@@ -26,6 +26,7 @@ export default function HomeScreen() {
           <Text style={styles.title}>JUST NOW</Text>
           <MaterialIcons name="access-time" size={50} color="black" />
         </View>
+        <Link href={'/camera'} style={styles.link} >Go to camera</Link>
         <StatusBar hidden />
       </ImageBackground>
     </SafeAreaView>
@@ -49,5 +50,11 @@ const styles = StyleSheet.create({
   titleContainer: {
     display: 'flex',
     alignItems: 'center',
+  },
+  // --------
+  link: {
+    color: "#fff",
+    fontSize: 20,
+    marginBottom: 30
   }
 });

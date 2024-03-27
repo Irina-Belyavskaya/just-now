@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "JUST_NOW",
+    "name": "JUST NOW",
     "slug": "JUST_NOW",
     "scheme": "just_now",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon_3.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash_1.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon_3.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -32,7 +32,7 @@
       "package": "com.anonymous.JUST_NOW"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/icon_3.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -44,6 +44,12 @@
           "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
           "enableMicrophonePermission": true,
           "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ]
     ]

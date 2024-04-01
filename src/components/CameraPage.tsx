@@ -1,13 +1,14 @@
 import { Stack, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, ActivityIndicator, View, Button, Pressable, Image } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, ActivityIndicator, View, Button, Pressable, Image, Dimensions, ViewStyle } from 'react-native';
 import { useCameraPermission, useCameraDevice, Camera, PhotoFile, TakePhotoOptions, useMicrophonePermission, VideoFile } from 'react-native-vision-camera';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Video, ResizeMode } from 'expo-av';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { AntDesign } from '@expo/vector-icons';
 
-export default function CameraScreen() {
+export default function AppCamera() {
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const { hasPermission: microphonePermission, requestPermission: requestMicrophonePermission } = useMicrophonePermission();
@@ -18,8 +19,10 @@ export default function CameraScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState<VideoFile>();
 
+  const videoRef = useRef<any>(null);
+  const [status, setStatus] = useState<AVPlaybackStatus>();
 
-
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const device = useCameraDevice('back');
   const camera = useRef<Camera>(null);
 
@@ -92,31 +95,52 @@ export default function CameraScreen() {
     })
   }
 
+  // Get screen width
+ const {width: screenWidth, height: screenHeight} = Dimensions.get("window")
+
+ // calculate ratio of screen to video width
+  const delta_1 = video ? screenWidth / video.width : 0;
+  const delta_2 = video ? screenHeight / video.height : 0;
+
+  const VIDEO: ViewStyle = {
+    // Set the width and height to fit in the screen
+    width: video ? video.width * delta_1 : screenWidth,
+    height: video ? video.height * delta_2 : screenHeight,
+    flex: 0,
+    backgroundColor: '#fff',
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <Camera
-        ref={camera}
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={isActive && !photo && !video}
-        photo
-        video
-        audio
-        enableZoomGesture
-      />
+      <Stack.Screen options={{headerShown: false}}/>
+      {device && 
+        <Camera
+          ref={camera}
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive={isActive && !photo && !video}
+          photo
+          video
+          audio
+          enableZoomGesture
+        />
+      }
       {photo &&
         <>
           <Image source={{ uri: `file://${photo.path}` }} style={StyleSheet.absoluteFill} />
-          <FontAwesome5
+          <AntDesign 
             onPress={() => setPhoto(undefined)}
-            name="arrow-left"
-            size={30}
-            color="red"
+            name="arrowleft" 
+            size={25}
+            color="white"
             style={{
               position: 'absolute',
-              top: 30,
-              left: 30
-            }}
+              top: 15,
+              left: 15,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              borderRadius: 50,
+              padding: 5
+            }} 
           />
           <View
             style={{
@@ -124,11 +148,21 @@ export default function CameraScreen() {
               bottom: 0,
               left: 0,
               right: 0,
-              paddingBottom: 50,
-              backgroundColor: 'rgba(0,0,0,0.4)',
+              paddingBottom: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <Button title="Upload" onPress={uploadPhoto} />
+            <AntDesign 
+              name="upload" 
+              size={40} 
+              color="white" 
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                borderRadius: 50,
+                padding: 10
+              }}
+            />
           </View>
         </>
       }
@@ -139,7 +173,7 @@ export default function CameraScreen() {
             style={{
               position: 'absolute',
               right: 10,
-              top: 50,
+              top: 30,
               backgroundColor: 'rgba(0,0,0,0.4)',
               borderRadius: 5
             }}
@@ -170,24 +204,63 @@ export default function CameraScreen() {
       {video &&
         <>
           <Video
-            style={StyleSheet.absoluteFill}
+            // style={StyleSheet.absoluteFill}
+            // style={{ flex: 1 }}
             source={{
               uri: video.path,
             }}
-            useNativeControls
-            resizeMode={ResizeMode.COVER}
+            useNativeControls={false}
+            // resizeMode={ResizeMode.COVER}
+            resizeMode={ResizeMode.CONTAIN}
+            shouldPlay={isPlaying}
             isLooping
+            style={VIDEO}
           />
-          <FontAwesome5
-            onPress={() => setVideo(undefined)}
-            name="arrow-left"
-            size={30}
-            color="red"
+          
+          <View
             style={{
               position: 'absolute',
-              top: 30,
-              left: 30
+              bottom: 0,
+              left: 0,
+              right: 0,
+              paddingBottom: 20,
+              // justifyContent: 'center',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              flexDirection: 'row'
             }}
+          >
+            <AntDesign 
+              name="upload" 
+              size={30} 
+              color="black" 
+              style={{
+                position: 'absolute',
+                bottom: 20,
+                left: 10
+              }}
+            />
+            <AntDesign 
+              name={isPlaying ? "pausecircleo" :  "playcircleo"}
+              size={30} 
+              color="black" 
+              style={{
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }} 
+             onPress={() => setIsPlaying(!isPlaying)}
+            />
+          </View>
+          <AntDesign 
+            onPress={() => setVideo(undefined)}
+            name="arrowleft" 
+            size={25}
+            color="black"
+            style={{
+              position: 'absolute',
+              top: 20,
+              left: 15,
+            }} 
           />
         </>
       }
@@ -196,9 +269,3 @@ export default function CameraScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  }
-});

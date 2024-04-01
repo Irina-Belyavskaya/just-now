@@ -1,38 +1,63 @@
 import { Text, TextInput, View, StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
-import { Formik, FormikState, useFormik } from 'formik';
+import { Formik, FormikState } from 'formik';
 import { useAuth } from '../../context/auth-context';
 import * as yup from 'yup';
 import { Button } from 'react-native-paper';
-import { FieldValues, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { FieldValues } from 'react-hook-form';
+import { Link, router } from 'expo-router';
+import repository from '@/src/repository';
 
 export default function SignUp() {
   const { signIn } = useAuth();
 
   const schema = yup.object().shape({
-    name: yup.string()
+    nickname:yup.string()
       .required('Required'),
+    // name: yup.string()
+    //   .required('Required'),
+    // surname: yup.string()
+    //   .required('Required'),
     email: yup.string()
       .required('Required')
       .email('Invalid email'),
     password: yup.string()
       .required('Required')
       .min(8, 'Password must contain at least 8 characters'),
+    confirmPassword:yup.string()
+      .required('Required')
+      .min(8, 'Password must contain at least 8 characters'),
+
   });
 
-  const handleSubmitForm = (data: FieldValues, resetForm: (nextState?: Partial<FormikState<{
-    name: string;
+  const handleSubmitForm = async (data: FieldValues, resetForm: (nextState?: Partial<FormikState<{
+    // name: string;
     email: string;
     password: string;
+    // surname: string;
+    confirmPassword: string;
+    nickname: string;
   }>> | undefined) => void) => {
-    const dto = {
-      name: data.name,
-      email: data.email,
-      password: data.password
-    };
-    console.log("dto: ", dto);
-    resetForm();
+    try {
+      const dto = {
+        user_name: "Name",
+        user_email: data.email,
+        user_password: data.password,
+        user_confirmPassword: data.confirmPassword,
+        user_nickname: data.nickname,
+        user_surname:"Surname",
+        user_profile_picture_url: ''
+      };
+      console.log("dto: ", dto);
+      const { data: responseInfo, status } = await repository.post("/auth/sign-up", dto);
+      console.log(responseInfo);
+      console.log(status);
+      resetForm();
+      router.replace('/')
+    } catch (error) {
+      const err = error as any;
+      console.error(err.message);
+      console.error(err.code);
+    }
   }
 
   return (
@@ -46,7 +71,7 @@ export default function SignUp() {
           Sign Up
         </Text>
         <Formik
-          initialValues={{ name: '', email: '', password: '' }}
+          initialValues={{ email: '', password: '', confirmPassword: '', nickname: '' }}
           onSubmit={(values, { resetForm }) => {
             handleSubmitForm(values, resetForm);
           }}
@@ -55,6 +80,20 @@ export default function SignUp() {
           {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting, setFieldTouched, touched }) => (
             <View style={styles.formWrap}>
               <View style={styles.wrapInput}>
+                <TextInput
+                  onChangeText={handleChange('nickname')}
+                  onBlur={handleBlur('nickname')}
+                  value={values.nickname}
+                  style={[styles.input, touched.nickname && errors.nickname ? styles.errorInput : null]}
+                  autoFocus
+                  placeholder="Nickname"
+                />
+                {touched.nickname && errors.nickname ? (
+                  <Text style={styles.error}>{errors.nickname}</Text>
+                ) : null}
+              </View>
+
+              {/* <View style={styles.wrapInput}>
                 <TextInput
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
@@ -66,7 +105,21 @@ export default function SignUp() {
                 {touched.name && errors.name ? (
                   <Text style={styles.error}>{errors.name}</Text>
                 ) : null}
-              </View>
+              </View> */}
+
+              {/* <View style={styles.wrapInput}>
+                <TextInput
+                  onChangeText={handleChange('surname')}
+                  onBlur={handleBlur('surname')}
+                  value={values.name}
+                  style={[styles.input, touched.surname && errors.surname ? styles.errorInput : null]}
+                  autoFocus
+                  placeholder="Surname"
+                />
+                {touched.name && errors.surname ? (
+                  <Text style={styles.error}>{errors.surname}</Text>
+                ) : null}
+              </View> */}
 
               <View style={styles.wrapInput}>
                 <TextInput
@@ -88,9 +141,30 @@ export default function SignUp() {
                   value={values.password}
                   style={[styles.input, [styles.input, touched.password && errors.password ? styles.errorInput : null]]}
                   placeholder="Password"
+                  autoCapitalize={'none'}
+                  autoCorrect={false}
+                  secureTextEntry={true}
+                  textContentType={'password'}
                 />
                 {touched.password && errors.password ? (
                   <Text style={styles.error}>{errors.password}</Text>
+                ) : null}
+              </View>
+
+              <View style={styles.wrapInput}>
+                <TextInput
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
+                  style={[styles.input, [styles.input, touched.confirmPassword && errors.confirmPassword ? styles.errorInput : null]]}
+                  placeholder="Confirm password"
+                  autoCapitalize={'none'}
+                  autoCorrect={false}
+                  secureTextEntry={true}
+                  textContentType={'password'}
+                />
+                {touched.confirmPassword && errors.confirmPassword ? (
+                  <Text style={styles.error}>{errors.confirmPassword}</Text>
                 ) : null}
               </View>
 
@@ -99,7 +173,7 @@ export default function SignUp() {
                 mode="contained"
                 type="submit"
                 loading={isSubmitting}
-                disabled={isSubmitting}
+                disabled={false}
                 style={styles.button}
                 labelStyle={{ color: 'white' }}
                 uppercase

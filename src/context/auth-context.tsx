@@ -1,47 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSegments } from 'expo-router';
+import { useStorageState } from './useStorageState';
 
-// const AuthContext = React.createContext<{
-//   signIn: () => void;
-//   signOut: () => void;
-//   user?: string | null;
-// }>({
-//   signIn: () => null,
-//   signOut: () => null,
-//   user: null,
-// });
+type AuthContexttype = {
+  signIn: (token: string) => void;
+  signOut: () => void;
+  session?: string | null;
+}
 
-const AuthContext = React.createContext<any>(null);
+const AuthContext = React.createContext<AuthContexttype>({
+  signIn: () => null,
+  signOut: () => null,
+  session: null
+});
 
 export function useAuth() {
   return React.useContext(AuthContext);
 }
 
 export function AuthProvider(props: React.PropsWithChildren) {
-  const [user, setUser] = useState<string | undefined>("");
+  const [[isLoading, session], setSession] = useStorageState('session');
   const rootSegment = useSegments()[0];
   const router = useRouter();
 
   useEffect(() => {
-    if (user === undefined) return;
+    if (session === undefined) return;
 
-    if (!user && rootSegment !== "(auth)") {
+    if (!session && rootSegment !== "(auth)") {
       router.replace("/(auth)/sign-in");
-    } else if (user && rootSegment !== "(app)") {
+    } else if (session && rootSegment !== "(app)") {
       router.replace("/");
     }
-  }, [user, rootSegment])
+  }, [session, rootSegment])
 
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          setUser('123456');
+        signIn: (token: string) => {
+          setSession(token);
         },
         signOut: () => {
-          setUser("");
+          setSession("");
         },
-        user,
+        session,
       }}>
       {props.children}
     </AuthContext.Provider>

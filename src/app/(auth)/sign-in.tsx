@@ -5,10 +5,14 @@ import * as yup from 'yup';
 import { Button } from 'react-native-paper';
 import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useEffect } from 'react';
+import repository from '@/src/repository';
+import axios from "axios";
 
 export default function SignIn() {
   const { signIn } = useAuth();
+
 
   const schema = yup.object().shape({
     email: yup.string()
@@ -19,16 +23,28 @@ export default function SignIn() {
       .min(8, 'Password must contain at least 8 characters'),
   });
 
-  const handleSubmitForm = (data: FieldValues, resetForm: (nextState?: Partial<FormikState<{
+  const handleSubmitForm = async (data: FieldValues, resetForm: (nextState?: Partial<FormikState<{
     email: string;
     password: string;
   }>> | undefined) => void) => {
-    const dto = {
-      email: data.email,
-      password: data.password
-    };
-    console.log("dto: ", dto);
-    resetForm();
+    
+    try {
+      const dto = {
+        user_email: data.email,
+        user_password: data.password
+      };
+      console.log("dto: ", dto);
+      const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
+      console.log(responseInfo);
+      console.log(status);
+      resetForm();
+      signIn(responseInfo.access_token);
+      router.replace('/')
+    } catch (error) {
+      const err = error as any;
+      console.error(err.message);
+      console.error(err.code);
+    }
   }
 
   return (
@@ -72,6 +88,10 @@ export default function SignIn() {
                   value={values.password}
                   style={[styles.input, [styles.input, touched.password && errors.password ? styles.errorInput : null]]}
                   placeholder="Password"
+                  autoCapitalize={'none'}
+                  autoCorrect={false}
+                  secureTextEntry={true}
+                  textContentType={'password'}
                 />
                 {touched.password && errors.password ? (
                   <Text style={styles.error}>{errors.password}</Text>
@@ -83,7 +103,7 @@ export default function SignIn() {
                 mode="contained"
                 type="submit"
                 loading={isSubmitting}
-                disabled={isSubmitting}
+                disabled={false}
                 style={styles.button}
                 labelStyle={{ color: 'white' }}
                 uppercase

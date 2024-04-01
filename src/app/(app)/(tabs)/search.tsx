@@ -1,12 +1,14 @@
-import { Button, StyleSheet } from 'react-native';
-import { Text, View } from '@/src/components/Themed';
-import LottieView from 'lottie-react-native';
-import { useRef } from 'react';
+import { StyleSheet } from 'react-native';
 
-export default function TabOneScreen() {
+import EditScreenInfo from '@/src/components/EditScreenInfo';
+import { Text, View } from '@/src/components/Themed';
+import { Stack } from 'expo-router';
+
+export default function SearchScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
+      <Stack.Screen options={{headerShown: false}}/>
+      <Text style={styles.title}>Search</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
     </View>
   );

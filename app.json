@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "JUST NOW",
+    "name": "JustNow",
     "slug": "JUST_NOW",
     "scheme": "just_now",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon_3.png",
+    "icon": "./assets/camera_icon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash_1.png",
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon_3.png",
+        "foregroundImage": "./assets/camera_icon.jpg",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -32,7 +32,7 @@
       "package": "com.anonymous.JUST_NOW"
     },
     "web": {
-      "favicon": "./assets/icon_3.png",
+      "favicon": "./assets/camera_icon.jpg",
       "bundler": "metro"
     },
     "plugins": [

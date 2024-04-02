@@ -8,7 +8,7 @@ export default function ProfileHead() {
       <View style={styles.imageContainer}>
         <Image 
           style={styles.userImage} 
-          source={require("../../assets/user.png")}
+          source={require("../../assets/user.jpg")}
         />
         <Text style={styles.userName}>
           User Name
@@ -51,16 +51,18 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 100,
     marginBottom: 5,
+    borderWidth: 2,
+    borderColor: "black"
   },
   userName: {
     fontSize: 30, 
-    color: Colors.white, 
+    color: "black", 
     fontWeight: "700", 
     fontFamily: "Raleway_400Regular"
   },
   userEmail: {
     fontSize: 20, 
-    color: Colors.white, 
+    color: "black", 
     fontFamily: "Raleway_300Light" 
   },
   middleSectionTextContainer: {
@@ -74,12 +76,12 @@ const styles = StyleSheet.create({
   },
   toptext: {
     fontSize: 18,
-    color: Colors.white,
+    color: "black",
     fontFamily: "Raleway_400Regular",
   },
   bottomtext: {
     fontSize: 18,
-    color: Colors.white,
+    color: "black",
     fontFamily: "Raleway_400Regular",
   },
 });

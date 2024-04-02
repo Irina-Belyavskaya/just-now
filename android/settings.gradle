@@ -1,4 +1,4 @@
-rootProject.name = 'JUST NOW'
+rootProject.name = 'JustNow'
 
 dependencyResolutionManagement {
   versionCatalogs {

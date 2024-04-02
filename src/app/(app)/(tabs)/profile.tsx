@@ -9,7 +9,7 @@ export default function ProfileScreen() {
     <>
       <ImageBackground
         style={styles.backgroundImage}
-        source={require("../../../../assets/background.jpg")}
+        source={require("../../../../assets/yellow_background.jpg")}
         blurRadius={8}
       >
         <ProfileHead />

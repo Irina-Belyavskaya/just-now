@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { AntDesign } from '@expo/vector-icons';
+import repository from '../repository';
 
 export default function AppCamera() {
 
@@ -51,12 +52,33 @@ export default function AppCamera() {
     return <Text>Camera no found!</Text>;
   }
 
+  const convertBlobToBase64 = (blob: any) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+        resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+
   const uploadPhoto = async () => {
-    if (!photo)
-      return;
-    const result = await fetch(`file://${photo?.path}`)
-    const data = await result.blob();
-    console.log(data);
+    try {
+      if (!photo)
+        return;
+      
+      const result = await fetch(`file://${photo?.path}`)
+      const blob = await result.blob();
+      const base64 = await convertBlobToBase64(blob);
+
+      await repository.post(
+        '/users/upload', 
+        {data : base64}
+      );
+    } catch (error) {
+      const err = error as any;
+      console.error(err.message);
+      console.error(err.code);
+    }
   }
 
   const onTakePicturePressed = async () => {
@@ -154,6 +176,7 @@ export default function AppCamera() {
             }}
           >
             <AntDesign 
+              onPress={uploadPhoto}
               name="upload" 
               size={40} 
               color="white" 

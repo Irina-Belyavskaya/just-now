@@ -1,22 +1,57 @@
-import { Button, StyleSheet } from 'react-native';
-import { Text, View } from '@/src/components/Themed';
-import LottieView from 'lottie-react-native';
-import { useRef } from 'react';
+import { Button, StyleSheet, Image, SafeAreaView, ImageBackground } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '@/src/context/auth-context';
+import { Post } from '@/src/types/post.type';
+import repository from '@/src/repository';
 
 export default function TabOneScreen() {
+  const {user} = useAuth();
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const {data} = await repository.get('/posts');
+      console.log(data)
+      setPosts(data);
+    })();
+  }, [])
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ImageBackground
+        style={styles.backgroundImage}
+        source={require("../../../../assets/yellow_background.jpg")}
+        blurRadius={8}
+      >
+      {
+        posts.map((post) => 
+          <Image 
+            key={post.post_id}
+            source={{ uri: post.post_content_url }} 
+            style={{
+              width: 200,
+              height: 500,
+              resizeMode: 'contain'
+            }} 
+          />
+        )
+      }
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
+    resizeMode: "cover",
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start'
+  },
+  container: {
+    height: '100%'
   },
   title: {
     fontSize: 20,

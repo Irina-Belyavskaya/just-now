@@ -1,4 +1,4 @@
-import { Stack, useFocusEffect } from 'expo-router';
+import { Stack, router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, SafeAreaView, Text, ActivityIndicator, View, Button, Pressable, Image, Dimensions, ViewStyle } from 'react-native';
@@ -8,9 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { AntDesign } from '@expo/vector-icons';
 import repository from '../repository';
+import { useAuth } from '../context/auth-context';
 
 export default function AppCamera() {
-
+  const {user} = useAuth();
   const { hasPermission, requestPermission } = useCameraPermission();
   const { hasPermission: microphonePermission, requestPermission: requestMicrophonePermission } = useMicrophonePermission();
 
@@ -71,9 +72,10 @@ export default function AppCamera() {
       const base64 = await convertBlobToBase64(blob);
 
       await repository.post(
-        '/users/upload', 
-        {data : base64}
+        '/posts/upload', 
+        {data : base64, user_id: user}
       );
+      router.replace('/');
     } catch (error) {
       const err = error as any;
       console.error(err.message);

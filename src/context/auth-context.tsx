@@ -1,48 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import { useStorageState } from './useStorageState';
+import JWT from 'expo-jwt';
 
 type AuthContexttype = {
   signIn: (token: string) => void;
+  signUp: (token: string) => void;
   signOut: () => void;
-  session?: string | null;
+  token?: string | null;
+  user?: string | null;
 }
 
 const AuthContext = React.createContext<AuthContexttype>({
   signIn: () => null,
+  signUp: () => null,
   signOut: () => null,
-  session: null
+  token: null,
+  user: null
 });
 
 export function useAuth() {
   return React.useContext(AuthContext);
 }
 
+type JwtPayload = {
+  user_id: string;
+  user_email: string;
+  user_entry_data:string; 
+}
+
 export function AuthProvider(props: React.PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState('session');
+  const [[isLoadingSession, token], setToken] = useStorageState('token');
+  const [[isLoadingUser, user], setUser] = useStorageState('user');
   const rootSegment = useSegments()[0];
   const router = useRouter();
 
   useEffect(() => {
-    if (session === undefined) return;
+    if (token === undefined) return;
 
-    if (!session && rootSegment !== "(auth)") {
+    if (!token && rootSegment !== "(auth)") {
       router.replace("/(auth)/sign-in");
-    } else if (session && rootSegment !== "(app)") {
+    } else if (token && rootSegment !== "(app)") {
       router.replace("/");
     }
-  }, [session, rootSegment])
+  }, [token, rootSegment])
 
   return (
     <AuthContext.Provider
       value={{
         signIn: (token: string) => {
-          setSession(token);
+          setToken(token);
+          console.log("token: ", token);
+          const key = 'SECRET';
+          const decoded: JwtPayload = JWT.decode(token, key);
+          console.log("decoded: ", decoded)
+          setUser(decoded.user_id);
+        },
+        signUp: (token: string) => {
+          setToken(token);
+          const key = 'SECRET';
+          const decoded: JwtPayload = JWT.decode(token, key);
+          console.log(decoded)
+          setUser(decoded.user_id);
         },
         signOut: () => {
-          setSession("");
+          setToken("");
+          setUser("");
         },
-        session,
+        token,
+        user
       }}>
       {props.children}
     </AuthContext.Provider>

@@ -3,16 +3,17 @@ import { Formik, FormikState, useFormik } from 'formik';
 import { useAuth } from '../../context/auth-context';
 import * as yup from 'yup';
 import { Button } from 'react-native-paper';
-import { FieldValues, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { FieldValues } from 'react-hook-form';
 import { Link, router } from 'expo-router';
-import { useEffect } from 'react';
 import repository from '@/src/repository';
-import axios from "axios";
+import { useState } from 'react';
+import { ErrorText } from '@/src/components/Themed';
 
 export default function SignIn() {
   const { signIn } = useAuth();
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] =  useState<string>('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const schema = yup.object().shape({
     email: yup.string()
@@ -27,23 +28,25 @@ export default function SignIn() {
     email: string;
     password: string;
   }>> | undefined) => void) => {
-    
     try {
+      setIsLoading(true);
+      setErrorMessage('');
       const dto = {
         user_email: data.email,
         user_password: data.password
       };
-      console.log("dto: ", dto);
       const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
-      console.log(responseInfo);
-      console.log(status);
+      // console.log(responseInfo);
+      // console.log(status);
       resetForm();
       signIn(responseInfo.access_token);
-      router.replace('/')
+      setIsLoading(false);
+      router.replace('/');
     } catch (error) {
-      const err = error as any;
-      console.error(err.message);
-      console.error(err.code);
+      // const err = JSON.parse(JSON.stringify(error));
+      setErrorMessage('Incorrect email or password');
+      setModalVisible(true);
+      setIsLoading(false);
     }
   }
 
@@ -102,14 +105,15 @@ export default function SignIn() {
                 onPress={handleSubmit}
                 mode="contained"
                 type="submit"
-                loading={isSubmitting}
+                loading={isLoading}
                 disabled={false}
                 style={styles.button}
                 labelStyle={{ color: 'white' }}
                 uppercase
               >
-                Submit
+                Sign In
               </Button>
+              {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
             </View>
           )}
         </Formik>
@@ -182,6 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: 50,
-  }
+    marginTop: 35,
+  },
 });

@@ -8,7 +8,7 @@ import { Link, router } from 'expo-router';
 import repository from '@/src/repository';
 
 export default function SignUp() {
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
 
   const schema = yup.object().shape({
     nickname:yup.string()
@@ -51,6 +51,7 @@ export default function SignUp() {
       const { data: responseInfo, status } = await repository.post("/auth/sign-up", dto);
       console.log(responseInfo);
       console.log(status);
+      signUp(responseInfo.access_token);
       resetForm();
       router.replace('/')
     } catch (error) {
@@ -87,6 +88,7 @@ export default function SignUp() {
                   style={[styles.input, touched.nickname && errors.nickname ? styles.errorInput : null]}
                   autoFocus
                   placeholder="Nickname"
+                  autoCapitalize={'none'}
                 />
                 {touched.nickname && errors.nickname ? (
                   <Text style={styles.error}>{errors.nickname}</Text>

@@ -7,6 +7,7 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from './useColorScheme';
+import React from 'react';
 
 type ThemeProps = {
   lightColor?: string;
@@ -42,4 +43,22 @@ export function View(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+export function ErrorText({children, props} : {children: React.ReactNode, props?: TextProps}) {
+  return (
+    <Text 
+      style={{ 
+        marginBottom: 15,
+        textAlign: 'center',
+        fontFamily: 'Raleway_400Regular',
+        fontSize: 18,
+        color: '#FF4433',
+        marginTop: 8
+      }} 
+      {...props}
+    >
+      {children}
+    </Text>
+  )
 }

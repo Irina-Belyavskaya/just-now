@@ -5,17 +5,22 @@ import { Animated } from "react-native";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
-export default function AnimationSplashScreen({
-  onAnimationFinish = () => { }
-}: {
-  onAnimationFinish: () => void
-}) {
-  const animation = useRef<LottieView>(null);
-  const animationProgress = useRef(new Animated.Value(0)).current;
+type AnimationScreenProps = {
+  onAnimationFinish?: () => void
+  loop?: boolean
+}
 
+export default function AnimationScreen({
+  onAnimationFinish = () => { },
+  loop = false
+}: AnimationScreenProps) {
+  const animation = useRef<LottieView>(null);
 
   useEffect(() => {
-    animation.current?.play(0, 40);
+    if (!loop)
+      animation.current?.play(0, 40);
+    else 
+      animation.current?.play(0, 1000);
     // animation.current?.play(0, 1000);
     // Animated.timing(animationProgress, {
     //   toValue: 1,
@@ -37,13 +42,11 @@ export default function AnimationSplashScreen({
       <AnimatedLottieView
         ref={animation}
         onAnimationFinish={onAnimationFinish}
-        // progress={animationProgress}
-        loop={false}
+        loop={loop}
         style={{
           width: '80%',
           maxWidth: 400,
           height: 400,
-          // opacity: animationProgress
         }}
         source={require('@/assets/lottie/calendar.json')}
       />

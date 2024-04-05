@@ -21,9 +21,6 @@ export default function AppCamera() {
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState<VideoFile>();
 
-  const videoRef = useRef<any>(null);
-  const [status, setStatus] = useState<AVPlaybackStatus>();
-
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const device = useCameraDevice('back');
   const camera = useRef<Camera>(null);
@@ -73,6 +70,27 @@ export default function AppCamera() {
 
       await repository.post(
         '/posts/upload', 
+        {data : base64, user_id: user}
+      );
+      router.replace('/');
+    } catch (error) {
+      const err = error as any;
+      console.error(err.message);
+      console.error(err.code);
+    }
+  }
+
+  const uploadVideo = async () => {
+    try {
+      if (!video)
+        return;
+      
+      const result = await fetch(`file://${video?.path}`)
+      const blob = await result.blob();
+      const base64 = await convertBlobToBase64(blob);
+
+      await repository.post(
+        '/posts/upload/video', 
         {data : base64, user_id: user}
       );
       router.replace('/');
@@ -229,13 +247,10 @@ export default function AppCamera() {
       {video &&
         <>
           <Video
-            // style={StyleSheet.absoluteFill}
-            // style={{ flex: 1 }}
             source={{
               uri: video.path,
             }}
             useNativeControls={false}
-            // resizeMode={ResizeMode.COVER}
             resizeMode={ResizeMode.CONTAIN}
             shouldPlay={isPlaying}
             isLooping
@@ -249,13 +264,13 @@ export default function AppCamera() {
               left: 0,
               right: 0,
               paddingBottom: 20,
-              // justifyContent: 'center',
               justifyContent: 'flex-start',
               alignItems: 'center',
               flexDirection: 'row'
             }}
           >
             <AntDesign 
+              onPress={uploadVideo}
               name="upload" 
               size={30} 
               color="black" 

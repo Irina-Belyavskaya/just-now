@@ -1,18 +1,28 @@
-import { Button, StyleSheet, Image, SafeAreaView, ImageBackground } from 'react-native';
+import { StyleSheet, SafeAreaView, ImageBackground} from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/src/context/auth-context';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
+import FeedScreen from '@/src/components/Feed';
+import AnimationSplashScreen from '@/src/components/AnimatedSplashScreen';
 
 export default function TabOneScreen() {
   const {user} = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const {data} = await repository.get('/posts');
-      console.log(data)
-      setPosts(data);
+      try {
+        setLoading(true);
+        const {data} = await repository.get('/posts');
+        console.log(data)
+        setPosts(data);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
     })();
   }, [])
 
@@ -23,19 +33,13 @@ export default function TabOneScreen() {
         source={require("../../../../assets/yellow_background.jpg")}
         blurRadius={8}
       >
-      {
-        posts.map((post) => 
-          <Image 
-            key={post.post_id}
-            source={{ uri: post.post_content_url }} 
-            style={{
-              width: 200,
-              height: 500,
-              resizeMode: 'contain'
-            }} 
-          />
-        )
-      }
+        {
+          isLoading || posts.length === 0
+          ?
+            <AnimationSplashScreen loop/>
+          :
+            <FeedScreen posts={posts}/>
+        }
       </ImageBackground>
     </SafeAreaView>
   );
@@ -45,10 +49,6 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: "cover",
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start'
   },
   container: {
     height: '100%'

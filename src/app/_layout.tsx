@@ -46,9 +46,10 @@ export default function RootLayout() {
 
   if (!appReady || !splashAnimationFinished) {
     return (
-      <AnimationSplashScreen onAnimationFinish={() => {
-        setSplashAnimationFinished(true);
-      }}
+      <AnimationSplashScreen 
+        onAnimationFinish={() => {
+          setSplashAnimationFinished(true);
+        }}
       />
     );
   }

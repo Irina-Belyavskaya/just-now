@@ -1,14 +1,14 @@
 import { Stack, router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, ActivityIndicator, View, Button, Pressable, Image, Dimensions, ViewStyle } from 'react-native';
+import { StyleSheet, Text, ActivityIndicator, View, Pressable, Image, Dimensions, ViewStyle } from 'react-native';
 import { useCameraPermission, useCameraDevice, Camera, PhotoFile, TakePhotoOptions, useMicrophonePermission, VideoFile } from 'react-native-vision-camera';
-import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av';
 import { AntDesign } from '@expo/vector-icons';
 import repository from '../repository';
 import { useAuth } from '../context/auth-context';
+import { sendToFirebase } from '../utils/firebase';
 
 export default function AppCamera() {
   const {user} = useAuth();
@@ -20,6 +20,8 @@ export default function AppCamera() {
   const [flash, setFlash] = useState<TakePhotoOptions["flash"]>("off");
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState<VideoFile>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const device = useCameraDevice('back');
@@ -63,7 +65,9 @@ export default function AppCamera() {
     try {
       if (!photo)
         return;
-      
+
+      setIsLoading(true);
+
       const result = await fetch(`file://${photo?.path}`)
       const blob = await result.blob();
       const base64 = await convertBlobToBase64(blob);
@@ -72,11 +76,14 @@ export default function AppCamera() {
         '/posts/upload', 
         {data : base64, user_id: user}
       );
+      setPhoto(undefined);
+      setIsLoading(false);
       router.replace('/');
     } catch (error) {
       const err = error as any;
       console.error(err.message);
       console.error(err.code);
+      setIsLoading(false);
     }
   }
 
@@ -84,20 +91,19 @@ export default function AppCamera() {
     try {
       if (!video)
         return;
-      
+      setIsLoading(true);
       const result = await fetch(`file://${video?.path}`)
       const blob = await result.blob();
-      const base64 = await convertBlobToBase64(blob);
-
-      await repository.post(
-        '/posts/upload/video', 
-        {data : base64, user_id: user}
-      );
+      const url = await sendToFirebase(blob);
+      console.log(url);
+      setVideo(undefined);
+      setIsLoading(false);
       router.replace('/');
     } catch (error) {
       const err = error as any;
       console.error(err.message);
       console.error(err.code);
+      setIsLoading(false);
     }
   }
 
@@ -167,7 +173,14 @@ export default function AppCamera() {
           enableZoomGesture
         />
       }
-      {photo &&
+
+      {isLoading && 
+        <View style={{backgroundColor: 'balck'}}>
+          <ActivityIndicator size={'large'}/>
+        </View>
+      }
+
+      {photo && !isLoading &&
         <>
           <Image source={{ uri: `file://${photo.path}` }} style={StyleSheet.absoluteFill} />
           <AntDesign 
@@ -210,7 +223,7 @@ export default function AppCamera() {
         </>
       }
 
-      {!photo && !video &&
+      {!photo && !video && !isLoading &&
         <>
           <View
             style={{
@@ -244,7 +257,7 @@ export default function AppCamera() {
         </>
       }
 
-      {video &&
+      {video && !isLoading &&
         <>
           <Video
             source={{

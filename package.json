@@ -25,6 +25,7 @@
     "expo-status-bar": "~1.11.1",
     "expo-system-ui": "~2.9.3",
     "expo-web-browser": "^12.8.2",
+    "firebase": "^10.10.0",
     "formik": "^2.4.5",
     "lottie-react-native": "6.5.1",
     "react": "18.2.0",
@@ -36,6 +37,7 @@
     "react-native-screens": "~3.29.0",
     "react-native-vision-camera": "^3.9.1",
     "react-native-web": "~0.19.6",
+    "socket.io-client": "^4.7.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import uuid from 'react-native-uuid';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtT1UMxcFJ0sf4U-M2I7pLShFczcCpNYw",
@@ -14,30 +15,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-export const sendToFirebase = async (blob: Blob) => {
+export const sendToFirebase = async (blob: Blob, user_id: string) => {
   try {
-    const storageRef = ref(storage,' test');
+    const storageRef = ref(storage,`${user_id}/${uuid.v4()}`);
 
     const snapshot = await uploadBytes(storageRef, blob);
     if (snapshot) {
       const downloadURL = await getDownloadURL(storageRef);
       return downloadURL;
-      // .then((downloadURL) => {
-      //   console.log("downloadURL: ", JSON.stringify(downloadURL, null, 2));
-      //   return downloadURL;
-      // })
     }
-      // .then((snapshot) => {
-      //   console.log('Uploaded a blob or file!');
-      //   console.log("snapshot: ", JSON.stringify(snapshot, null, 2));
-        // getDownloadURL(storageRef).then((downloadURL) => {
-        //   console.log("downloadURL: ", JSON.stringify(downloadURL, null, 2));
-        //   return downloadURL;
-        // })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-      // });
   } catch (error) {
     console.log(error);
   }

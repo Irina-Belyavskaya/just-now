@@ -1,19 +1,19 @@
-import { Stack, router, useFocusEffect } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, ActivityIndicator, View, Pressable, Image, Dimensions, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useCameraPermission, useCameraDevice, Camera, PhotoFile, TakePhotoOptions, useMicrophonePermission, VideoFile } from 'react-native-vision-camera';
-import { Ionicons } from '@expo/vector-icons';
-import { Video, ResizeMode } from 'expo-av';
-import { AntDesign } from '@expo/vector-icons';
-import repository from '../repository';
-import { useAuth } from '../context/auth-context';
-import { sendToFirebase } from '../utils/firebase';
+import LoaderScreen from '../app/loader';
+import VideoPlayer from './VideoPlayer';
+import PhotoViewer from './PhotoViewer';
+import CameraButtons from './CameraButtons';
 
 export default function AppCamera() {
-  const {user} = useAuth();
   const { hasPermission, requestPermission } = useCameraPermission();
-  const { hasPermission: microphonePermission, requestPermission: requestMicrophonePermission } = useMicrophonePermission();
+  const { 
+          hasPermission: microphonePermission, 
+          requestPermission: requestMicrophonePermission 
+        } = useMicrophonePermission();
 
   const [isActive, setIsActive] = useState(false);
   const [photo, setPhoto] = useState<PhotoFile>();
@@ -22,9 +22,9 @@ export default function AppCamera() {
   const [video, setVideo] = useState<VideoFile>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [cameraSide, setCameraSide] = useState<'back' | 'front'>('back');
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const device = useCameraDevice('back');
+  const device = useCameraDevice(cameraSide);
   const camera = useRef<Camera>(null);
 
   useEffect(() => {
@@ -45,66 +45,11 @@ export default function AppCamera() {
   )
 
   if (!hasPermission || !microphonePermission) {
-    return <ActivityIndicator />;
+    return <LoaderScreen />;
   }
 
   if (!device) {
     return <Text>Camera no found!</Text>;
-  }
-
-  const convertBlobToBase64 = (blob: any) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => {
-        resolve(reader.result);
-    };
-    reader.readAsDataURL(blob);
-  });
-
-  const uploadPhoto = async () => {
-    try {
-      if (!photo)
-        return;
-
-      setIsLoading(true);
-
-      const result = await fetch(`file://${photo?.path}`)
-      const blob = await result.blob();
-      const base64 = await convertBlobToBase64(blob);
-
-      await repository.post(
-        '/posts/upload', 
-        {data : base64, user_id: user}
-      );
-      setPhoto(undefined);
-      setIsLoading(false);
-      router.replace('/');
-    } catch (error) {
-      const err = error as any;
-      console.error(err.message);
-      console.error(err.code);
-      setIsLoading(false);
-    }
-  }
-
-  const uploadVideo = async () => {
-    try {
-      if (!video)
-        return;
-      setIsLoading(true);
-      const result = await fetch(`file://${video?.path}`)
-      const blob = await result.blob();
-      const url = await sendToFirebase(blob);
-      console.log(url);
-      setVideo(undefined);
-      setIsLoading(false);
-      router.replace('/');
-    } catch (error) {
-      const err = error as any;
-      console.error(err.message);
-      console.error(err.code);
-      setIsLoading(false);
-    }
   }
 
   const onTakePicturePressed = async () => {
@@ -143,25 +88,17 @@ export default function AppCamera() {
     })
   }
 
-  // Get screen width
- const {width: screenWidth, height: screenHeight} = Dimensions.get("window")
-
- // calculate ratio of screen to video width
-  const delta_1 = video ? screenWidth / video.width : 0;
-  const delta_2 = video ? screenHeight / video.height : 0;
-
-  const VIDEO: ViewStyle = {
-    // Set the width and height to fit in the screen
-    width: video ? video.width * delta_1 : screenWidth,
-    height: video ? video.height * delta_2 : screenHeight,
-    flex: 0,
-    backgroundColor: '#fff',
+  const changeCameraSide= () => {
+    if (cameraSide === 'back') setCameraSide('front');
+    if (cameraSide === 'front') setCameraSide('back');
   }
 
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen options={{headerShown: false}}/>
-      {device && 
+      
+      {/* CAMERA */}
+      {device && !isLoading &&
         <Camera
           ref={camera}
           style={StyleSheet.absoluteFill}
@@ -174,148 +111,38 @@ export default function AppCamera() {
         />
       }
 
-      {isLoading && 
-        <View style={{backgroundColor: 'balck'}}>
-          <ActivityIndicator size={'large'}/>
-        </View>
-      }
+      {isLoading && <LoaderScreen />}
 
+      {/* PHOTO VIEWER */}
       {photo && !isLoading &&
-        <>
-          <Image source={{ uri: `file://${photo.path}` }} style={StyleSheet.absoluteFill} />
-          <AntDesign 
-            onPress={() => setPhoto(undefined)}
-            name="arrowleft" 
-            size={25}
-            color="white"
-            style={{
-              position: 'absolute',
-              top: 15,
-              left: 15,
-              backgroundColor: 'rgba(0,0,0,0.8)',
-              borderRadius: 50,
-              padding: 5
-            }} 
-          />
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingBottom: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <AntDesign 
-              onPress={uploadPhoto}
-              name="upload" 
-              size={40} 
-              color="white" 
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                borderRadius: 50,
-                padding: 10
-              }}
-            />
-          </View>
-        </>
+        <PhotoViewer 
+          photoPath={photo.path}
+          setPhoto={setPhoto}
+          photo={photo}
+          setIsLoading={setIsLoading}
+        />
       }
 
+      {/*CAMERA BUTTONS */}
       {!photo && !video && !isLoading &&
-        <>
-          <View
-            style={{
-              position: 'absolute',
-              right: 10,
-              top: 30,
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              borderRadius: 5
-            }}
-          >
-            <Ionicons
-              onPress={() => setFlash((curValue) => curValue === 'off' ? 'on' : 'off')}
-              name={flash === 'off' ? "flash-off" : "flash"}
-              size={24}
-              color="white"
-            />
-          </View>
-          <Pressable
-            onPress={onTakePicturePressed}
-            onLongPress={onStartRecording}
-            style={{
-              position: 'absolute',
-              bottom: 10,
-              width: 70,
-              height: 70,
-              backgroundColor: isRecording ? 'red' : 'white',
-              alignSelf: 'center',
-              borderRadius: 75
-            }}
-          />
-        </>
+        <CameraButtons 
+          onTakePicturePressed={onTakePicturePressed}
+          onStartRecording={onStartRecording} 
+          setFlash={setFlash} 
+          flash={flash} 
+          isRecording={isRecording}   
+          changeCameraSide={changeCameraSide}     
+        />
       }
 
+      {/* VIDEO PLAYER */}
       {video && !isLoading &&
-        <>
-          <Video
-            source={{
-              uri: video.path,
-            }}
-            useNativeControls={false}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay={isPlaying}
-            isLooping
-            style={VIDEO}
-          />
-          
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingBottom: 20,
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              flexDirection: 'row'
-            }}
-          >
-            <AntDesign 
-              onPress={uploadVideo}
-              name="upload" 
-              size={30} 
-              color="black" 
-              style={{
-                position: 'absolute',
-                bottom: 20,
-                left: 10
-              }}
-            />
-            <AntDesign 
-              name={isPlaying ? "pausecircleo" :  "playcircleo"}
-              size={30} 
-              color="black" 
-              style={{
-                marginLeft: 'auto',
-                marginRight: 'auto'
-              }} 
-             onPress={() => setIsPlaying(!isPlaying)}
-            />
-          </View>
-          <AntDesign 
-            onPress={() => setVideo(undefined)}
-            name="arrowleft" 
-            size={25}
-            color="black"
-            style={{
-              position: 'absolute',
-              top: 20,
-              left: 15,
-            }} 
-          />
-        </>
+        <VideoPlayer 
+          videoPath={video.path}
+          video={video}
+          setVideo={setVideo}
+          setIsLoading={setIsLoading}
+        />
       }
 
       <StatusBar hidden />

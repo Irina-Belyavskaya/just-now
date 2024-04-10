@@ -30,7 +30,7 @@ type JwtPayload = {
 }
 
 export function AuthProvider(props: React.PropsWithChildren) {
-  const [[isLoadingSession, token], setToken] = useStorageState('token');
+  const [[isLoadingToken, token], setToken] = useStorageState('token');
   const [[isLoadingUser, user], setUser] = useStorageState('user');
   const rootSegment = useSegments()[0];
   const router = useRouter();
@@ -38,7 +38,9 @@ export function AuthProvider(props: React.PropsWithChildren) {
   useEffect(() => {
     if (token === undefined) return;
 
-    if (!token && rootSegment !== "(auth)") {
+    if (isLoadingToken) {
+      router.replace("/loader");
+    } else if (!token && rootSegment !== "(auth)") {
       router.replace("/(auth)/sign-in");
     } else if (token && rootSegment !== "(app)") {
       router.replace("/");
@@ -53,14 +55,12 @@ export function AuthProvider(props: React.PropsWithChildren) {
           console.log("token: ", token);
           const key = 'SECRET';
           const decoded: JwtPayload = JWT.decode(token, key);
-          console.log("decoded: ", decoded)
           setUser(decoded.user_id);
         },
         signUp: (token: string) => {
           setToken(token);
           const key = 'SECRET';
           const decoded: JwtPayload = JWT.decode(token, key);
-          console.log(decoded)
           setUser(decoded.user_id);
         },
         signOut: () => {

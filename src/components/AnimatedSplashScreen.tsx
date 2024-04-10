@@ -6,7 +6,7 @@ import { Animated } from "react-native";
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
 type AnimationScreenProps = {
-  onAnimationFinish?: () => void
+  onAnimationFinish?: () => void,
   loop?: boolean
 }
 

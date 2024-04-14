@@ -1,3 +1,4 @@
+import Colors from "@/src/constants/Colors";
 import { useAuth } from "@/src/context/auth-context";
 import { Stack, router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-    backgroundColor: 'black',
+    backgroundColor: Colors.pickedYelllow,
   },
   modalView: {
     backgroundColor: 'white',

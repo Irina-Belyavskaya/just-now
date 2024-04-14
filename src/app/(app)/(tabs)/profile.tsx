@@ -1,8 +1,6 @@
 import { ImageBackground, StyleSheet } from 'react-native';
 import Sizes from '@/src/constants/Sizes';
 import ProfileHead from '@/src/components/ProfileHead';
-import Middle from '@/src/components/ProfileHead';
-import Bottom from '@/src/components/Bottom';
 
 export default function ProfileScreen() {
   return (

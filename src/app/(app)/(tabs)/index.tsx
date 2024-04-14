@@ -4,7 +4,6 @@ import { useAuth } from '@/src/context/auth-context';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
 import FeedScreen from '@/src/components/Feed';
-import AnimationSplashScreen from '@/src/components/AnimatedSplashScreen';
 import { useLocalSearchParams } from 'expo-router';
 import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
@@ -22,7 +21,7 @@ export default function TabOneScreen() {
       setPosts(data);
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
   }, [])
@@ -38,7 +37,7 @@ export default function TabOneScreen() {
         source={require("../../../../assets/yellow_background.jpg")}
         blurRadius={8}
       >
-        {posts.length === 0 && !isLoading &&
+        {!isLoading && posts.length === 0 && 
           <EmptyScreen text='No posts('/>
         }
         {isLoading && 

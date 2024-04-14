@@ -35,8 +35,38 @@ export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
-  return <DefaultText style={[{ color }, style]} {...otherProps} />;
+  return (
+    <DefaultText 
+      style={[
+        { 
+          color, 
+          fontFamily: 'Raleway_400Regular' 
+        }, 
+        style
+      ]} 
+      {...otherProps} 
+    />
+  );
 }
+
+
+
+// export function BoldText({children, props} : {children: React.ReactNode, props?: TextProps}) {
+//   return (
+//     <Text 
+//       style={{ 
+//         marginBottom: 15,
+//         textAlign: 'center',
+//         fontFamily: 'Raleway_700Bold',
+//         fontSize: 25,
+//         marginTop: 8
+//       }} 
+//       {...props}
+//     >
+//       {children}
+//     </Text>
+//   )
+// }
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -47,7 +77,7 @@ export function View(props: ViewProps) {
 
 export function ErrorText({children, props} : {children: React.ReactNode, props?: TextProps}) {
   return (
-    <Text 
+    <DefaultText 
       style={{ 
         marginBottom: 15,
         textAlign: 'center',
@@ -59,6 +89,6 @@ export function ErrorText({children, props} : {children: React.ReactNode, props?
       {...props}
     >
       {children}
-    </Text>
+    </DefaultText>
   )
 }

@@ -1,40 +1,67 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
-import Colors from "../constants/Colors";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/auth-context";
+import repository from "../repository";
+import { User } from "../types/user.type";
+import LoaderScreen from "../app/loader";
 
 export default function ProfileHead() {
-  return (
-    <View style={styles.main}>
-      <View style={styles.imageContainer}>
-        <Image 
-          style={styles.userImage} 
-          source={require("../../assets/user.jpg")}
-        />
-        <Text style={styles.userName}>
-          User Name
-        </Text>
-        <Text
-          style={styles.userEmail}
-        >
-          user@mail.ru
-        </Text>
-      </View>
+  const {user} = useAuth();
+  const [userInfo, setUserInfo] = useState<User>();
+  const [isLoading, setLoading] = useState(false);
 
-      <View style={styles.middleSectionTextContainer}>
-        <View style={styles.middleSectionText}>
-          <Text style={styles.toptext}>Friends</Text>
-          <Text style={styles.bottomtext}>28</Text>
-        </View>
-        <View style={styles.middleSectionText}>
-          <Text style={styles.toptext}>Photos</Text>
-          <Text style={styles.bottomtext}>73</Text>
-        </View>
-        <View style={styles.middleSectionText}>
-        <Text style={styles.toptext}>Video</Text>
-              <Text style={styles.bottomtext}>18</Text>
-        </View>
-      </View>
-    </View>
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const {data} = await repository.get(`/users/${user}`);
+        setUserInfo(data);
+        console.log(data);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    })();
+  }, [])
+  
+  return (
+    <>
+      {isLoading && 
+          <LoaderScreen />
+        }
+        {!isLoading && userInfo &&
+          <View style={styles.main}>
+            <View style={styles.imageContainer}>
+              <Image 
+                style={styles.userImage} 
+                source={require("../../assets/user.jpg")}
+              />
+              <Text style={styles.userName}>
+                {userInfo?.user_nickname}
+              </Text>
+              <Text style={styles.userEmail}>
+                {userInfo?.user_email}
+              </Text>
+            </View>
+      
+            <View style={styles.middleSectionTextContainer}>
+              <View style={styles.middleSectionText}>
+                <Text style={styles.toptext}>Friends</Text>
+                <Text style={styles.bottomtext}>28</Text>
+              </View>
+              <View style={styles.middleSectionText}>
+                <Text style={styles.toptext}>Photos</Text>
+                <Text style={styles.bottomtext}>73</Text>
+              </View>
+              <View style={styles.middleSectionText}>
+              <Text style={styles.toptext}>Video</Text>
+                    <Text style={styles.bottomtext}>18</Text>
+              </View>
+            </View>
+          </View>
+        }
+    </>
   );
 }
 

@@ -89,10 +89,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonNo: {
-    backgroundColor: '#FF4433',
+    backgroundColor: Colors.deniedColor,
   },
   buttonYes: {
-    backgroundColor: '#4CBB17',
+    backgroundColor: Colors.acceptColor,
   },
   textStyle: {
     color: 'white',

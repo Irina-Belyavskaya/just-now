@@ -24,4 +24,6 @@ export default {
   darkGray: "#3F4F57",
   white: "#ffff",
   alt: "rgba(0,0,0,0.5)",
+  acceptColor: "#4CBB17",
+  deniedColor: "#FF4433"
 };

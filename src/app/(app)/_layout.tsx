@@ -24,6 +24,22 @@ export default function AppEntry() {
           headerTintColor: Colors.white 
         }} 
       />
+      <Stack.Screen 
+        name="user" 
+        options={{ 
+          presentation: 'modal', 
+          headerStyle: {backgroundColor: Colors.black}, 
+          headerTintColor: Colors.white 
+        }} 
+      />
+      <Stack.Screen 
+        name="notifications" 
+        options={{ 
+          presentation: 'modal', 
+          headerStyle: {backgroundColor: Colors.black}, 
+          headerTintColor: Colors.white 
+        }} 
+      />
     </Stack>
   )
 }

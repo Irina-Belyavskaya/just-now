@@ -1,26 +1,27 @@
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { Text, View as ViewThemed } from '@/src/components/Themed';
 import Colors from '@/src/constants/Colors';
 import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
-import { useNavigation } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useAuth } from '@/src/context/auth-context';
+import { FriendRequestSenders } from '@/src/types/friend-requests.type';
 
-export default function SearchScreen() {
-  const navigation = useNavigation();
+export default function SearchScreen() {;
+  const {user} = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<User[]>([]);
+  const [friends, setFriends] = useState<FriendRequestSenders[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
   useEffect(() => {
-    setUsers([]);
-    setFilteredData([]);
     (async () => {
       try {
         // setLoading(true);
         const {data} = await repository.get('/users');
-        setUsers(data);
+        setUsers(data.filter((item: User) => item.user_id !== user));
         console.log(data);
         // setLoading(false);
       } catch (error) {
@@ -28,14 +29,53 @@ export default function SearchScreen() {
         // setLoading(false);
       }
     })();
-  }, [])
+  }, [user])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!user)
+        return;
+  
+      (async () => {
+        try {
+          // setLoading(true);
+          const {data} = await repository.get(`/friend-requests/friends/${user}`);
+          setFriends(data);
+          console.log("friends: ", data);
+          // setLoading(false);
+        } catch (error) {
+          console.error(error);
+          // setLoading(false);
+        }
+      })();
+    }, [])
+  );
+
+  // useFocusEffect(() => {
+    // if (!user)
+    //   return;
+
+    // (async () => {
+    //   try {
+    //     // setLoading(true);
+    //     const {data} = await repository.get(`/friend-requests/friends/${user}`);
+    //     setFriends(data);
+    //     console.log("friends: ", data);
+    //     // setLoading(false);
+    //   } catch (error) {
+    //     console.error(error);
+    //     // setLoading(false);
+    //   }
+    // })();
+  // })
 
   const handleSearch = (text: string) => {
     const query = text.toLowerCase();
+    setSearchQuery(text);
+
 
     if (query === '') {
       setFilteredData([]);
-      setSearchQuery(text);
       return;
     }
 
@@ -43,22 +83,12 @@ export default function SearchScreen() {
       user.user_nickname.toLowerCase().includes(query)
     );
 
-    // const filteredFiles = files.filter((file) =>
-    //   file.title.toLowerCase().includes(query)
-    // );
-
     setFilteredData([...filteredUsers]);
-    setSearchQuery(text);
   };
 
-  const handleItemSelected = (item: any) => {
-    // // Check the type of the item and navigate accordingly
-    // if (item.type === 'user') {
-    //   navigation.navigate('UserProfile', { user: item });
-    // } else if (item.type === 'file') {
-    //   navigation.navigate('FileScreen', { file: item });
-    // }
-    // // Add more conditions for other types/screens as needed
+  const handleItemSelected = (user_id: string) => {
+    router.push('/user');
+    router.setParams({user_id: user_id})
   };
 
   return (
@@ -71,109 +101,66 @@ export default function SearchScreen() {
       />
       { filteredData.length > 0 && 
         <FlatList
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
           data={filteredData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemSelected(item)}>
-              <Text>{item.user_nickname}</Text>
+            <TouchableOpacity 
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 8
+              }}
+              onPress={() => handleItemSelected(item.user_id)}
+            >
+              <Image 
+                style={styles.userImage} 
+                source={{uri: item.user_profile_picture_url}}
+              />
+              <Text style={{fontSize: 18, marginLeft: 20}}>
+                {item.user_nickname}
+              </Text>
             </TouchableOpacity>
           )}
         />
       }
-      <View>
-        <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 20}}>
-          Friends Requests
-        </Text>
-      </View>
       <ViewThemed style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View>
-        <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 20}}>
+      <View >
+        <Text style={styles.friendsTitle}>
           Friends
         </Text>
-        {users.map((user) => <Text key={user.user_id}>{user.user_nickname}</Text>)}
+       
+          {friends.map((friend) => 
+            <TouchableOpacity 
+              style={styles.friendWrap}
+              key={friend.friend_request_id}
+              onPress={() => handleItemSelected(friend.sender.user_id)}
+            >
+              <Image 
+                style={styles.userImage} 
+                source={{uri: friend.sender.user_profile_picture_url}}
+              />
+              <Text style={{fontSize: 18}}>
+                {friend.sender.user_nickname}
+              </Text>
+            </TouchableOpacity>
+          )}
+        
       </View>
     </View>    
   );
 }
-
-
-
-
-
-// export default function SearchScreen()  {
-//   const navigation = useNavigation();
-//   const [searchQuery, setSearchQuery] = useState('');
-//   const [users, setUsers] = useState<User[]>([]);
-//   const [filteredData, setFilteredData] = useState(users);
-
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         // setLoading(true);
-//         const {data} = await repository.get('/users');
-//         setUsers(data);
-//         console.log(data);
-//         // setLoading(false);
-//       } catch (error) {
-//         console.error(error);
-//         // setLoading(false);
-//       }
-//     })();
-//   }, [])
-
-//   const handleSearch = (text: string) => {
-//     const query = text.toLowerCase();
-
-//     const filteredUsers = users.filter((user) =>
-//       user.user_nickname.toLowerCase().includes(query)
-//     );
-
-//     // const filteredFiles = files.filter((file) =>
-//     //   file.title.toLowerCase().includes(query)
-//     // );
-
-//     setFilteredData([...filteredUsers]);
-//     setSearchQuery(text);
-//   };
-
-//   const handleItemSelected = (item: any) => {
-//     // // Check the type of the item and navigate accordingly
-//     // if (item.type === 'user') {
-//     //   navigation.navigate('UserProfile', { user: item });
-//     // } else if (item.type === 'file') {
-//     //   navigation.navigate('FileScreen', { file: item });
-//     // }
-//     // // Add more conditions for other types/screens as needed
-//   };
-
-//   return (
-//     <View>
-//       <Searchbar
-//         placeholder="Search"
-//         onChangeText={handleSearch}
-//         value={searchQuery}
-//         autoCapitalize={'none'}
-//       />
-//       <FlatList
-//         data={filteredData}
-//         keyExtractor={(item, index) => index.toString()}
-//         renderItem={({ item }) => (
-//           <TouchableOpacity onPress={() => handleItemSelected(item)}>
-//             <Text>{item.user_nickname}</Text>
-//           </TouchableOpacity>
-//         )}
-//       />
-//     </View>
-//   );
-// };
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
     padding: 10,
     backgroundColor: Colors.pickedYelllow
   },
@@ -182,4 +169,22 @@ const styles = StyleSheet.create({
     height: 1,
     width: '100%',
   },
+  friendsTitle: {
+    fontFamily: 'Raleway_700Bold', 
+    fontSize: 25,
+    textAlign: 'center'
+  },
+  userImage: {
+    width: 40, 
+    height: 40,
+    borderRadius: 100,
+    marginRight: 15
+  },
+  friendWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    gap: 2
+  }
 });

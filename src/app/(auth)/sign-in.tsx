@@ -78,6 +78,7 @@ export default function SignIn() {
                   style={[styles.input, touched.email && errors.email ? styles.errorInput : null]}
                   autoFocus
                   placeholder="Email Address"
+                  autoCapitalize={'none'}
                 />
                 {touched.email && errors.email ? (
                   <Text style={styles.error}>{errors.email}</Text>

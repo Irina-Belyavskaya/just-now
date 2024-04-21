@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     marginTop: Sizes.xs,
   },
   card: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.white,
   },
   bottomSection: {
     justifyContent: "center",

@@ -1,6 +1,5 @@
 import { StyleSheet, SafeAreaView, ImageBackground} from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@/src/context/auth-context';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
 import FeedScreen from '@/src/components/Feed';
@@ -9,7 +8,6 @@ import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
 
 export default function TabOneScreen() {
-  const {user} = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setLoading] = useState(false);
   const {refresh} = useLocalSearchParams<{ refresh: string }>();
@@ -17,8 +15,12 @@ export default function TabOneScreen() {
   const getPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const {data} = await repository.get('/posts');
-      setPosts(data);
+      const {data: posts} = await repository.get('/posts');
+      setPosts(posts.sort((postA: Post, postB: Post) => {
+        const dateA = new Date(postA.post_created_at).toISOString(); 
+        const dateB = new Date(postB.post_created_at).toISOString();
+        return dateB.localeCompare(dateA);
+      }));
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -44,7 +46,7 @@ export default function TabOneScreen() {
           <LoaderScreen />
         }
         {!isLoading && posts.length !== 0 &&
-          <FeedScreen posts={posts}/>
+          <FeedScreen posts={posts} getPosts={getPosts}/>
         }
       </ImageBackground>
     </SafeAreaView>

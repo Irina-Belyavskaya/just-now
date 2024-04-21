@@ -36,14 +36,11 @@ export default function SignIn() {
         user_password: data.password
       };
       const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
-      // console.log(responseInfo);
-      // console.log(status);
       resetForm();
       signIn(responseInfo.access_token);
       setIsLoading(false);
       router.replace('/');
     } catch (error) {
-      // const err = JSON.parse(JSON.stringify(error));
       setErrorMessage('Incorrect email or password');
       setModalVisible(true);
       setIsLoading(false);
@@ -76,7 +73,6 @@ export default function SignIn() {
                   onBlur={handleBlur('email')}
                   value={values.email}
                   style={[styles.input, touched.email && errors.email ? styles.errorInput : null]}
-                  autoFocus
                   placeholder="Email Address"
                   autoCapitalize={'none'}
                 />

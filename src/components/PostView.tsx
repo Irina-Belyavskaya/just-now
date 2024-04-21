@@ -2,26 +2,41 @@ import { FontAwesome } from "@expo/vector-icons";
 import { View, TouchableOpacity, Image, Text, Pressable } from "react-native";
 import { Post } from "../types/post.type";
 import VideoPost from "./VideoPost";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Colors from "../constants/Colors";
+import repository from "../repository";
 
 type PostProps = {
-  post: Post,
-  activePostId: string
+  post: Post
 }
 
-export default function PostView ({post, activePostId}: PostProps) {
+export default function PostView ({post}: PostProps) {
   const [like, setLike] = useState<boolean>();
 
   const isImageUrl = (url:string) => {
     return /\.(jpg|jpeg|png|gif)$/i.test(url);
   }
 
-  const likePost = () => {
-
+  const likePost = async (postLikes: number, postId: string) => {
+    try {
+      console.log(postLikes)
+      const dto = {
+        likes: postLikes + 1
+      }
+      await repository.post(`/posts/set-reaction/${postId}`, dto);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  const dislikePost = () => {
-    
+  const dislikePost = async (postLikes: number, postId: string) => {
+    try {
+      console.log(postLikes)
+
+      await repository.post(`/posts/set-reaction/${postId}`, {likes: postLikes - 1});
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -36,7 +51,7 @@ export default function PostView ({post, activePostId}: PostProps) {
     >
       <View style={{ flexDirection: "row", alignItems: "center", padding: 10, }}>
         <Image 
-          source={require("../../assets/user.jpg")} 
+          source={{uri: post.user.user_profile_picture_url}} 
           style={{ height: 50, width: 50, borderRadius: 50 }} 
         />
         <View style={{ marginLeft: 10 }}>
@@ -57,9 +72,8 @@ export default function PostView ({post, activePostId}: PostProps) {
             source={{ uri: post.post_content_url }} 
             style={{ height: 454, resizeMode: 'contain' }}
           />
-        : 
-        <></>
-        // <VideoPost post={post} activePostId={activePostId}/>
+        :
+          <VideoPost post={post}/>
       }
       <View style={{ height: 1, width: "100%", backgroundColor: "white" }} />
       <View style={{ flexDirection: "row", }}>
@@ -89,21 +103,27 @@ export default function PostView ({post, activePostId}: PostProps) {
               <FontAwesome 
                 name="heart" 
                 size={24} 
-                color="red" 
+                color={Colors.pickedYelllow}
                 onPress={() => {
-                  if (like) setLike(false)
+                  if (like) { 
+                    setLike(false);
+                    dislikePost(post.likes, post.post_id)
+                  }
                 }}                
               /> 
               : 
               <Pressable 
                 onPress={() => {
-                  if (!like) setLike(true)
+                  if (!like) {
+                    setLike(true);
+                    likePost(post.likes, post.post_id);
+                  }
                 }}
               >
                 <FontAwesome 
                   name="heart-o" 
                   size={24} 
-                  color="red" 
+                  color={Colors.pickedYelllow}
                 />
               </Pressable>         
             }       

@@ -8,7 +8,10 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import { AuthProvider } from '@/src/context/auth-context';
 import { Raleway_700Bold, Raleway_100Thin, Raleway_300Light, Raleway_400Regular } from '@expo-google-fonts/raleway';
 import AnimationSplashScreen from '../components/AnimatedSplashScreen';
-import StartPage from '../components/StartPage';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { Provider } from 'react-redux';
+import { store } from '../redux/store';
 
 export {
   ErrorBoundary,
@@ -68,7 +71,13 @@ function RootLayoutNav() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Slot />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Animated.View style={{ flex: 1 }} entering={FadeIn}>
+            <Provider store={store}>
+              <Slot />
+            </Provider>
+          </Animated.View>
+        </GestureHandlerRootView>
       </ThemeProvider>
     </AuthProvider>
   );

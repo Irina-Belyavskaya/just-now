@@ -20,7 +20,7 @@ export default {
   black: "#000",
   pickedYelllow: "#f5d102",
   gold: "#FFC90E",
-  grey: "#D8D8D8",
+  gray: "#D8D8D8",
   darkGray: "#3F4F57",
   white: "#ffff",
   alt: "rgba(0,0,0,0.5)",

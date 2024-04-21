@@ -7,28 +7,16 @@ import { ActivityIndicator } from "react-native-paper";
 import Colors from "../constants/Colors";
 
 type VideoPostProps = {
-  post: Post,
-  activePostId: string
+  post: Post
 }
 
-export default function VideoPost ({ post, activePostId }: VideoPostProps) {
+export default function VideoPost ({ post }: VideoPostProps) {
   const video = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isPlaying = status?.isLoaded && status.isPlaying;
 
-  useEffect(() => {
-    if (!video.current) {
-      return;
-    }
-    if (activePostId !== post.post_id) {
-      video.current.pauseAsync();
-    }
-    if (activePostId === post.post_id) {
-      video.current.playAsync();
-    }
-  }, [activePostId, video.current]);
 
   const onPress = () => {
     if (!video.current) {

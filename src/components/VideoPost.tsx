@@ -7,10 +7,12 @@ import { ActivityIndicator } from "react-native-paper";
 import Colors from "../constants/Colors";
 
 type VideoPostProps = {
-  post: Post
+  post: Post,
+  height?: number | null,
+  width?: number | null
 }
 
-export default function VideoPost ({ post }: VideoPostProps) {
+export default function VideoPost ({ post, height = 340, width = null}: VideoPostProps) {
   const video = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -33,7 +35,7 @@ export default function VideoPost ({ post }: VideoPostProps) {
     <Pressable onPress={onPress}>
       <Video
         ref={video}
-        style={{ height: 340 }} 
+        style={{ height, width }} 
         resizeMode={ResizeMode.CONTAIN}
         source={{uri: post.post_content_url}} 
         onPlaybackStatusUpdate={setStatus}

@@ -7,10 +7,19 @@ import LoaderScreen from "../app/loader";
 
 type ProfileHeadProps = {
   userInfo: User,
-  isPersonalAccount?: boolean
+  numberOfUserFriends: number,
+  numberOfPhotos: number,
+  numberOfVideo: number,
+  isPersonalAccount?: boolean,
 }
 
-export default function ProfileHead({userInfo, isPersonalAccount = false}: ProfileHeadProps) {  
+export default function ProfileHead({
+  userInfo, 
+  numberOfUserFriends, 
+  numberOfPhotos, 
+  numberOfVideo, 
+  isPersonalAccount = false
+}: ProfileHeadProps) {  
   return (
     <View style={styles.main}>
       <View style={styles.imageContainer}>
@@ -27,21 +36,22 @@ export default function ProfileHead({userInfo, isPersonalAccount = false}: Profi
           </Text>
         }
       </View>
-
-      <View style={styles.middleSectionTextContainer}>
-        <View style={styles.middleSectionText}>
-          <Text style={styles.toptext}>Friends</Text>
-          <Text style={styles.bottomtext}>28</Text>
+      {isPersonalAccount &&
+        <View style={styles.middleSectionTextContainer}>
+          <View style={styles.middleSectionText}>
+            <Text style={styles.toptext}>Friends</Text>
+            <Text style={styles.bottomtext}>{numberOfUserFriends}</Text>
+          </View>
+          <View style={styles.middleSectionText}>
+            <Text style={styles.toptext}>Photos</Text>
+            <Text style={styles.bottomtext}>{numberOfPhotos}</Text>
+          </View>
+          <View style={styles.middleSectionText}>
+          <Text style={styles.toptext}>Video</Text>
+                <Text style={styles.bottomtext}>{numberOfVideo}</Text>
+          </View>
         </View>
-        <View style={styles.middleSectionText}>
-          <Text style={styles.toptext}>Photos</Text>
-          <Text style={styles.bottomtext}>73</Text>
-        </View>
-        <View style={styles.middleSectionText}>
-        <Text style={styles.toptext}>Video</Text>
-              <Text style={styles.bottomtext}>18</Text>
-        </View>
-      </View>
+      }
     </View>
   );
 }

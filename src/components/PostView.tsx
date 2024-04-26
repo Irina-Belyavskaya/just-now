@@ -5,6 +5,7 @@ import VideoPost from "./VideoPost";
 import { useState } from "react";
 import Colors from "../constants/Colors";
 import repository from "../repository";
+import { isImageUrl } from "../utils/isImagePost";
 
 type PostProps = {
   post: Post
@@ -13,13 +14,8 @@ type PostProps = {
 export default function PostView ({post}: PostProps) {
   const [like, setLike] = useState<boolean>();
 
-  const isImageUrl = (url:string) => {
-    return /\.(jpg|jpeg|png|gif)$/i.test(url);
-  }
-
   const likePost = async (postLikes: number, postId: string) => {
     try {
-      console.log(postLikes)
       const dto = {
         likes: postLikes + 1
       }
@@ -31,8 +27,6 @@ export default function PostView ({post}: PostProps) {
 
   const dislikePost = async (postLikes: number, postId: string) => {
     try {
-      console.log(postLikes)
-
       await repository.post(`/posts/set-reaction/${postId}`, {likes: postLikes - 1});
     } catch (error) {
       console.error(error);
@@ -55,7 +49,7 @@ export default function PostView ({post}: PostProps) {
           style={{ height: 50, width: 50, borderRadius: 50 }} 
         />
         <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 20, color: 'white' }}>{'Name'}</Text>
+          <Text style={{ fontSize: 20, color: 'white' }}>{post.user.user_nickname}</Text>
           <View style={{ flexDirection: "row" }}>
             <Text style={{ fontSize: 12, color: 'white' }}>
               {new Date(post.post_created_at).toString().substring(0, 16)}

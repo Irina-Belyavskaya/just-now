@@ -39,9 +39,8 @@ export default function SearchScreen() {;
       (async () => {
         try {
           // setLoading(true);
-          const {data} = await repository.get(`/friend-requests/friends/${user}`);
-          setFriends(data);
-          console.log("friends: ", data);
+          const {data: friends} = await repository.get(`/friend-requests/friends/${user}`);
+          setFriends(friends);
           // setLoading(false);
         } catch (error) {
           console.error(error);
@@ -134,6 +133,9 @@ export default function SearchScreen() {;
         <Text style={styles.friendsTitle}>
           Friends
         </Text>
+          {friends.length === 0 && 
+            <Text>{'No friends('}</Text>
+          }
        
           {friends.map((friend) => 
             <TouchableOpacity 

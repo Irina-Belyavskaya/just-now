@@ -8,6 +8,7 @@ import { Link, router } from 'expo-router';
 import repository from '@/src/repository';
 import { useState } from 'react';
 import { ErrorText } from '@/src/components/Themed';
+import { SignInDto } from '@/src/redux/sign-up/types/sign-in.dto';
 
 export default function SignIn() {
   const { signIn } = useAuth();
@@ -31,13 +32,15 @@ export default function SignIn() {
     try {
       setIsLoading(true);
       setErrorMessage('');
-      const dto = {
+      const dto: SignInDto = {
         user_email: data.email,
         user_password: data.password
       };
+      console.log('AUTH SIGN IN');
       const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
+      // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       resetForm();
-      signIn(responseInfo.access_token);
+      await signIn(responseInfo.access_token, responseInfo.expired_at.toString());
       setIsLoading(false);
       router.replace('/');
     } catch (error) {

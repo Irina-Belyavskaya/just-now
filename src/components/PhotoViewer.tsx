@@ -1,39 +1,46 @@
 import { AntDesign } from "@expo/vector-icons";
 import { View, StyleSheet, Image } from "react-native";
-import { PhotoFile } from "react-native-vision-camera";
-import { convertBlobToBase64 } from "../utils/convertToBase64";
-import repository from "../repository";
 import { router } from "expo-router";
 import { useAuth } from "../context/auth-context";
+import { ImageResult } from "expo-image-manipulator";
 
 type PhotoViewerProps = {
   photoPath: string,
-  photo: PhotoFile,
-  setPhoto: React.Dispatch<React.SetStateAction<PhotoFile | undefined>>,
+  photo: ImageResult,
+  setPhoto: React.Dispatch<React.SetStateAction<ImageResult | undefined>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  handlePhoto: (photoUrl: string) => Promise<void>,
+  navigate?: () => void
 }
 
-export default function PhotoViewer ({photoPath, photo, setPhoto, setIsLoading}: PhotoViewerProps) {
-  const {user} = useAuth();
-  
+export default function PhotoViewer({
+  photoPath,
+  photo,
+  setPhoto,
+  setIsLoading,
+  handlePhoto,
+  navigate
+}: PhotoViewerProps) {
+  const { user } = useAuth();
+
   const uploadPhoto = async () => {
     try {
       if (!photo)
         return;
 
       setIsLoading(true);
-
-      const result = await fetch(`file://${photo?.path}`)
-      const blob = await result.blob();
-      const base64 = await convertBlobToBase64(blob);
-
-      await repository.post(
-        '/posts/upload/photo', 
-        {data : base64, user_id: user}
-      );
+      // const result = await fetch(`file://${photo?.uri}`)
+      // const blob = await result.blob();
+      // const file = await uploadToFirebaseAndCreateFile(`file://${photo?.uri}`, 'profile');
+      await handlePhoto(`file://${photo?.uri}`);
       setPhoto(undefined);
       setIsLoading(false);
-      router.replace('/');
+      if (navigate) {
+        console.log('Navigate!')
+        navigate();
+      } else {
+        router.replace('/');
+      }
       router.setParams({ refresh: 'true' })
     } catch (error) {
       const err = error as any;
@@ -46,9 +53,9 @@ export default function PhotoViewer ({photoPath, photo, setPhoto, setIsLoading}:
   return (
     <>
       <Image source={{ uri: `file://${photoPath}` }} style={StyleSheet.absoluteFill} />
-      <AntDesign 
+      <AntDesign
         onPress={() => setPhoto(undefined)}
-        name="arrowleft" 
+        name="arrowleft"
         size={25}
         color="white"
         style={{
@@ -58,7 +65,7 @@ export default function PhotoViewer ({photoPath, photo, setPhoto, setIsLoading}:
           backgroundColor: 'rgba(0,0,0,0.8)',
           borderRadius: 50,
           padding: 5
-        }} 
+        }}
       />
       <View
         style={{
@@ -71,11 +78,11 @@ export default function PhotoViewer ({photoPath, photo, setPhoto, setIsLoading}:
           alignItems: 'center',
         }}
       >
-        <AntDesign 
+        <AntDesign
           onPress={uploadPhoto}
-          name="upload" 
-          size={40} 
-          color="white" 
+          name="upload"
+          size={40}
+          color="white"
           style={{
             backgroundColor: 'rgba(0,0,0,0.8)',
             borderRadius: 50,

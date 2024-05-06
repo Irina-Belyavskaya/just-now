@@ -31,6 +31,7 @@ export default function UserScreen() {
         user_id: user,
         friend_id: user_id
       }
+      console.log('CHECK FRIENDSHIP STATUS');
       const {data} = await repository.post('/friend-requests/check-friendship-status', body);
       setFriendRequest(data);
       if (!data) {
@@ -43,8 +44,6 @@ export default function UserScreen() {
         setIsRequestSent(true);
       }
       if (data.friend_request_status === FriendRequestStatus.accepted) setIsFriend(true);
-      
-      console.log(data);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -52,9 +51,10 @@ export default function UserScreen() {
     }
   }, [user_id, user])
 
-  const getUserInfo = useCallback(async () => {
+  const getUserProfile = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('GET USER PROFILE');
       const {data} = await repository.get(`/users/${user_id}`);
       setUserInfo(data);
       setLoading(false);
@@ -65,8 +65,8 @@ export default function UserScreen() {
   }, [user_id])
 
   useEffect(() => {
-    getUserInfo();
-  }, [getUserInfo])
+    getUserProfile();
+  }, [getUserProfile])
 
   useEffect(() => {
     checkFriendshipStatus();
@@ -79,9 +79,9 @@ export default function UserScreen() {
         sender_id: user,
         receiver_id: user_id
       }
-      const {data} = await repository.post('/friend-requests/create', body);
+      console.log('CREATE FRIEND REQUEST');
+      await repository.post('/friend-requests/create', body);
       checkFriendshipStatus();
-      console.log(data);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -94,8 +94,8 @@ export default function UserScreen() {
       return;
     try {
       setLoading(true);
-      const {data} = await repository.delete(`/friend-requests/remove-friend/${friendRequest.friend_request_id}`);
-      console.log(data);
+      console.log('DELETE FRIEND REQUEST');
+      await repository.delete(`/friend-requests/remove-friend/${friendRequest.friend_request_id}`);
       checkFriendshipStatus();
       setLoading(false);
     } catch (error) {

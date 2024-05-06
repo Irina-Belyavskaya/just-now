@@ -4,7 +4,8 @@ import { Platform } from 'react-native';
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
-function useAsyncState<T>(
+// function useAsyncState<T>(
+function useState<T>(
   initialValue: [boolean, T | null] = [true, null],
 ): UseStateHook<T> {
   return React.useReducer(
@@ -13,7 +14,8 @@ function useAsyncState<T>(
   ) as UseStateHook<T>;
 }
 
-export async function setStorageItemAsync(key: string, value: string | null) {
+// export async function setStorageItemAsync(key: string, value: string | null) {
+export async function setStorageItem(key: string, value: string | null) {
   if (Platform.OS === 'web') {
     try {
       if (value === null) {
@@ -28,12 +30,14 @@ export async function setStorageItemAsync(key: string, value: string | null) {
     if (value == null) {
       await SecureStore.deleteItemAsync(key);
     } else {
-      await SecureStore.setItemAsync(key, value);
+      // await SecureStore.setItemAsync(key, value);
+      SecureStore.setItem(key, value);
     }
   }
 }
 
-export async function getStorageItemAsync(key: string): Promise<string | null> {
+// export async function getStorageItemAsync(key: string): Promise<string | null> {
+export function getStorageItem(key: string): string | null {
   if (Platform.OS === 'web') {
     try {
       const value = localStorage.getItem(key);
@@ -44,8 +48,8 @@ export async function getStorageItemAsync(key: string): Promise<string | null> {
     }
   } else {
     try {
-      const value = await SecureStore.getItemAsync(key);
-      return value;
+      // const value = await SecureStore.getItemAsync(key);
+      return SecureStore.getItem(key);
     } catch (error) {
       console.error('Error getting item from SecureStore:', error);
       return null;
@@ -55,7 +59,7 @@ export async function getStorageItemAsync(key: string): Promise<string | null> {
 
 export function useStorageState(key: string): UseStateHook<string> {
   // Public
-  const [state, setState] = useAsyncState<string>();
+  const [state, setState] = useState<string>();
 
   // Get
   React.useEffect(() => {
@@ -68,9 +72,11 @@ export function useStorageState(key: string): UseStateHook<string> {
         console.error('Local storage is unavailable:', e);
       }
     } else {
-      SecureStore.getItemAsync(key).then(value => {
-        setState(value);
-      });
+      // SecureStore.getItemAsync(key).then(value => {
+      //   setState(value);
+      // });
+      const value = SecureStore.getItem(key);
+      setState(value);
     }
   }, [key]);
 
@@ -78,7 +84,9 @@ export function useStorageState(key: string): UseStateHook<string> {
   const setValue = React.useCallback(
     (value: string | null) => {
       setState(value);
-      setStorageItemAsync(key, value);
+      // setStorageItemAsync(key, value);
+      setStorageItem(key, value);
+
     },
     [key]
   );

@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setPhotoUrl, setSignUpFromReset } from "../redux/sign-up.reducer";
+import { setPhotoUrl, setSignUpFromReset } from "../redux/sign-up/sign-up.reducer";
 import { BaseStepType } from "../types/base-step.type";
 import React, { useState } from 'react';
 import {
-	Image,
-	View,
-	StyleSheet
+  Image,
+  View,
+  StyleSheet
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Button } from 'react-native-paper';
@@ -14,22 +14,26 @@ import SignUpButtons from "./SignUpButtons";
 import repository from "../repository";
 import { useAuth } from "../context/auth-context";
 import { router } from "expo-router";
-import { sendToFirebase } from "../utils/firebase";
+import { generatePath, sendToFirebase } from "../utils/firebase";
 import LoaderScreen from "../app/loader";
 import ModalWindow from "./ModalWindow";
+import { SignUpDto } from "../redux/sign-up/types/sign-up.dto";
+import { uploadToFirebaseAndCreateFile } from "../redux/actions";
 
-export default function SignUpUploadPhotoScreen ({
-  handleNext, 
-  onMain
+export default function SignUpUploadPhotoScreen({
+  handleNext,
+  onMain,
+  isLoading,
+  setIsLoading
 }: BaseStepType) {
   const dispatch = useAppDispatch();
   const { signUp } = useAuth();
-  
-  const photoUrl = useAppSelector(state => state.signUp.photoUrl);
-  const signUpData = useAppSelector(state => state.signUp);
+
+  const photoUrl = useAppSelector(state => state.signUpReducer.user_profile_picture_url);
+  const signUpData = useAppSelector(state => state.signUpReducer);
 
   const [image, setImage] = useState<any>(photoUrl);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showModalWindow, setShowModalWindow] = useState<boolean>(false);
 
   const pickImage = async () => {
@@ -38,7 +42,7 @@ export default function SignUpUploadPhotoScreen ({
       allowsEditing: true,
       aspect: [5, 5],
       quality: 1,
-    });    
+    });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -49,10 +53,10 @@ export default function SignUpUploadPhotoScreen ({
   const handleSubmitForm = async () => {
     try {
 
-      if (!signUpData.email ||
-          !signUpData.password ||
-          !signUpData.nickname || 
-          !signUpData.photoUrl
+      if (!signUpData.user_email ||
+        !signUpData.user_password ||
+        !signUpData.user_nickname ||
+        !signUpData.user_profile_picture_url
       ) {
         setShowModalWindow(true);
         return;
@@ -60,62 +64,76 @@ export default function SignUpUploadPhotoScreen ({
 
       setIsLoading(true);
 
-      const result = await fetch(photoUrl)
-      const blob = await result.blob();
+      const file = await uploadToFirebaseAndCreateFile(photoUrl, 'profile');
+      console.log(file);
+      console.log(file.file_id);
+      // const result = await fetch(photoUrl)
+      // const blob = await result.blob();
 
-      const url = await sendToFirebase(blob, 'profile');
+      // const path = generatePath('profile');
+      // const response = await sendToFirebase(blob, path);
 
-      const dto = {
-        user_email: signUpData.email,
-        user_password: signUpData.password,
-        // user_confirmPassword: signUpData.confirmPassword,
-        user_nickname: signUpData.nickname,
-        user_profile_picture_url: url
+      // if (!response) {
+      //   throw new Error('Something go wrong');
+      // }
+
+      // const fileDto = {
+      //   file_url: response.url,
+      //   file_path: response.fullPath,
+      //   file_size: response.size,
+      // }
+      // const { data: responseFileInfo } = await repository.post("/files", fileDto);
+      // console.log(JSON.stringify(responseFileInfo, null, 2));
+
+      const signUpDto: SignUpDto = {
+        user_email: signUpData.user_email,
+        user_password: signUpData.user_password,
+        user_nickname: signUpData.user_nickname,
+        user_profile_picture_id: file.file_id
       };
-      console.log("dto: ", dto);
-      const { data: responseInfo, status } = await repository.post("/auth/sign-up", dto);
-      console.log(responseInfo);
-      console.log(status);
+      console.log('AUTH SIGN UP');
+      const { data: responseInfo } = await repository.post("/auth/sign-up", signUpDto);
       setIsLoading(false);
-      signUp(responseInfo.access_token);
+      signUp(responseInfo.access_token, responseInfo.expired_at.toString());
       dispatch(setSignUpFromReset());
       router.replace('/')
     } catch (error) {
       const err = error as any;
       console.error(err.message);
       console.error(err.code);
+      setIsLoading(false);
     }
-  } 
+  }
 
   return (
     <>
-    {isLoading && <LoaderScreen />}
-    {!isLoading && showModalWindow && 
-      <ModalWindow
-        modalVisible
-        handleCloseModalWindow={() => setShowModalWindow(false)}
-        message={'Please fill in all data'}
-      />
-    }
-    {!isLoading && !showModalWindow &&
-      <View style={styles.container}>
-        <Button style={styles.button} onPress={pickImage} textColor={Colors.white}>
-          Pick an image from camera roll
-        </Button>
-        {image && 
-          <Image 
-            source={{ uri: image }} 
-            style={styles.image} 
-          />
-        }
-        <SignUpButtons 
-          handleNext={handleNext} 
-          onMain={onMain} 
-          handleSubmit={handleSubmitForm}        
+      {/* {isLoading && <LoaderScreen />} */}
+      {!isLoading && showModalWindow &&
+        <ModalWindow
+          modalVisible
+          handleCloseModalWindow={() => setShowModalWindow(false)}
+          message={'Please fill in all data'}
         />
-      </View>
-    }
-  </>
+      }
+      {!isLoading && !showModalWindow &&
+        <View style={styles.container}>
+          <Button style={styles.button} onPress={pickImage} textColor={Colors.white}>
+            Pick an image from camera roll
+          </Button>
+          {image &&
+            <Image
+              source={{ uri: image }}
+              style={styles.image}
+            />
+          }
+          <SignUpButtons
+            handleNext={handleNext}
+            onMain={onMain}
+            handleSubmit={handleSubmitForm}
+          />
+        </View>
+      }
+    </>
   )
 }
 

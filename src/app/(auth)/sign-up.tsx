@@ -14,15 +14,16 @@ import Animated, {
 import SignUpSteps from '@/src/constants/SignUpSteps';
 import Colors from '@/src/constants/Colors';
 import { useAppDispatch } from '@/src/redux/hooks';
-import { setSignUpFromReset } from '@/src/redux/sign-up.reducer';
-
-
+import { setSignUpFromReset } from '@/src/redux/sign-up/sign-up.reducer';
+import LoaderScreen from '../loader';
 
 export default function OnboardingScreen() {
   const [screenIndex, setScreenIndex] = useState(0);
 
   const data = SignUpSteps[screenIndex];
   const dispatch = useAppDispatch();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onMain = () => {
     setScreenIndex(0);
@@ -54,49 +55,54 @@ export default function OnboardingScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.page}>
-      <Stack.Screen options={{ headerShown: false }} />
-      <ImageBackground
-        source={require('../../../assets/cat.jpg')}
-        style={styles.imageBackground}
-        resizeMode='cover'
-      >
-        <View style={styles.stepIndicatorContainer}>
-          {SignUpSteps.map((step, index) => (
-            <View
-              key={index}
-              style={[
-                styles.stepIndicator,
-                { backgroundColor: index === screenIndex ? Colors.black : Colors.darkGray },
-              ]}
-            />
-          ))}
-        </View>
-        <GestureDetector gesture={swipes}>      
-          <View style={styles.pageContent} key={screenIndex}>
-            <Animated.View entering={FadeIn} exiting={FadeOut}>
-              <Animated.Text
-                entering={FadeIn}
-                exiting={FadeOut}
-                style={styles.title}
-              >
-                {data.title}
-              </Animated.Text>
-            </Animated.View>
-
-            <View style={styles.content}>            
-              <Animated.View
-                entering={FadeIn}
-                exiting={FadeOut}
-              >
-                {data.content({handleNext: onContinue, onMain})}
-              </Animated.View>  
+    <>
+      {isLoading && <LoaderScreen />}
+      {!isLoading &&
+        <SafeAreaView style={styles.page}>
+          <Stack.Screen options={{ headerShown: false }} />
+          <ImageBackground
+            source={require('../../../assets/cat.jpg')}
+            style={styles.imageBackground}
+            resizeMode='cover'
+          >
+            <View style={styles.stepIndicatorContainer}>
+              {SignUpSteps.map((step, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.stepIndicator,
+                    { backgroundColor: index === screenIndex ? Colors.black : Colors.darkGray },
+                  ]}
+                />
+              ))}
             </View>
-          </View>
-        </GestureDetector>
-      </ImageBackground>
-    </SafeAreaView>
-  );
+            <GestureDetector gesture={swipes}>
+              <View style={styles.pageContent} key={screenIndex}>
+                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                  <Animated.Text
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                    style={styles.title}
+                  >
+                    {data.title}
+                  </Animated.Text>
+                </Animated.View>
+
+                <View style={styles.content}>
+                  <Animated.View
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                  >
+                    {data.content({ handleNext: onContinue, onMain, setIsLoading, isLoading })}
+                  </Animated.View>
+                </View>
+              </View>
+            </GestureDetector>
+          </ImageBackground>
+        </SafeAreaView>
+      }
+    </>
+  )
 }
 
 const styles = StyleSheet.create({

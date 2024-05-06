@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, ImageBackground} from 'react-native';
+import { StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
@@ -6,18 +6,21 @@ import FeedScreen from '@/src/components/Feed';
 import { useLocalSearchParams } from 'expo-router';
 import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
+import { useAuth } from '@/src/context/auth-context';
 
 export default function TabOneScreen() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setLoading] = useState(false);
-  const {refresh} = useLocalSearchParams<{ refresh: string }>();
+  const { refresh } = useLocalSearchParams<{ refresh: string }>();
 
   const getPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const {data: posts} = await repository.get('/posts');
+      console.log('GET POSTS');
+      const { data: posts } = await repository.get('/posts');
       setPosts(posts.sort((postA: Post, postB: Post) => {
-        const dateA = new Date(postA.post_created_at).toISOString(); 
+        const dateA = new Date(postA.post_created_at).toISOString();
         const dateB = new Date(postB.post_created_at).toISOString();
         return dateB.localeCompare(dateA);
       }));
@@ -29,8 +32,11 @@ export default function TabOneScreen() {
   }, [])
 
   useEffect(() => {
+    if (!user || user === '')
+      return;
+
     getPosts();
-  }, [refresh])
+  }, [refresh, user])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,14 +45,14 @@ export default function TabOneScreen() {
         source={require("../../../../assets/yellow_background.jpg")}
         blurRadius={8}
       >
-        {!isLoading && posts.length === 0 && 
-          <EmptyScreen text='No posts('/>
+        {!isLoading && posts.length === 0 &&
+          <EmptyScreen text='No posts(' />
         }
-        {isLoading && 
+        {isLoading &&
           <LoaderScreen />
         }
         {!isLoading && posts.length !== 0 &&
-          <FeedScreen posts={posts} getPosts={getPosts}/>
+          <FeedScreen posts={posts} getPosts={getPosts} />
         }
       </ImageBackground>
     </SafeAreaView>

@@ -1,34 +1,34 @@
 import { Modal, Pressable, View, StyleSheet, Text } from "react-native";
 
 type ModalWindowProps = {
-  modalVisible: boolean, 
+  modalVisible: boolean,
   message: string,
   handleCloseModalWindow: () => void
 }
 
-export default function ModalWindow ({modalVisible, handleCloseModalWindow, message}: ModalWindowProps) {  
+export default function ModalWindow({ modalVisible, handleCloseModalWindow, message }: ModalWindowProps) {
   return (
     <View style={styles.centeredView}>
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-    >
-      <View style={styles.centeredView}>
-        <View style={[styles.modalView, {width: '90%'}]}>
-          <Text style={styles.modalText}>
-            {message}
-          </Text>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+      >
+        <View style={styles.centeredView}>
+          <View style={[styles.modalView, { width: '90%' }]}>
+            <Text style={styles.modalText}>
+              {message}
+            </Text>
             <Pressable
               style={[styles.button, styles.buttonOk]}
               onPress={handleCloseModalWindow}
             >
               <Text style={styles.textStyle}>Ok</Text>
             </Pressable>
+          </View>
         </View>
-      </View>
-    </Modal>
-  </View>
+      </Modal>
+    </View>
   );
 };
 

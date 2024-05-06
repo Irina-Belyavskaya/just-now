@@ -9,6 +9,7 @@ import Colors from '@/src/constants/Colors';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
 import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
+import { Badge } from 'react-native-paper';
 
 export default function TabLayout() {
   const {user} = useAuth();
@@ -20,6 +21,7 @@ export default function TabLayout() {
 
     (async() => {
       try {
+        console.log('GET USER NOTIFICATIONS IN TABS');
         const {data} = await repository.get(`/friend-requests/notifications/${user}`);
         if (data && data.length > 0) 
           setIsNotifications(true);
@@ -29,7 +31,7 @@ export default function TabLayout() {
         console.error(error);
       }
     })();    
-  })
+  }, [])
 
   return (
     <Tabs
@@ -64,19 +66,16 @@ export default function TabLayout() {
                 <Pressable>
                   {({ pressed }) => (
                     <>
-                      { isNotifications && 
-                        <View 
-                          style={{
-                            width: 8,
-                            height: 8,
-                            backgroundColor: Colors.deniedColor,
-                            borderRadius: 50,
-                            position: 'absolute',
-                            left: '35%',
-                            zIndex: 10
-                          }} 
-                        />
-                      }
+                      <Badge 
+                        visible={isNotifications} 
+                        size={10} 
+                        style={{
+                          position: 'absolute',
+                          left: '35%',
+                          top: '-10%',
+                          zIndex: 10
+                        }} 
+                      />
                       <Ionicons 
                         name="notifications" 
                         size={25}

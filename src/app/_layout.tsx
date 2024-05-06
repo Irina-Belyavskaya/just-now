@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot} from 'expo-router';
+import { Slot } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { useColorScheme } from '@/src/components/useColorScheme';
@@ -48,7 +48,7 @@ export default function RootLayout() {
 
   if (!appReady || !splashAnimationFinished) {
     return (
-      <AnimationSplashScreen 
+      <AnimationSplashScreen
         onAnimationFinish={() => {
           setSplashAnimationFinished(true);
         }}
@@ -69,16 +69,16 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Animated.View style={{ flex: 1 }} entering={FadeIn}>
-            <Provider store={store}>
+    <Provider store={store}>
+      <AuthProvider>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Animated.View style={{ flex: 1 }} entering={FadeIn}>
               <Slot />
-            </Provider>
-          </Animated.View>
-        </GestureHandlerRootView>
-      </ThemeProvider>
-    </AuthProvider>
+            </Animated.View>
+          </GestureHandlerRootView>
+        </ThemeProvider>
+      </AuthProvider>
+    </Provider>
   );
 }

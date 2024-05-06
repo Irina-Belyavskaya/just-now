@@ -4,7 +4,7 @@ import { FieldValues } from 'react-hook-form';
 import * as yup from 'yup';
 import { BaseStepType } from "../types/base-step.type";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setNickname } from "../redux/sign-up.reducer";
+import { setNickname } from "../redux/sign-up/sign-up.reducer";
 import { useState } from "react";
 import SignUpButtons from "./SignUpButtons";
 import repository from "../repository";
@@ -14,7 +14,7 @@ export default function SignUpNicknameScreen ({
   onMain
 }: BaseStepType) {
   const dispatch = useAppDispatch();
-  const nickname = useAppSelector(state => state.signUp.nickname);
+  const nickname = useAppSelector(state => state.signUpReducer.user_nickname);
   const [isUniquenessError, setIsUniquenessError] = useState(false);
 
   const initialValues = {

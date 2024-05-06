@@ -10,25 +10,25 @@ import Colors from '@/src/constants/Colors';
 import { Button } from 'react-native-paper';
 
 export default function NotificationssScreen() {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [isLoading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<FriendRequestSenders[]>([]);
 
   const getNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const {data} = await repository.get(`/friend-requests/${user}`);
+      console.log('GET NOTIFICATIONS');
+      const { data } = await repository.get(`/friend-requests/${user}`);
       setNotifications(data);
-      console.log(JSON.stringify(data, null, 2));
       setLoading(false);
     } catch (error) {
       console.error(error);
       setLoading(false);
     }
-  }, [user])
+  }, [])
 
   const handleAcceptStatus = async (
-    friend_request_id: string, 
+    friend_request_id: string,
     friend_request_status: FriendRequestStatus
   ) => {
     try {
@@ -36,8 +36,8 @@ export default function NotificationssScreen() {
         friend_request_status: friend_request_status,
         friend_request_id: friend_request_id
       }
-      const {data} = await repository.put('/friend-requests/update-status', body);
-      console.log(data);
+      console.log('UPDATE FRIENDS REQUEST STATUS');
+      await repository.put('/friend-requests/update-status', body);
       getNotifications();
     } catch (error) {
       console.error(error);
@@ -45,9 +45,10 @@ export default function NotificationssScreen() {
   }
 
   const handleDeniedStatus = async (
-    friend_request_id: string, 
+    friend_request_id: string,
   ) => {
     try {
+      console.log('DELETE FRIENDS REQUEST');
       await repository.delete(`/friend-requests/remove-friend/${friend_request_id}`);
       getNotifications();
     } catch (error) {
@@ -61,51 +62,51 @@ export default function NotificationssScreen() {
 
   return (
     <>
-      {isLoading && 
+      {isLoading &&
         <LoaderScreen />
       }
-      {!isLoading && notifications.length === 0 && 
-        <EmptyScreen text='No notifications('/>
+      {!isLoading && notifications.length === 0 &&
+        <EmptyScreen text='No notifications(' />
       }
-      {!isLoading && notifications.length !== 0  &&
+      {!isLoading && notifications.length !== 0 &&
         <ImageBackground
           style={styles.backgroundImage}
           source={require("../../../assets/yellow_background.jpg")}
           blurRadius={8}
         >
           {notifications.map((notification) => (
-            <View 
+            <View
               key={notification.friend_request_id}
               style={styles.requestWrap}
             >
-              <View 
+              <View
                 key={notification.friend_request_id}
                 style={styles.nicknameWrap}
               >
-                <Image 
-                  style={styles.userImage} 
-                  source={{uri: notification.sender.user_profile_picture_url}}
+                <Image
+                  style={styles.userImage}
+                  source={{ uri: notification.sender.file.file_url }}
                 />
                 <Text style={styles.requestText}>
                   {notification.sender.user_nickname}
                 </Text>
               </View>
               <View style={styles.btnWrap}>
-                <Button 
-                  textColor={Colors.white} 
+                <Button
+                  textColor={Colors.white}
                   style={styles.acceptBtn}
                   onPress={() => handleAcceptStatus(notification.friend_request_id, FriendRequestStatus.accepted)}
                 >
                   Accept
                 </Button>
-                <Button 
-                  textColor={Colors.white} 
+                <Button
+                  textColor={Colors.white}
                   style={styles.deniedBtn}
                   onPress={() => handleDeniedStatus(notification.friend_request_id)}
                 >
                   Denied
                 </Button>
-              </View>              
+              </View>
             </View>
           ))}
         </ImageBackground>
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   userImage: {
-    width: 40, 
+    width: 40,
     height: 40,
     borderRadius: 100,
     marginRight: 15

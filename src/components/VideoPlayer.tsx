@@ -53,7 +53,6 @@ export default function VideoPlayer ({
         '/posts/upload/video', 
         {video_url : url, user_id: user}
       );
-      console.log(url);
 
       // Reset states
       setVideo(undefined);

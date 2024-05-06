@@ -4,18 +4,18 @@ import { FieldValues } from 'react-hook-form';
 import * as yup from 'yup';
 import { BaseStepType } from "../types/base-step.type";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setEmail, setPassword } from "../redux/sign-up.reducer";
+import { setEmail, setPassword } from "../redux/sign-up/sign-up.reducer";
 import SignUpButtons from "./SignUpButtons";
 import { useState } from "react";
 import repository from "../repository";
 
-export default function SignUpEmailAndPasswordScreen ({
-  handleNext, 
+export default function SignUpEmailAndPasswordScreen({
+  handleNext,
   onMain
 }: BaseStepType) {
   const dispatch = useAppDispatch();
-  const email = useAppSelector(state => state.signUp.email);
-  const password = useAppSelector(state => state.signUp.password);
+  const email = useAppSelector(state => state.signUpReducer.user_email);
+  const password = useAppSelector(state => state.signUpReducer.user_password);
   const [isUniquenessError, setIsUniquenessError] = useState(false);
 
   const initialValues = {
@@ -30,14 +30,11 @@ export default function SignUpEmailAndPasswordScreen ({
     password: yup.string()
       .required('Required')
       .min(8, 'Password must contain at least 8 characters'),
-    // confirmPassword:yup.string()
-    //   .required('Required')
-    //   .min(8, 'Password must contain at least 8 characters'),
   });
 
-  const handleSubmitForm = async ({email, password}: FieldValues) => {
+  const handleSubmitForm = async ({ email, password }: FieldValues) => {
     try {
-      const {data: isTaken} = await repository.get(`/auth/email-is-taken/${email}`);
+      const { data: isTaken } = await repository.get(`/auth/email-is-taken/${email}`);
       if (isTaken) {
         setIsUniquenessError(true);
         return;
@@ -61,45 +58,45 @@ export default function SignUpEmailAndPasswordScreen ({
       }}
       validationSchema={schema}
     >
-      {({ 
-        handleChange, 
-        handleBlur, 
-        handleSubmit, 
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
         setFieldValue,
-        values, 
-        errors, 
-        touched 
+        values,
+        errors,
+        touched
       }) => (
-      <>
-        <AppInput
-          onChangeText={(text) => {
-            setFieldValue('email', text);
-            setIsUniquenessError(false);
-          }}
-          onBlur={handleBlur('email')}
-          value={values.email}             
-          placeholder={'Email'}
-          isTouched={touched.email || isUniquenessError}
-          errorMessage={errors.email || ( isUniquenessError ? 'This email already exists' : '')}
-        />
-        <AppInput
-          onChangeText={handleChange('password')}
-          onBlur={handleBlur('password')}
-          value={values.password}             
-          placeholder={'Password'}
-          isTouched={touched.password}
-          errorMessage={errors.password}
-          autoCorrect={false}
-          secureTextEntry={true}
-          textContentType={'password'}
-        />
-        <SignUpButtons
-          handleNext={handleNext}
-          onMain={onMain}
-          handleSubmit={() => handleSubmit()}
-        />
-      </>
-    )}
-  </Formik>
+        <>
+          <AppInput
+            onChangeText={(text) => {
+              setFieldValue('email', text);
+              setIsUniquenessError(false);
+            }}
+            onBlur={handleBlur('email')}
+            value={values.email}
+            placeholder={'Email'}
+            isTouched={touched.email || isUniquenessError}
+            errorMessage={errors.email || (isUniquenessError ? 'This email already exists' : '')}
+          />
+          <AppInput
+            onChangeText={handleChange('password')}
+            onBlur={handleBlur('password')}
+            value={values.password}
+            placeholder={'Password'}
+            isTouched={touched.password}
+            errorMessage={errors.password}
+            autoCorrect={false}
+            secureTextEntry={true}
+            textContentType={'password'}
+          />
+          <SignUpButtons
+            handleNext={handleNext}
+            onMain={onMain}
+            handleSubmit={() => handleSubmit()}
+          />
+        </>
+      )}
+    </Formik>
   )
 }

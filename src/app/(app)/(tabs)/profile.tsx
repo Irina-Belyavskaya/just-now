@@ -9,10 +9,11 @@ import LoaderScreen from '../../loader';
 import { Post } from '@/src/types/post.type';
 import ProfileBottom from '@/src/components/ProfileBottom';
 import { useIsFocused } from '@react-navigation/native';
+import { useAppSelector } from '@/src/redux/hooks';
 
 export default function ProfileScreen() {
-  const {user} = useAuth();
-  const [userInfo, setUserInfo] = useState<User>();
+  const { user } = useAuth();
+  // const [userInfo, setUserInfo] = useState<User>();
   const [userPosts, setUserPosts] = useState<Post[]>();
 
   const [numberOfPhotoPosts, setNumberOfPhotoPosts] = useState<number>(0);
@@ -22,11 +23,10 @@ export default function ProfileScreen() {
   const [isLoading, setLoading] = useState(false);
 
   const isFocused = useIsFocused();
-
-  // Объявляем состояние для отслеживания обновления страницы
   const [refreshCount, setRefreshCount] = useState(0);
 
-  // Обновляем состояние, когда компонент становится активным
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
+
   useEffect(() => {
     if (isFocused) {
       setRefreshCount((prevCount) => prevCount + 1);
@@ -34,12 +34,14 @@ export default function ProfileScreen() {
   }, [isFocused]);
 
   useEffect(() => {
+    if (!user)
+      return;
+
     (async () => {
       try {
         setLoading(true);
-        const {data: userInfo} = await repository.get(`/users/${user}`);
-        setUserInfo(userInfo);
-        const {data: userFriends} = await repository.get(`/friend-requests/friends/${user}`);
+        console.log('GET FREINDS');
+        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user}`);
         setNumberOfUserFriends(userFriends.length);
         setLoading(false);
       } catch (error) {
@@ -47,41 +49,31 @@ export default function ProfileScreen() {
         setLoading(false);
       }
     })();
-  }, [user])
+  }, [])
 
   useEffect(() => {
+    if (!user)
+      return;
+
     (async () => {
       try {
         setLoading(true);
-        const {data: numberOfPhotoPosts} = await repository.get(`/posts/number-of-photos/${user}`);
-        setNumberOfPhotoPosts(numberOfPhotoPosts);
-        const {data: numberOfVideoPosts} = await repository.get(`/posts/number-of-video/${user}`);
-        setNumberOfVideoPosts(numberOfVideoPosts);
+        console.log('GET POSTS INFO FOR PROFILE');
+        const { data } = await repository.get(`posts/profile-posts-info/${user}`);
+        setNumberOfPhotoPosts(data.numberOfPhotoPosts);
+        setNumberOfVideoPosts(data.numberOfVideoPosts);
+        setUserPosts(data.userPosts);
         setLoading(false);
       } catch (error) {
         console.error(error);
         setLoading(false);
       }
     })();
-  }, [user])
+  }, [])
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const {data: userPosts} = await repository.get(`/posts/${user}`);
-        setUserPosts(userPosts);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    })();
-  }, [user])
-  
   return (
     <>
-      {isLoading && 
+      {isLoading &&
         <LoaderScreen />
       }
       {!isLoading && userInfo && userPosts &&
@@ -90,14 +82,14 @@ export default function ProfileScreen() {
           source={require("../../../../assets/yellow_background.jpg")}
           blurRadius={8}
         >
-          <ProfileHead 
-            userInfo={userInfo} 
+          <ProfileHead
+            userInfo={userInfo}
             numberOfUserFriends={numberOfUserFriends}
             numberOfPhotos={numberOfPhotoPosts}
             numberOfVideo={numberOfVideoPosts}
-            isPersonalAccount 
+            isPersonalAccount
           />
-          <ProfileBottom userPosts={userPosts}/>
+          <ProfileBottom userPosts={userPosts} />
         </ImageBackground>
       }
     </>

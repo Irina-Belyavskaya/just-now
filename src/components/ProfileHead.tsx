@@ -4,28 +4,29 @@ import { useAuth } from "../context/auth-context";
 import repository from "../repository";
 import { User } from "../types/user.type";
 import LoaderScreen from "../app/loader";
+import { router } from "expo-router";
 
 type ProfileHeadProps = {
   userInfo: User,
-  numberOfUserFriends: number,
-  numberOfPhotos: number,
-  numberOfVideo: number,
+  numberOfUserFriends?: number,
+  numberOfPhotos?: number,
+  numberOfVideo?: number,
   isPersonalAccount?: boolean,
 }
 
 export default function ProfileHead({
-  userInfo, 
-  numberOfUserFriends, 
-  numberOfPhotos, 
-  numberOfVideo, 
+  userInfo,
+  numberOfUserFriends,
+  numberOfPhotos,
+  numberOfVideo,
   isPersonalAccount = false
-}: ProfileHeadProps) {  
+}: ProfileHeadProps) {
   return (
     <View style={styles.main}>
       <View style={styles.imageContainer}>
-        <Image 
-          style={styles.userImage} 
-          source={{uri: userInfo.user_profile_picture_url}}
+        <Image
+          style={styles.userImage}
+          source={{ uri: userInfo.file.file_url }}
         />
         <Text style={styles.userName}>
           {userInfo.user_nickname}
@@ -47,8 +48,8 @@ export default function ProfileHead({
             <Text style={styles.bottomtext}>{numberOfPhotos}</Text>
           </View>
           <View style={styles.middleSectionText}>
-          <Text style={styles.toptext}>Video</Text>
-                <Text style={styles.bottomtext}>{numberOfVideo}</Text>
+            <Text style={styles.toptext}>Video</Text>
+            <Text style={styles.bottomtext}>{numberOfVideo}</Text>
           </View>
         </View>
       }
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userImage: {
-    width: 200, 
+    width: 200,
     height: 200,
     borderRadius: 100,
     marginBottom: 5,
@@ -73,15 +74,15 @@ const styles = StyleSheet.create({
     borderColor: "black"
   },
   userName: {
-    fontSize: 30, 
-    color: "black", 
-    fontWeight: "700", 
+    fontSize: 30,
+    color: "black",
+    fontWeight: "700",
     fontFamily: "Raleway_400Regular"
   },
   userEmail: {
-    fontSize: 20, 
-    color: "black", 
-    fontFamily: "Raleway_300Light" 
+    fontSize: 20,
+    color: "black",
+    fontFamily: "Raleway_300Light"
   },
   middleSectionTextContainer: {
     flexDirection: "row",

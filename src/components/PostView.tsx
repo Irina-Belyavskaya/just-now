@@ -1,17 +1,16 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { View, TouchableOpacity, Image, Text, Pressable } from "react-native";
-import { Post } from "../types/post.type";
+import { Post, PostType } from "../types/post.type";
 import VideoPost from "./VideoPost";
 import { useState } from "react";
 import Colors from "../constants/Colors";
 import repository from "../repository";
-import { isImageUrl } from "../utils/isImagePost";
 
 type PostProps = {
   post: Post
 }
 
-export default function PostView ({post}: PostProps) {
+export default function PostView({ post }: PostProps) {
   const [like, setLike] = useState<boolean>();
 
   const likePost = async (postLikes: number, postId: string) => {
@@ -27,26 +26,26 @@ export default function PostView ({post}: PostProps) {
 
   const dislikePost = async (postLikes: number, postId: string) => {
     try {
-      await repository.post(`/posts/set-reaction/${postId}`, {likes: postLikes - 1});
+      await repository.post(`/posts/set-reaction/${postId}`, { likes: postLikes - 1 });
     } catch (error) {
       console.error(error);
     }
   }
 
   return (
-    <View 
+    <View
       style={{
         margin: 10, borderRadius: 7, elevation: 5, backgroundColor: "black", shadowColor: 'white',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 2,
-        
+
       }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", padding: 10, }}>
-        <Image 
-          source={{uri: post.user.user_profile_picture_url}} 
-          style={{ height: 50, width: 50, borderRadius: 50 }} 
+        <Image
+          source={{ uri: post.user.file.file_url }}
+          style={{ height: 50, width: 50, borderRadius: 50 }}
         />
         <View style={{ marginLeft: 10 }}>
           <Text style={{ fontSize: 20, color: 'white' }}>{post.user.user_nickname}</Text>
@@ -55,58 +54,58 @@ export default function PostView ({post}: PostProps) {
               {new Date(post.post_created_at).toString().substring(0, 16)}
             </Text>
             <Text style={{ fontSize: 12, marginLeft: 5, color: 'white' }}>
-              {new Date(post.post_created_at).getHours() + " : " + new Date(post.post_created_at).getMinutes()}
+              {post.post_created_at.split('T')[1].slice(0, 5)}
             </Text>
           </View>
         </View>
       </View>
       {
-        isImageUrl(post.post_content_url)
-        ? <Image 
-            source={{ uri: post.post_content_url }} 
+        post.post_type === PostType.PHOTO
+          ? <Image
+            source={{ uri: post.file.file_url }}
             style={{ height: 454, resizeMode: 'contain' }}
           />
-        :
-          <VideoPost post={post}/>
+          :
+          <VideoPost post={post} />
       }
       <View style={{ height: 1, width: "100%", backgroundColor: "white" }} />
       <View style={{ flexDirection: "row", }}>
-        <View 
-          style={{ 
-            flex: 1, 
+        <View
+          style={{
+            flex: 1,
             margin: 10,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
           }}
         >
-          <Text 
-            style={{ 
-              textAlign: "center", 
-              fontWeight: "bold", 
-              color: 'white', 
-              marginRight: 10 
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              color: 'white',
+              marginRight: 10
             }}
           >
-            {post.likes} 
+            {post.likes}
           </Text>
-          
-            {
-            like 
-              ? 
-              <FontAwesome 
-                name="heart" 
-                size={24} 
+
+          {
+            like
+              ?
+              <FontAwesome
+                name="heart"
+                size={24}
                 color={Colors.pickedYelllow}
                 onPress={() => {
-                  if (like) { 
+                  if (like) {
                     setLike(false);
                     dislikePost(post.likes, post.post_id)
                   }
-                }}                
-              /> 
-              : 
-              <Pressable 
+                }}
+              />
+              :
+              <Pressable
                 onPress={() => {
                   if (!like) {
                     setLike(true);
@@ -114,13 +113,13 @@ export default function PostView ({post}: PostProps) {
                   }
                 }}
               >
-                <FontAwesome 
-                  name="heart-o" 
-                  size={24} 
+                <FontAwesome
+                  name="heart-o"
+                  size={24}
                   color={Colors.pickedYelllow}
                 />
-              </Pressable>         
-            }       
+              </Pressable>
+          }
         </View>
         <View style={{ backgroundColor: "white", height: "100%", width: 1 }} />
         <TouchableOpacity style={{ flex: 1, margin: 10 }}>

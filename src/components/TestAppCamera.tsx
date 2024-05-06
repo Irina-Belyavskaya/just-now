@@ -1,61 +1,33 @@
-import { useAuth } from "@/src/context/auth-context";
-import repository from "@/src/repository";
-import { convertBlobToBase64 } from "@/src/utils/convertToBase64";
-import { File } from "@/src/types/file.type";
-import { PostType } from "@/src/types/post.type";
-import { uploadToFirebaseAndCreateFile } from "@/src/redux/actions";
-import { Stack, router, useFocusEffect } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useCameraPermission, useCameraDevice, Camera, PhotoFile, TakePhotoOptions, useMicrophonePermission, VideoFile, useCameraFormat } from 'react-native-vision-camera';
-import LoaderScreen from '@/src/app/loader';
-import VideoPlayer from '@/src/components/VideoPlayer';
+import LoaderScreen from '../app/loader';
+import CameraButtons from './CameraButtons';
 import { ImageResult, manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import PhotoViewer from "@/src/components/PhotoViewer";
-import CameraButtons from "@/src/components/CameraButtons";
-import TestAppCamera from "@/src/components/TestAppCamera";
 
-// export default function CameraScreen() {
-//   const { user } = useAuth();
+type TestAppCameraProps = {
+  setPhoto: (photo: ImageResult) => void;
+  photo: ImageResult | undefined;
 
-//   const handlePhoto = useCallback(async (photoUrl: string) => {
-//     // const base64 = await convertBlobToBase64(blob);
-//     const file = await uploadToFirebaseAndCreateFile(`file://${photoUrl}`, `post/${user}/`);
+  setVideo?: (video: VideoFile) => void;
+  video?: VideoFile | undefined;
 
-//     const postDto = {
-//       post_content_id: file.file_id,
-//       user_id: user,
-//       post_type: PostType.PHOTO
-//     }
+  onlyPhoto?: boolean;
 
-//     await repository.post('/posts/', postDto);
-//   }, [user])
+}
 
-//   return (
-
-//   );
-// }
-
-// type AppCameraProps = {
-//   handlePhoto: (photoUrl) => Promise<void>,
-//   navigate?: () => void
-// }
-
-export default function CameraScreen() {
+export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPhoto = false }: TestAppCameraProps) {
   const { hasPermission, requestPermission } = useCameraPermission();
   const {
     hasPermission: microphonePermission,
     requestPermission: requestMicrophonePermission
   } = useMicrophonePermission();
 
-  const { user } = useAuth();
-
   const [isActive, setIsActive] = useState(false);
-  const [photo, setPhoto] = useState<ImageResult>();
   const [flash, setFlash] = useState<TakePhotoOptions["flash"]>("off");
   const [isRecording, setIsRecording] = useState(false);
-  const [video, setVideo] = useState<VideoFile>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [exposure, setExposure] = useState<number>(0);
 
@@ -72,25 +44,12 @@ export default function CameraScreen() {
     { videoResolution: { width: 3048, height: 2160 } },
   ]);
 
-  const handlePhoto = useCallback(async (photoUrl: string) => {
-    const file = await uploadToFirebaseAndCreateFile(photoUrl, `post/${user}/`);
-
-    const postDto = {
-      post_content_id: file.file_id,
-      user_id: user,
-      post_type: PostType.PHOTO
-    }
-
-    await repository.post('/posts/', postDto);
-  }, [user])
-
-
   useEffect(() => {
     if (!hasPermission) {
       requestPermission();
     }
 
-    if (!microphonePermission) {
+    if (!microphonePermission && !onlyPhoto) {
       requestMicrophonePermission();
     }
   }, [hasPermission, microphonePermission]);
@@ -102,12 +61,12 @@ export default function CameraScreen() {
     }, [])
   )
 
-  if (!hasPermission || !microphonePermission) {
+  if (!hasPermission || (!microphonePermission && !onlyPhoto)) {
     return <LoaderScreen />;
   }
 
   if (!device) {
-    return <Text>Camera no found!</Text>;
+    return <LoaderScreen />;
   }
 
   const onTakePicturePressed = async () => {
@@ -115,6 +74,7 @@ export default function CameraScreen() {
       camera.current?.stopRecording();
       return;
     }
+    console.log('PICTURE TAKEN');
 
     const photo = await camera.current?.takePhoto({
       enableShutterSound: false,
@@ -142,7 +102,7 @@ export default function CameraScreen() {
   }
 
   const onStartRecording = async () => {
-    if (!camera.current) {
+    if (!camera.current || onlyPhoto || !setVideo) {
       return;
     }
     setIsRecording(true);
@@ -168,6 +128,7 @@ export default function CameraScreen() {
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
+
       {/* CAMERA */}
       {device && !isLoading &&
         <Camera
@@ -175,28 +136,18 @@ export default function CameraScreen() {
           style={StyleSheet.absoluteFill}
           device={device}
           isActive={isActive && !photo && !video}
+          photo
+          video={!onlyPhoto}
+          audio={!onlyPhoto}
+          enableZoomGesture
           format={format}
           exposure={exposure}
           videoStabilizationMode={'cinematic-extended'}
-          photo
-          video
-          audio
-          enableZoomGesture
         />
       }
 
       {isLoading && <LoaderScreen />}
 
-      {/* PHOTO VIEWER */}
-      {photo && !isLoading &&
-        <PhotoViewer
-          photoPath={photo.uri}
-          setPhoto={setPhoto}
-          photo={photo}
-          setIsLoading={setIsLoading}
-          handlePhoto={handlePhoto}
-        />
-      }
 
       {/*CAMERA BUTTONS */}
       {!photo && !video && !isLoading &&
@@ -212,17 +163,7 @@ export default function CameraScreen() {
         />
       }
 
-      {/* VIDEO PLAYER */}
-      {video && !isLoading &&
-        <VideoPlayer
-          videoPath={video.path}
-          video={video}
-          setVideo={setVideo}
-          setIsLoading={setIsLoading}
-        />
-      }
-
       <StatusBar hidden />
     </View>
-  );
+  )
 }

@@ -9,8 +9,9 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/src/context/auth-context';
 import { FriendRequestSenders } from '@/src/types/friend-requests.type';
 
-export default function SearchScreen() {;
-  const {user} = useAuth();
+export default function SearchScreen() {
+  ;
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [friends, setFriends] = useState<FriendRequestSenders[]>([]);
@@ -20,26 +21,28 @@ export default function SearchScreen() {;
     (async () => {
       try {
         // setLoading(true);
-        const {data} = await repository.get('/users');
+        console.log('GET USERS');
+        const { data } = await repository.get('/users');
         setUsers(data.filter((item: User) => item.user_id !== user));
-        console.log(data);
         // setLoading(false);
       } catch (error) {
         console.error(error);
         // setLoading(false);
       }
     })();
-  }, [user])
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
       if (!user)
         return;
-  
+
       (async () => {
         try {
           // setLoading(true);
-          const {data: friends} = await repository.get(`/friend-requests/friends/${user}`);
+          console.log('GET FRIENDS');
+
+          const { data: friends } = await repository.get(`/friend-requests/friends/${user}`);
           setFriends(friends);
           // setLoading(false);
         } catch (error) {
@@ -49,24 +52,6 @@ export default function SearchScreen() {;
       })();
     }, [])
   );
-
-  // useFocusEffect(() => {
-    // if (!user)
-    //   return;
-
-    // (async () => {
-    //   try {
-    //     // setLoading(true);
-    //     const {data} = await repository.get(`/friend-requests/friends/${user}`);
-    //     setFriends(data);
-    //     console.log("friends: ", data);
-    //     // setLoading(false);
-    //   } catch (error) {
-    //     console.error(error);
-    //     // setLoading(false);
-    //   }
-    // })();
-  // })
 
   const handleSearch = (text: string) => {
     const query = text.toLowerCase();
@@ -87,7 +72,7 @@ export default function SearchScreen() {;
 
   const handleItemSelected = (user_id: string) => {
     router.push('/user');
-    router.setParams({user_id: user_id})
+    router.setParams({ user_id: user_id })
   };
 
   return (
@@ -98,7 +83,7 @@ export default function SearchScreen() {;
         value={searchQuery}
         autoCapitalize='none'
       />
-      { filteredData.length > 0 && 
+      {filteredData.length > 0 &&
         <FlatList
           style={{
             width: '100%',
@@ -108,7 +93,7 @@ export default function SearchScreen() {;
           data={filteredData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={{
                 width: '100%',
                 flexDirection: 'row',
@@ -117,11 +102,11 @@ export default function SearchScreen() {;
               }}
               onPress={() => handleItemSelected(item.user_id)}
             >
-              <Image 
-                style={styles.userImage} 
-                source={{uri: item.user_profile_picture_url}}
+              <Image
+                style={styles.userImage}
+                source={{ uri: item.file.file_url }}
               />
-              <Text style={{fontSize: 18, marginLeft: 20}}>
+              <Text style={{ fontSize: 18, marginLeft: 20 }}>
                 {item.user_nickname}
               </Text>
             </TouchableOpacity>
@@ -133,28 +118,28 @@ export default function SearchScreen() {;
         <Text style={styles.friendsTitle}>
           Friends
         </Text>
-          {friends.length === 0 && 
-            <Text>{'No friends('}</Text>
-          }
-       
-          {friends.map((friend) => 
-            <TouchableOpacity 
-              style={styles.friendWrap}
-              key={friend.friend_request_id}
-              onPress={() => handleItemSelected(friend.sender.user_id)}
-            >
-              <Image 
-                style={styles.userImage} 
-                source={{uri: friend.sender.user_profile_picture_url}}
-              />
-              <Text style={{fontSize: 18}}>
-                {friend.sender.user_nickname}
-              </Text>
-            </TouchableOpacity>
-          )}
-        
+        {friends.length === 0 &&
+          <Text>{'No friends('}</Text>
+        }
+
+        {friends.map((friend) =>
+          <TouchableOpacity
+            style={styles.friendWrap}
+            key={friend.friend_request_id}
+            onPress={() => handleItemSelected(friend.sender.user_id)}
+          >
+            <Image
+              style={styles.userImage}
+              source={{ uri: friend.sender.file.file_url }}
+            />
+            <Text style={{ fontSize: 18 }}>
+              {friend.sender.user_nickname}
+            </Text>
+          </TouchableOpacity>
+        )}
+
       </View>
-    </View>    
+    </View>
   );
 }
 
@@ -172,12 +157,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   friendsTitle: {
-    fontFamily: 'Raleway_700Bold', 
+    fontFamily: 'Raleway_700Bold',
     fontSize: 25,
     textAlign: 'center'
   },
   userImage: {
-    width: 40, 
+    width: 40,
     height: 40,
     borderRadius: 100,
     marginRight: 15

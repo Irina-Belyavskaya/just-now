@@ -1,5 +1,4 @@
-import { Post } from "../types/post.type";
-import { isImageUrl } from "../utils/isImagePost";
+import { Post, PostType } from "../types/post.type";
 import { View, TouchableOpacity, Image, Text, StyleSheet, FlatList, RefreshControl, useWindowDimensions } from "react-native";
 import VideoPost from "./VideoPost";
 
@@ -10,8 +9,8 @@ type ProfileBottomProps = {
 const height = 200;
 const width = 200;
 
-export default function ProfileBottom({userPosts}: ProfileBottomProps) { 
-  return(    
+export default function ProfileBottom({ userPosts }: ProfileBottomProps) {
+  return (
     <FlatList
       // refreshControl={
       //   <RefreshControl refreshing={isLoading} onRefresh={async () => {
@@ -21,7 +20,7 @@ export default function ProfileBottom({userPosts}: ProfileBottomProps) {
       //     }} 
       //   />
       // }
-      
+
       contentContainerStyle={{
         display: 'flex',
         flexDirection: 'row',
@@ -32,17 +31,17 @@ export default function ProfileBottom({userPosts}: ProfileBottomProps) {
       data={userPosts}
       showsVerticalScrollIndicator={false}
       horizontal
-      renderItem={({ item }) =>         
-        isImageUrl(item.post_content_url)
-        ? 
-          <Image 
+      renderItem={({ item }) =>
+        item.post_type === PostType.PHOTO
+          ?
+          <Image
             key={item.post_id}
-            source={{ uri: item.post_content_url }} 
+            source={{ uri: item.file.file_url }}
             style={{ height, width, resizeMode: 'contain', }}
           />
-        :
-          <VideoPost 
-            key={item.post_id} 
+          :
+          <VideoPost
+            key={item.post_id}
             post={item}
             height={height}
             width={width}

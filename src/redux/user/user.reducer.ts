@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserStateType } from "./types/user-state.type";
 import { getUser } from "./users.actions";
+import { User } from "@/src/types/user.type";
 
 const initialState: UserStateType = {
   userInfo: null,
@@ -49,6 +50,9 @@ const userSlice = createSlice({
     setUserReset(state) {
       state.userInfo = null;
     },
+    setUserInfo(state, action: PayloadAction<User>) {
+      state.userInfo = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -75,6 +79,7 @@ export const {
   // setUserNickname, 
   // setUserEmail, 
   // setUserFromReset 
+  setUserInfo,
   setUserReset
 } = userSlice.actions;
 export default userSlice.reducer;

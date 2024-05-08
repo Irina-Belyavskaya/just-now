@@ -19,6 +19,7 @@ import LoaderScreen from "../app/loader";
 import ModalWindow from "./ModalWindow";
 import { SignUpDto } from "../redux/sign-up/types/sign-up.dto";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
+import { setUserInfo } from "../redux/user/user.reducer";
 
 export default function SignUpUploadPhotoScreen({
   handleNext,
@@ -67,23 +68,6 @@ export default function SignUpUploadPhotoScreen({
       const file = await uploadToFirebaseAndCreateFile(photoUrl, 'profile');
       console.log(file);
       console.log(file.file_id);
-      // const result = await fetch(photoUrl)
-      // const blob = await result.blob();
-
-      // const path = generatePath('profile');
-      // const response = await sendToFirebase(blob, path);
-
-      // if (!response) {
-      //   throw new Error('Something go wrong');
-      // }
-
-      // const fileDto = {
-      //   file_url: response.url,
-      //   file_path: response.fullPath,
-      //   file_size: response.size,
-      // }
-      // const { data: responseFileInfo } = await repository.post("/files", fileDto);
-      // console.log(JSON.stringify(responseFileInfo, null, 2));
 
       const signUpDto: SignUpDto = {
         user_email: signUpData.user_email,
@@ -93,8 +77,10 @@ export default function SignUpUploadPhotoScreen({
       };
       console.log('AUTH SIGN UP');
       const { data: responseInfo } = await repository.post("/auth/sign-up", signUpDto);
+      // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       setIsLoading(false);
-      signUp(responseInfo.access_token, responseInfo.expired_at.toString());
+      signUp(responseInfo.accessToken, responseInfo.refreshToken);
+      dispatch(setUserInfo(responseInfo.user));
       dispatch(setSignUpFromReset());
       router.replace('/')
     } catch (error) {

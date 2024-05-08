@@ -9,11 +9,14 @@ import repository from '@/src/repository';
 import { useState } from 'react';
 import { ErrorText } from '@/src/components/Themed';
 import { SignInDto } from '@/src/redux/sign-up/types/sign-in.dto';
+import { setUserInfo } from '@/src/redux/user/user.reducer';
+import { useAppDispatch } from '@/src/redux/hooks';
 
 export default function SignIn() {
   const { signIn } = useAuth();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] =  useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
 
   const schema = yup.object().shape({
@@ -40,13 +43,15 @@ export default function SignIn() {
       const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
       // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       resetForm();
-      await signIn(responseInfo.access_token, responseInfo.expired_at.toString());
+      await signIn(responseInfo.accessToken, responseInfo.refreshToken);
+      dispatch(setUserInfo(responseInfo.user));
       setIsLoading(false);
       router.replace('/');
     } catch (error) {
       setErrorMessage('Incorrect email or password');
       setModalVisible(true);
       setIsLoading(false);
+      console.log("ERROR IN SIGN IN: ", JSON.stringify(error, null, 2));
     }
   }
 

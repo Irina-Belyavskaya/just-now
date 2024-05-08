@@ -1,8 +1,6 @@
 import axios from "axios";
 import { getStorageItem, setStorageItem } from "./context/useStorageState";
 import { router } from "expo-router";
-import JWT from "expo-jwt";
-import { JwtPayload } from "./context/auth-context";
 
 const REACT_APP_API_URL = 'http://192.168.100.38:3000';
 
@@ -12,54 +10,47 @@ const repository = axios.create({
 
 repository.interceptors.request.use(
   async (config) => {
-    const token = getStorageItem('token');
+    const accessToken = getStorageItem('accessToken');
 
-    if (token && token !== '') {
-      config.headers.set('Authorization', `Bearer ${token}`);
+    if (accessToken && accessToken !== '') {
+      config.headers.set('Authorization', `Bearer ${accessToken}`);
     }
 
-    // console.log("CONFIG: ", JSON.stringify(config, null, 2));
+    // console.log("CONFIG REQUEST: ", JSON.stringify(config.headers, null, 2));
     console.log("CONFIG URL: ", config.url);
-    console.log("CONFIG URL: ", config.headers);
-
-    let curTime = Number(new Date().getTime()) / 1000;
-    let expTime = Number(getStorageItem('expiredAt')) / 1000;
-
-    if ((expTime - curTime) <= 0 && config.url !== '/auth/sign-in') {
-      setStorageItem('token', null);
-      setStorageItem('user', null);
-      setStorageItem('expiredAt', null);
-      router.replace("/");
-      return config;
-    }
-
-    console.log(expTime - curTime)
-
-    if ((expTime - curTime) < 600 && (expTime - curTime) > 0 && token) {
-      try {
-        console.log('-------REFRESH TOKEN-------')
-
-        const response = await axios.get('http://192.168.100.38:3000/auth/refresh-token', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const key = 'SECRET';
-        const decoded: JwtPayload = JWT.decode(token, key);
-        setStorageItem('token', response.data.access_token);
-        setStorageItem('user', decoded.user_id);
-        setStorageItem('expiredAt', response.data.expired_at.toString());
-      } catch (e) {
-        setStorageItem('token', null);
-        setStorageItem('user', null);
-        setStorageItem('expiredAt', null);
-        router.replace("/");
-        return config;
-      }
-    }
 
     return config;
   },
 );
+
+repository.interceptors.response.use((config) => {
+  return config;
+}, async (error) => {
+  const originalRequest = error.config;
+  if (error.response.status == 401 && originalRequest && !originalRequest._isRetry) {
+    originalRequest._isRetry = true;
+    const refreshToken = getStorageItem('refreshToken');
+    if (refreshToken) {
+      try {
+        console.log('REFRESH -> ......');
+        const response = await axios.post(`${REACT_APP_API_URL}/auth/refresh`, { refreshToken });
+        const newAccessToken = response.data.accessToken;
+        setStorageItem('accessToken', newAccessToken);
+        setStorageItem('refreshToken', response.data.refreshToken);
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return repository.request(originalRequest);
+      } catch (e) {
+        console.log('UNAUTHORIZED!');
+        setStorageItem('accessToken', null);
+        setStorageItem('refreshToken', null);
+        setStorageItem('user', null);
+        router.replace("/");
+      }
+    }
+  }
+
+  throw error;
+})
 
 export default repository;

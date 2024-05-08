@@ -7,21 +7,17 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setUserReset } from '../redux/user/user.reducer';
 
 type AuthContexttype = {
-  signIn: (token: string, expiredAt: string) => void;
-  signUp: (token: string, expiredAt: string) => void;
+  signIn: (accessToken: string, refreshToken: string) => void;
+  signUp: (accessToken: string, refreshToken: string) => void;
   signOut: () => void;
-  token: string | null;
   user: string | null;
-  expiredAt: string | null;
 }
 
 const AuthContext = React.createContext<AuthContexttype>({
   signIn: () => null,
   signUp: () => null,
   signOut: () => null,
-  token: null,
   user: null,
-  expiredAt: null
 });
 
 export function useAuth() {
@@ -35,9 +31,9 @@ export type JwtPayload = {
 }
 
 export function AuthProvider(props: React.PropsWithChildren) {
-  const [[isLoadingToken, token], setToken] = useStorageState('token');
+  const [[isLoadingAccessToken, accessToken], setAccessToken] = useStorageState('accessToken');
+  const [[isLoadingRefreshToken, refreshToken], setRefreshToken] = useStorageState('refreshToken');
   const [[isLoadingUser, user], setUser] = useStorageState('user');
-  const [[isLoadingExpiredAt, expiredAt], setExpiredAt] = useStorageState('expiredAt');
 
   const rootSegment = useSegments()[0];
 
@@ -47,68 +43,70 @@ export function AuthProvider(props: React.PropsWithChildren) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (token === undefined) return;
+    if (accessToken === undefined) return;
 
     console.log("-----------------------------------------------");
-    console.log("TOKEN IN AUTH PROVIDER: ", token);
+    console.log("TOKEN IN AUTH PROVIDER: ", accessToken);
     console.log("USER IN AUTH PROVIDER: ", user);
-    console.log("IS LOADING TOKEN IN AUTH PROVIDER: ", isLoadingToken);
+    console.log("IS LOADING TOKEN IN AUTH PROVIDER: ", isLoadingAccessToken);
     console.log("IS LOADING USER IN AUTH PROVIDER: ", isLoadingUser);
     console.log("-----------------------------------------------");
 
-    if (isLoadingToken || isLoadingUser || isLoadingExpiredAt) {
+    if (isLoadingAccessToken || isLoadingUser) {
       router.replace("/loader");
-    } else if (!token && rootSegment !== "(auth)") {
+    } else if (!accessToken && rootSegment !== "(auth)") {
       router.replace("/(auth)/sign-in");
-    } else if (token && rootSegment !== "(app)") {
+    } else if (accessToken && rootSegment !== "(app)") {
       router.replace("/");
     }
-  }, [token, rootSegment, isLoadingToken, isLoadingUser, isLoadingExpiredAt])
+  }, [accessToken, rootSegment, isLoadingAccessToken, isLoadingUser])
 
-  useEffect(() => {
-    if (user && !userState) {
-      console.log('*********** GET USER IN AUTH CONTEXT ***********');
-      console.log('*********** USER STATE IN AUTH CONTEXT ***********', userState);
-      dispatch(getUser({ id: user }));
-    }
-  }, [user, userState]);
+  // useEffect(() => {
+  //   if (user && !userState) {
+  //     console.log('*********** GET USER IN AUTH CONTEXT ***********');
+  //     console.log('*********** USER STATE IN AUTH CONTEXT ***********', userState);
+  //     dispatch(getUser({ id: user }));
+  //   }
+  // }, [user, userState]);
 
   return (
     <AuthContext.Provider
       value={{
-        signIn: async (token: string, expiredAt: string) => {
+        signIn: async (accessToken: string, refreshToken: string) => {
           try {
             console.log('SIGN IN AUTH PROVIDER');
-            setToken(token);
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
+
+            // TODO: remove
             const key = 'SECRET';
-            const decoded: JwtPayload = JWT.decode(token, key);
+            const decoded: JwtPayload = JWT.decode(accessToken, key);
             setUser(decoded.user_id);
-            setExpiredAt(expiredAt);
           } catch (error) {
             console.log(error)
           }
         },
-        signUp: (token: string, expiredAt: string) => {
+        signUp: (accessToken: string, refreshToken: string) => {
           try {
             console.log('SIGN IN AUTH PROVIDER');
-            setToken(token);
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
+
+            // TODO: remove
             const key = 'SECRET';
-            const decoded: JwtPayload = JWT.decode(token, key);
+            const decoded: JwtPayload = JWT.decode(accessToken, key);
             setUser(decoded.user_id);
-            setExpiredAt(expiredAt);
           } catch (error) {
             console.log(error)
           }
         },
         signOut: () => {
-          setToken(null);
+          setAccessToken(null);
+          setRefreshToken(null);
           setUser(null);
-          setExpiredAt(null);
           dispatch(setUserReset());
         },
-        token,
         user,
-        expiredAt
       }}>
       {props.children}
     </AuthContext.Provider>

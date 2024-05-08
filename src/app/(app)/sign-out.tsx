@@ -1,14 +1,19 @@
 import Colors from "@/src/constants/Colors";
 import { useAuth } from "@/src/context/auth-context";
+import { getStorageItem } from "@/src/context/useStorageState";
+import repository from "@/src/repository";
 import { Stack, router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Modal, Pressable, View, StyleSheet, Text } from "react-native";
+import { useState } from "react";
+import { Modal, Pressable, View, StyleSheet, Text } from "react-native";
 
 export default function SignOut() {
   const { signOut } = useAuth();
   const [modalVisible, setModalVisible] = useState(true);
 
-  const handleYesPressed = () => {
+  const handleYesPressed = async () => {
+    const refreshToken = getStorageItem('refreshToken');
+    if (refreshToken)
+      await repository.post('/auth/sign-out', { refreshToken });
     signOut();
     setModalVisible(!modalVisible);
     router.replace("/");
@@ -21,7 +26,7 @@ export default function SignOut() {
 
   return (
     <View style={styles.centeredView}>
-      <Stack.Screen options={{headerStyle: { backgroundColor: 'black' }}} />
+      <Stack.Screen options={{ headerStyle: { backgroundColor: 'black' } }} />
       <Modal
         animationType="slide"
         transparent={true}
@@ -32,7 +37,7 @@ export default function SignOut() {
         }}
       >
         <View style={styles.centeredView}>
-          <View style={[styles.modalView, {width: '90%'}]}>
+          <View style={[styles.modalView, { width: '90%' }]}>
             <Text style={styles.modalText}>
               Are you sure you want to go out?
             </Text>

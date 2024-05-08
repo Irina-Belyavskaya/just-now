@@ -5,6 +5,7 @@ import VideoPost from "./VideoPost";
 import { useState } from "react";
 import Colors from "../constants/Colors";
 import repository from "../repository";
+import Reactions from "./Reactions";
 
 type PostProps = {
   post: Post
@@ -12,6 +13,7 @@ type PostProps = {
 
 export default function PostView({ post }: PostProps) {
   const [like, setLike] = useState<boolean>();
+  const [open, setOpen] = useState(false);
 
   const likePost = async (postLikes: number, postId: string) => {
     try {
@@ -68,64 +70,6 @@ export default function PostView({ post }: PostProps) {
           :
           <VideoPost post={post} />
       }
-      <View style={{ height: 1, width: "100%", backgroundColor: "white" }} />
-      <View style={{ flexDirection: "row", }}>
-        <View
-          style={{
-            flex: 1,
-            margin: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              color: 'white',
-              marginRight: 10
-            }}
-          >
-            {post.likes}
-          </Text>
-
-          {
-            like
-              ?
-              <FontAwesome
-                name="heart"
-                size={24}
-                color={Colors.pickedYelllow}
-                onPress={() => {
-                  if (like) {
-                    setLike(false);
-                    dislikePost(post.likes, post.post_id)
-                  }
-                }}
-              />
-              :
-              <Pressable
-                onPress={() => {
-                  if (!like) {
-                    setLike(true);
-                    likePost(post.likes, post.post_id);
-                  }
-                }}
-              >
-                <FontAwesome
-                  name="heart-o"
-                  size={24}
-                  color={Colors.pickedYelllow}
-                />
-              </Pressable>
-          }
-        </View>
-        <View style={{ backgroundColor: "white", height: "100%", width: 1 }} />
-        <TouchableOpacity style={{ flex: 1, margin: 10 }}>
-          <Text style={{ textAlign: "center", fontWeight: "bold", color: 'white' }}>Comment</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   )
 }

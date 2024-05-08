@@ -7,6 +7,8 @@ import { sendToFirebase } from "../utils/firebase";
 import repository from "../repository";
 import { useAuth } from "../context/auth-context";
 import { router } from "expo-router";
+import { PostType } from "../types/post.type";
+import { uploadToFirebaseAndCreateFile } from "../redux/actions";
 
 type VideoPlayerProps = {
   videoPath: string,
@@ -15,16 +17,16 @@ type VideoPlayerProps = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-export default function VideoPlayer ({
-  videoPath, 
-  video, 
-  setVideo, 
+export default function VideoPlayer({
+  videoPath,
+  video,
+  setVideo,
   setIsLoading
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
-  const {width: screenWidth, height: screenHeight} = Dimensions.get("window")
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window")
 
   const delta_1 = screenWidth / video.width;
   const delta_2 = screenHeight / video.height;
@@ -43,16 +45,15 @@ export default function VideoPlayer ({
 
       setIsLoading(true);
 
-      // Get blob
-      const result = await fetch(`file://${video?.path}`)
-      const blob = await result.blob();
-      const url = await sendToFirebase(blob, user as string);
+      const file = await uploadToFirebaseAndCreateFile(`file://${video?.path}`, `post/${user}/`);
 
-      // Send to server
-      await repository.post(
-        '/posts/upload/video', 
-        {video_url : url, user_id: user}
-      );
+      const postDto = {
+        post_content_id: file.file_id,
+        user_id: user,
+        post_type: PostType.PHOTO
+      }
+
+      await repository.post('/posts/', postDto);
 
       // Reset states
       setVideo(undefined);
@@ -81,7 +82,6 @@ export default function VideoPlayer ({
         isLooping
         style={VIDEO}
       />
-      
       <View
         style={{
           position: 'absolute',
@@ -94,38 +94,38 @@ export default function VideoPlayer ({
           flexDirection: 'row'
         }}
       >
-        <AntDesign 
+        <AntDesign
           onPress={uploadVideo}
-          name="upload" 
-          size={30} 
-          color="black" 
+          name="upload"
+          size={30}
+          color="black"
           style={{
             position: 'absolute',
             bottom: 20,
             left: 10
           }}
         />
-        <AntDesign 
-          name={isPlaying ? "pausecircleo" :  "playcircleo"}
-          size={30} 
-          color="black" 
+        <AntDesign
+          name={isPlaying ? "pausecircleo" : "playcircleo"}
+          size={30}
+          color="black"
           style={{
             marginLeft: 'auto',
             marginRight: 'auto'
-          }} 
+          }}
           onPress={() => setIsPlaying(!isPlaying)}
         />
       </View>
-      <AntDesign 
+      <AntDesign
         onPress={() => setVideo(undefined)}
-        name="arrowleft" 
+        name="arrowleft"
         size={25}
         color="black"
         style={{
           position: 'absolute',
           top: 20,
           left: 15,
-        }} 
+        }}
       />
     </>
   )

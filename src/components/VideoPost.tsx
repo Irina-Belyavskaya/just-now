@@ -19,7 +19,6 @@ export default function VideoPost({ post, height = 340, width = null }: VideoPos
 
   const isPlaying = status?.isLoaded && status.isPlaying;
 
-
   const onPress = () => {
     if (!video.current) {
       return;

@@ -14,7 +14,6 @@ export const getUser = createAsyncThunk<User, { id: string }>(
   async ({ id }, thunkAPI) => {
     try {
       const response = await repository.get(`/users/${id}`, headers);
-      // console.log('RESPONSE IN GET USER', JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (e) {
       return thunkAPI.rejectWithValue('Can\'t get user info')

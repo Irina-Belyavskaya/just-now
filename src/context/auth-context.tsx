@@ -39,7 +39,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
   const router = useRouter();
 
-  const userState = useAppSelector(state => state.userReducer.userInfo);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -60,14 +59,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
       router.replace("/");
     }
   }, [accessToken, rootSegment, isLoadingAccessToken, isLoadingUser])
-
-  // useEffect(() => {
-  //   if (user && !userState) {
-  //     console.log('*********** GET USER IN AUTH CONTEXT ***********');
-  //     console.log('*********** USER STATE IN AUTH CONTEXT ***********', userState);
-  //     dispatch(getUser({ id: user }));
-  //   }
-  // }, [user, userState]);
 
   return (
     <AuthContext.Provider

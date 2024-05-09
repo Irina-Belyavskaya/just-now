@@ -70,6 +70,7 @@ export default function PostView({ post }: PostProps) {
           :
           <VideoPost post={post} />
       }
+      <Reactions />
     </View>
   )
 }

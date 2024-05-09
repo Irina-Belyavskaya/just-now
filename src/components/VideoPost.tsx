@@ -44,7 +44,7 @@ export default function VideoPost({ post, height = 340, width = null }: VideoPos
       />
       {!isPlaying && !isLoading && (
         <Feather
-          style={{ position: 'absolute', alignSelf: 'center', top: '40%' }}
+          style={{ position: 'absolute', alignSelf: 'center', top: '30%' }}
           name="play"
           size={70}
           color="rgba(255, 255, 255, 0.6)"
@@ -55,7 +55,7 @@ export default function VideoPost({ post, height = 340, width = null }: VideoPos
           size={'large'}
           color={Colors.yellow}
           style={{
-            position: 'absolute', alignSelf: 'center', top: '40%'
+            position: 'absolute', alignSelf: 'center', top: '30%'
           }}
         />
       }

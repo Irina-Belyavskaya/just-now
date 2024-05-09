@@ -63,7 +63,7 @@ const userSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, { payload }) => {
         state.pending.userInfo = false;
-        console.log('fulfilled!!!!!!!', payload)
+        console.log('DISPATCH GET USER')
         state.userInfo = payload;
       })
       .addCase(getUser.rejected, (state, action: any & { payload: any }) => {

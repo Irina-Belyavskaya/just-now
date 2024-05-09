@@ -9,6 +9,8 @@ import { useAuth } from "../context/auth-context";
 import { router } from "expo-router";
 import { PostType } from "../types/post.type";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
+import { useAppDispatch } from "../redux/hooks";
+import { getUser } from "../redux/user/users.actions";
 
 type VideoPlayerProps = {
   videoPath: string,
@@ -25,6 +27,7 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const { user } = useAuth();
+  const dispatch = useAppDispatch();
 
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window")
 
@@ -40,7 +43,7 @@ export default function VideoPlayer({
 
   const uploadVideo = async () => {
     try {
-      if (!video)
+      if (!video || !user)
         return;
 
       setIsLoading(true);
@@ -50,10 +53,12 @@ export default function VideoPlayer({
       const postDto = {
         post_content_id: file.file_id,
         user_id: user,
-        post_type: PostType.PHOTO
+        post_type: PostType.VIDEO
       }
 
       await repository.post('/posts/', postDto);
+
+      dispatch(getUser({ id: user }));
 
       // Reset states
       setVideo(undefined);

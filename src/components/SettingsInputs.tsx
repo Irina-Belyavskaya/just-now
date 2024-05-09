@@ -14,19 +14,16 @@ import { User } from '../types/user.type';
 import { Text } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
-import AppCamera from './CameraPage';
-import { sendToFirebase } from '../utils/firebase';
 import { useAuth } from '../context/auth-context';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { getUser } from '../redux/user/users.actions';
-import { uploadToFirebaseAndCreateFile, uploadToFirebaseAndUpdateFile } from '../redux/actions';
+import { uploadToFirebaseAndUpdateFile } from '../redux/actions';
 import TestAppCamera from './TestAppCamera';
 import { ImageResult } from 'expo-image-manipulator';
 import { FontAwesome } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import ModalWindow from './ModalWindow';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UpdateUserDTO } from '../redux/sign-up/types/update-info.dto';
+import LoaderScreen from '../app/loader';
 
 export default function SettingInputs() {
   const { user } = useAuth();
@@ -78,12 +75,6 @@ export default function SettingInputs() {
 
   const handleSubmitForm = async ({ nickname, email, currentPassword, newPassword }: FieldValues) => {
     try {
-      // console.log(nickname)
-      // console.log(email)
-      // console.log(currentPassword)
-      // console.log(newPassword)
-      // console.log(image)
-
       setIsLoading(true);
 
       let dto: UpdateUserDTO = {
@@ -96,16 +87,7 @@ export default function SettingInputs() {
         dto.user_currentPassword = currentPassword;
       }
 
-      const { data } = await repository.put(`/users/${user}`, dto);
-      console.log("data: ", JSON.stringify(data, null, 2))
-
-      if (data.status && data.status !== 201) {
-        setErrorMessage(data.message);
-        setIsLoading(false);
-        return;
-      }
-      // console.log(JSON.stringify(data, null, 2))
-      console.log(image !== userState?.file.file_url)
+      await repository.put(`/users/${user}`, dto);
 
       if (image && image !== userState?.file.file_url && user && userState) {
         console.log('here')
@@ -143,9 +125,8 @@ export default function SettingInputs() {
         />
       }
 
-      {!camera &&
+      {!camera && !isLoading &&
         <ScrollView style={{ flex: 1, backgroundColor: Colors.pickedYelllow }}>
-
           <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: true }} />
             {!isLoading && errorMessage &&
@@ -266,8 +247,9 @@ export default function SettingInputs() {
             </Formik>
           </SafeAreaView >
         </ScrollView>
-
       }
+
+      {isLoading && <LoaderScreen />}
     </>
   )
 }
@@ -278,6 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.pickedYelllow,
+    paddingTop: 20
   },
   button: {
     borderRadius: 30,

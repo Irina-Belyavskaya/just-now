@@ -1,7 +1,7 @@
 import { ImageBackground, StyleSheet } from 'react-native';
 import Sizes from '@/src/constants/Sizes';
 import ProfileHead from '@/src/components/ProfileHead';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
@@ -9,7 +9,8 @@ import LoaderScreen from '../../loader';
 import { Post } from '@/src/types/post.type';
 import ProfileBottom from '@/src/components/ProfileBottom';
 import { useIsFocused } from '@react-navigation/native';
-import { useAppSelector } from '@/src/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
+import { getUser } from '@/src/redux/user/users.actions';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -26,6 +27,13 @@ export default function ProfileScreen() {
   const [refreshCount, setRefreshCount] = useState(0);
 
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!userInfo && user) {
+      dispatch(getUser({ id: user }));
+    }
+  }, [userInfo, user])
 
   useEffect(() => {
     if (isFocused) {
@@ -51,24 +59,26 @@ export default function ProfileScreen() {
     })();
   }, [])
 
+  const getUserPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      console.log('GET POSTS INFO FOR PROFILE');
+      const { data } = await repository.get(`posts/profile-posts-info/${user}`);
+      setNumberOfPhotoPosts(data.numberOfPhotoPosts);
+      setNumberOfVideoPosts(data.numberOfVideoPosts);
+      setUserPosts(data.userPosts);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  }, [])
+
   useEffect(() => {
     if (!user)
       return;
 
-    (async () => {
-      try {
-        setLoading(true);
-        console.log('GET POSTS INFO FOR PROFILE');
-        const { data } = await repository.get(`posts/profile-posts-info/${user}`);
-        setNumberOfPhotoPosts(data.numberOfPhotoPosts);
-        setNumberOfVideoPosts(data.numberOfVideoPosts);
-        setUserPosts(data.userPosts);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    })();
+    getUserPosts();
   }, [])
 
   return (
@@ -89,7 +99,10 @@ export default function ProfileScreen() {
             numberOfVideo={numberOfVideoPosts}
             isPersonalAccount
           />
-          <ProfileBottom userPosts={userPosts} />
+          <ProfileBottom
+            userPosts={userPosts}
+            getUserPosts={getUserPosts}
+          />
         </ImageBackground>
       }
     </>

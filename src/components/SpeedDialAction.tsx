@@ -7,7 +7,7 @@ const speedDialActionSize = 50;
 
 type SpeedDialActionProps = {
   iconName: TypeOfReactions,
-  onPress: (reaction: TypeOfReactions) => void
+  onPress: (reaction: TypeOfReactions) => void,
 }
 
 export default function SpeedDialAction({ iconName, onPress }: SpeedDialActionProps) {

@@ -12,6 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
+import { ErrorHandler } from '../components/ErrorBoundary';
+import { StatusBar } from 'expo-status-bar';
 
 export {
   ErrorBoundary,
@@ -69,16 +71,19 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Animated.View style={{ flex: 1 }} entering={FadeIn}>
-              <Slot />
-            </Animated.View>
-          </GestureHandlerRootView>
-        </ThemeProvider>
-      </AuthProvider>
-    </Provider>
+    <ErrorHandler>
+      <Provider store={store}>
+        <AuthProvider>
+          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Animated.View style={{ flex: 1 }} entering={FadeIn}>
+                <StatusBar style='light' />
+                <Slot />
+              </Animated.View>
+            </GestureHandlerRootView>
+          </ThemeProvider>
+        </AuthProvider>
+      </Provider>
+    </ErrorHandler>
   );
 }

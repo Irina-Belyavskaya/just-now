@@ -35,11 +35,11 @@ export default function ProfileScreen() {
     }
   }, [userInfo, user])
 
-  useEffect(() => {
-    if (isFocused) {
-      setRefreshCount((prevCount) => prevCount + 1);
-    }
-  }, [isFocused]);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     setRefreshCount((prevCount) => prevCount + 1);
+  //   }
+  // }, [isFocused]);
 
   useEffect(() => {
     if (!user)

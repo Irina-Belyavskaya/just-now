@@ -2,37 +2,42 @@ import { FontAwesome } from "@expo/vector-icons";
 import { View, TouchableOpacity, Image, Text, Pressable } from "react-native";
 import { Post, PostType } from "../types/post.type";
 import VideoPost from "./VideoPost";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import repository from "../repository";
 import Reactions from "./Reactions";
+import { useAuth } from "../context/auth-context";
+import Entypo from '@expo/vector-icons/Entypo';
+import { Reaction } from "../types/reaction.type";
 
 type PostProps = {
   post: Post
 }
 
+function convertToKebabCase(input: string): any {
+  const lowerCaseInput = input.toLowerCase();
+  const words = lowerCaseInput.split('_');
+  const kebabCaseString = words.join('-');
+  return kebabCaseString;
+}
+
 export default function PostView({ post }: PostProps) {
-  const [like, setLike] = useState<boolean>();
-  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const [reaction, setReaction] = useState<Reaction>();
 
-  const likePost = async (postLikes: number, postId: string) => {
-    try {
-      const dto = {
-        likes: postLikes + 1
+  useEffect(() => {
+    if (!user || !post)
+      return;
+
+    (async () => {
+      try {
+        const { data } = await repository.get(`/reactions/${post.post_id}/${user}`);
+        setReaction(data);
+      } catch (error) {
+        console.error(error);
       }
-      await repository.post(`/posts/set-reaction/${postId}`, dto);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const dislikePost = async (postLikes: number, postId: string) => {
-    try {
-      await repository.post(`/posts/set-reaction/${postId}`, { likes: postLikes - 1 });
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    })()
+  }, [])
 
   return (
     <View
@@ -70,7 +75,21 @@ export default function PostView({ post }: PostProps) {
           :
           <VideoPost post={post} />
       }
-      <Reactions />
+      {reaction &&
+        <Entypo
+          name={convertToKebabCase(reaction.reaction_type)}
+          size={30}
+          color={Colors.pickedYelllow}
+          style={{
+            position: 'absolute',
+            bottom: 10,
+            left: 10,
+            marginLeft: 10,
+            marginBottom: 10
+          }}
+        />
+      }
+      <Reactions postId={post.post_id} setReaction={setReaction} />
     </View>
   )
 }

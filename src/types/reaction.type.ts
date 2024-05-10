@@ -4,3 +4,11 @@ export enum TypeOfReactions {
   EMOJI_NEUTRAL = 'emoji-neutral',
   EMOJI_SAD = 'emoji-sad'
 }
+
+export type Reaction = {
+  post_id: string,
+  user_id: string,
+  reaction_type: TypeOfReactions,
+  reaction_created_at: string,
+  reaction_updated_at: string
+}

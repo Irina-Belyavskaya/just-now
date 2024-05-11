@@ -10,27 +10,28 @@ import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
 import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { Badge } from 'react-native-paper';
+import { Text } from '@/src/components/Themed';
 
 export default function TabLayout() {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [isNotifications, setIsNotifications] = useState(false);
 
   useEffect(() => {
-    if (!user) 
+    if (!user)
       return;
 
-    (async() => {
+    (async () => {
       try {
         console.log('GET USER NOTIFICATIONS IN TABS');
-        const {data} = await repository.get(`/friend-requests/notifications/${user}`);
-        if (data && data.length > 0) 
+        const { data } = await repository.get(`/friend-requests/notifications/${user}`);
+        if (data && data.length > 0)
           setIsNotifications(true);
-        else 
+        else
           setIsNotifications(false);
       } catch (error) {
         console.error(error);
       }
-    })();    
+    })();
   }, [])
 
   return (
@@ -39,23 +40,23 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.pickedYelllow,
         headerShown: useClientOnlyValue(false, true),
         tabBarStyle: { backgroundColor: Colors.black },
-        headerStyle: { backgroundColor: Colors.black},
+        headerStyle: { backgroundColor: Colors.black },
         headerTintColor: Colors.white
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title:'Home',
-          tabBarLabel:() => {return null},
+          title: 'Home',
+          tabBarLabel: () => { return null },
           tabBarIcon: ({ color }) => <AntDesign name="home" color={color} size={25} />,
           headerRight: () => (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
               <Link href="/chats" asChild>
                 <Pressable>
                   {({ pressed }) => (
-                    <Feather 
+                    <Feather
                       name="message-circle"
-                      size={25}                   
+                      size={25}
                       color={'white'}
                       style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                     />
@@ -66,18 +67,18 @@ export default function TabLayout() {
                 <Pressable>
                   {({ pressed }) => (
                     <>
-                      <Badge 
-                        visible={isNotifications} 
-                        size={10} 
+                      <Badge
+                        visible={isNotifications}
+                        size={10}
                         style={{
                           position: 'absolute',
                           left: '35%',
                           top: '-10%',
                           zIndex: 10
-                        }} 
+                        }}
                       />
-                      <Ionicons 
-                        name="notifications" 
+                      <Ionicons
+                        name="notifications"
                         size={25}
                         color={'white'}
                         style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
@@ -93,48 +94,66 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title:'Search',
-          tabBarLabel:() => {return null},
+          title: 'Search',
+          tabBarLabel: () => { return null },
           tabBarIcon: ({ color }) => <Feather name="search" color={color} size={25} />,
         }}
       />
       <Tabs.Screen
         name="camera"
         options={{
-          title:'Camera',
-          tabBarLabel:() => {return null},
-          tabBarIcon: ({ color }) => <Feather name="camera" color={color} size={24}/>,
+          title: 'Camera',
+          tabBarLabel: () => { return null },
+          tabBarIcon: ({ color }) => <Feather name="camera" color={color} size={24} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title:'Profile',
-          tabBarLabel:() => {return null},
-          tabBarIcon: ({ color }) => <Octicons name="person" color={color} size={25} />,
+          title: 'Profile',
+          tabBarLabel: () => { return null },
+          tabBarIcon: ({ color }) =>
+            <>
+              <View
+                style={{
+                  backgroundColor: Colors.pickedYelllow,
+                  paddingHorizontal: 3,
+                  borderRadius: 100,
+                  transform: [{ rotate: '10deg' }],
+                  marginLeft: 10
+                }}
+              >
+                <Text style={{ fontSize: 9 }}>Upgrade</Text>
+              </View>
+              <Octicons
+                name="person"
+                color={color}
+                size={25}
+              />
+            </>,
           headerRight: () => (
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent' }}>
               <Link href="/settings" asChild>
                 <Pressable>
                   {({ pressed }) => (
-                    <AntDesign 
-                      name="setting" 
-                      size={25} 
-                      color="white" 
+                    <AntDesign
+                      name="setting"
+                      size={25}
+                      color="white"
                       style={{ marginRight: 20, opacity: pressed ? 0.5 : 1 }}
-                      />
+                    />
                   )}
                 </Pressable>
               </Link>
               <Link href="/sign-out" asChild>
                 <Pressable>
                   {({ pressed }) => (
-                    <AntDesign 
-                      name="logout" 
-                      size={22} 
-                      color="white" 
+                    <AntDesign
+                      name="logout"
+                      size={22}
+                      color="white"
                       style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                      />
+                    />
                   )}
                 </Pressable>
               </Link>

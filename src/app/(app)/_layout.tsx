@@ -6,14 +6,18 @@ export default function AppEntry() {
     <Stack>
       <Stack.Screen
         name="(tabs)"
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          navigationBarColor: Colors.black
+        }}
       />
       <Stack.Screen
         name="chats"
         options={{
           presentation: 'modal',
           headerStyle: { backgroundColor: Colors.black },
-          headerTintColor: Colors.white
+          headerTintColor: Colors.white,
+          navigationBarColor: Colors.black
         }}
       />
       <Stack.Screen
@@ -23,6 +27,7 @@ export default function AppEntry() {
           headerStyle: { backgroundColor: Colors.black },
           headerTintColor: Colors.white,
           headerShown: true,
+          navigationBarColor: Colors.black
         }}
       />
       <Stack.Screen
@@ -30,7 +35,8 @@ export default function AppEntry() {
         options={{
           presentation: 'modal',
           headerStyle: { backgroundColor: Colors.black },
-          headerTintColor: Colors.white
+          headerTintColor: Colors.white,
+          navigationBarColor: Colors.black
         }}
       />
       <Stack.Screen
@@ -38,7 +44,17 @@ export default function AppEntry() {
         options={{
           presentation: 'modal',
           headerStyle: { backgroundColor: Colors.black },
-          headerTintColor: Colors.white
+          headerTintColor: Colors.white,
+          navigationBarColor: Colors.black
+        }}
+      />
+      <Stack.Screen
+        name="paywall"
+        options={{
+          presentation: 'modal',
+          headerStyle: { backgroundColor: Colors.black },
+          headerTintColor: Colors.white,
+          navigationBarColor: Colors.black
         }}
       />
     </Stack>

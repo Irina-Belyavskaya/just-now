@@ -11,6 +11,8 @@ import ProfileBottom from '@/src/components/ProfileBottom';
 import { useIsFocused } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { getUser } from '@/src/redux/user/users.actions';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '@/src/constants/Colors';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -82,16 +84,12 @@ export default function ProfileScreen() {
   }, [])
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.pickedYelllow }}>
       {isLoading &&
         <LoaderScreen />
       }
       {!isLoading && userInfo && userPosts &&
-        <ImageBackground
-          style={styles.backgroundImage}
-          source={require("../../../../assets/yellow_background.jpg")}
-          blurRadius={8}
-        >
+        <>
           <ProfileHead
             userInfo={userInfo}
             numberOfUserFriends={numberOfUserFriends}
@@ -103,9 +101,9 @@ export default function ProfileScreen() {
             userPosts={userPosts}
             getUserPosts={getUserPosts}
           />
-        </ImageBackground>
+        </>
       }
-    </>
+    </SafeAreaView>
   );
 }
 

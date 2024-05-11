@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/auth-context";
 import repository from "../repository";
 import { User } from "../types/user.type";
 import LoaderScreen from "../app/loader";
 import { router } from "expo-router";
+import Colors from "../constants/Colors";
+import { AntDesign } from '@expo/vector-icons';
 
 type ProfileHeadProps = {
   userInfo: User,
@@ -24,6 +26,37 @@ export default function ProfileHead({
   return (
     <View style={styles.main}>
       <View style={styles.imageContainer}>
+        {isPersonalAccount &&
+          <TouchableOpacity
+            onPress={() => router.push('/paywall')}
+            style={{
+              backgroundColor: Colors.black,
+              paddingHorizontal: 20,
+              paddingVertical: 5,
+              borderRadius: 100,
+              transform: [{ rotate: '20deg' }],
+              marginLeft: 10,
+              position: 'absolute',
+              right: 50,
+              top: 0,
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+            activeOpacity={0.8}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                color: Colors.white,
+                marginRight: 5
+              }}
+            >
+              Upgrade
+            </Text>
+            <AntDesign name="star" size={24} color={Colors.white} />
+          </TouchableOpacity>
+        }
         <Image
           style={styles.userImage}
           source={{ uri: userInfo.file.file_url }}

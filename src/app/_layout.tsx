@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import { store } from '../redux/store';
 import { ErrorHandler } from '../components/ErrorBoundary';
 import { StatusBar } from 'expo-status-bar';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 export {
   ErrorBoundary,
@@ -67,22 +68,26 @@ export default function RootLayout() {
   );
 }
 
+const stripeKey = 'pk_test_51N6d4dBpzz7pK9M26cTkZp7vx8Md2hsbY8fM8ManwiXMcr87zNdTpttmr3QhsfsLZA27nIiqLBqHYQm8HZxoZdwZ00fO59Zv7I';
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
     <ErrorHandler>
       <Provider store={store}>
-        <AuthProvider>
-          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <Animated.View style={{ flex: 1 }} entering={FadeIn}>
-                <StatusBar style='light' />
-                <Slot />
-              </Animated.View>
-            </GestureHandlerRootView>
-          </ThemeProvider>
-        </AuthProvider>
+        <StripeProvider publishableKey={stripeKey}>
+          <AuthProvider>
+            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <Animated.View style={{ flex: 1 }} entering={FadeIn}>
+                  <StatusBar style='light' />
+                  <Slot />
+                </Animated.View>
+              </GestureHandlerRootView>
+            </ThemeProvider>
+          </AuthProvider>
+        </StripeProvider>
       </Provider>
     </ErrorHandler>
   );

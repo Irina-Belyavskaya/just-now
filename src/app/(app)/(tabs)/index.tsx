@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
 import FeedScreen from '@/src/components/Feed';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
 import { useAuth } from '@/src/context/auth-context';
@@ -26,8 +26,14 @@ export default function TabOneScreen() {
       }));
       setLoading(false);
     } catch (error) {
-      console.error(error);
       setLoading(false);
+
+      const err = error as any;
+      console.error('ERROR IN GET POSTS: ', err.message);
+      console.error(err.code);
+      if (err.code === 401) {
+        router.replace('/');
+      }
     }
   }, [])
 

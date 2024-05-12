@@ -21,7 +21,6 @@ export default function PhotoViewer({
   handlePhoto,
   navigate
 }: PhotoViewerProps) {
-  const { user } = useAuth();
 
   const uploadPhoto = async () => {
     try {
@@ -29,9 +28,6 @@ export default function PhotoViewer({
         return;
 
       setIsLoading(true);
-      // const result = await fetch(`file://${photo?.uri}`)
-      // const blob = await result.blob();
-      // const file = await uploadToFirebaseAndCreateFile(`file://${photo?.uri}`, 'profile');
       await handlePhoto(`file://${photo?.uri}`);
       setPhoto(undefined);
       setIsLoading(false);
@@ -44,8 +40,8 @@ export default function PhotoViewer({
       router.setParams({ refresh: 'true' })
     } catch (error) {
       const err = error as any;
-      console.error(err.message);
-      console.error(err.code);
+      console.error('ERROR IN uploadPhoto: ', err.message);
+      console.error('ERROR CODE IN uploadPhoto: ', err.code);
       setIsLoading(false);
     }
   }

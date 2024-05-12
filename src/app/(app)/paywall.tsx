@@ -13,12 +13,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import PaywallTextBlock from "@/src/components/PaywallTextBlock";
 import LottieView from "lottie-react-native";
 import Animated from "react-native-reanimated";
+import { RoleType } from "@/src/types/role.type";
+import { useAppDispatch } from "@/src/redux/hooks";
+import { setUserInfo } from "@/src/redux/user/user.reducer";
+import { useAuth } from "@/src/context/auth-context";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
 export default function Paywall() {
-
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const dispatch = useAppDispatch();
+  const { user } = useAuth();
 
   const handleUpgrade = async () => {
     try {
@@ -29,19 +34,29 @@ export default function Paywall() {
       // 2. Initialize the Payment sheet
       const initResponse = await initPaymentSheet({
         merchantDisplayName: 'JustNow',
-        paymentIntentClientSecret: data,
+        paymentIntentClientSecret: data
       });
 
       console.log("initResponse: ", JSON.stringify(initResponse, null, 2));
 
-
+      if (initResponse.error) {
+        console.error('ERROR IN handleUpgrade: ', initResponse.error.localizedMessage);
+        return;
+      }
       // 3. Present the Payment Sheet from Stripe
       const paymentResponse = await presentPaymentSheet();
 
       console.log("paymentResponse: ", JSON.stringify(paymentResponse, null, 2));
 
-      // 4. If payment ok -> create the order
-      router.replace('/');
+      if (paymentResponse.error) {
+        console.error('ERROR IN handleUpgrade: ', paymentResponse.error.localizedMessage);
+        return;
+      }
+
+      // 4. If payment ok 
+      const { data: updatedUser } = await repository.put(`/users/upgrade/${user}`, { role_type: RoleType.USER_MONTHLY_PRO })
+      dispatch(setUserInfo(updatedUser));
+      router.replace('/profile');
     } catch (error) {
       console.error('ERROR IN handleUpgrade: ', error);
     }

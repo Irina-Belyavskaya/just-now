@@ -7,12 +7,13 @@ import LoaderScreen from "../app/loader";
 import { router } from "expo-router";
 import Colors from "../constants/Colors";
 import { AntDesign } from '@expo/vector-icons';
+import { RoleType } from "../types/role.type";
 
 type ProfileHeadProps = {
   userInfo: User,
   numberOfUserFriends?: number,
-  numberOfPhotos?: number,
-  numberOfVideo?: number,
+  numberOfPhotos: number,
+  numberOfVideo: number,
   isPersonalAccount?: boolean,
 }
 
@@ -37,7 +38,7 @@ export default function ProfileHead({
               transform: [{ rotate: '20deg' }],
               marginLeft: 10,
               position: 'absolute',
-              right: 50,
+              right: 65,
               top: 0,
               zIndex: 10,
               display: 'flex',
@@ -52,9 +53,12 @@ export default function ProfileHead({
                 marginRight: 5
               }}
             >
-              Upgrade
+              {userInfo.role.role_type === RoleType.USER_START && 'Upgrade'}
+              {userInfo.role.role_type === RoleType.USER_MONTHLY_PRO && 'PRO'}
             </Text>
-            <AntDesign name="star" size={24} color={Colors.white} />
+            {userInfo.role.role_type === RoleType.USER_START &&
+              <AntDesign name="star" size={24} color={Colors.white} />
+            }
           </TouchableOpacity>
         }
         <Image
@@ -70,22 +74,31 @@ export default function ProfileHead({
           </Text>
         }
       </View>
-      {isPersonalAccount &&
-        <View style={styles.middleSectionTextContainer}>
-          <View style={styles.middleSectionText}>
-            <Text style={styles.toptext}>Friends</Text>
-            <Text style={styles.bottomtext}>{numberOfUserFriends}</Text>
-          </View>
-          <View style={styles.middleSectionText}>
-            <Text style={styles.toptext}>Photos</Text>
-            <Text style={styles.bottomtext}>{numberOfPhotos}</Text>
-          </View>
-          <View style={styles.middleSectionText}>
-            <Text style={styles.toptext}>Video</Text>
-            <Text style={styles.bottomtext}>{numberOfVideo}</Text>
-          </View>
+      <View style={styles.middleSectionTextContainer}>
+        <View style={styles.middleSectionText}>
+          <Text style={styles.toptext}>Friends</Text>
+          <Text style={styles.bottomtext}>{numberOfUserFriends}</Text>
         </View>
-      }
+        {isPersonalAccount
+          ?
+          <>
+            <View style={styles.middleSectionText}>
+              <Text style={styles.toptext}>Photos</Text>
+              <Text style={styles.bottomtext}>{numberOfPhotos}</Text>
+            </View>
+            <View style={styles.middleSectionText}>
+              <Text style={styles.toptext}>Video</Text>
+              <Text style={styles.bottomtext}>{numberOfVideo}</Text>
+            </View>
+          </>
+          :
+          <View style={styles.middleSectionText}>
+            <Text style={styles.toptext}>Posts</Text>
+            <Text style={styles.bottomtext}>{numberOfPhotos + numberOfVideo}</Text>
+          </View>
+        }
+
+      </View>
     </View>
   );
 }

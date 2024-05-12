@@ -88,20 +88,21 @@ export default function ProfileScreen() {
       {isLoading &&
         <LoaderScreen />
       }
-      {!isLoading && userInfo && userPosts &&
-        <>
-          <ProfileHead
-            userInfo={userInfo}
-            numberOfUserFriends={numberOfUserFriends}
-            numberOfPhotos={numberOfPhotoPosts}
-            numberOfVideo={numberOfVideoPosts}
-            isPersonalAccount
-          />
-          <ProfileBottom
-            userPosts={userPosts}
-            getUserPosts={getUserPosts}
-          />
-        </>
+      {!isLoading && userInfo &&
+        <ProfileHead
+          userInfo={userInfo}
+          numberOfUserFriends={numberOfUserFriends}
+          numberOfPhotos={numberOfPhotoPosts}
+          numberOfVideo={numberOfVideoPosts}
+          isPersonalAccount
+        />
+      }
+
+      {!isLoading && userPosts && userPosts.length > 0 &&
+        <ProfileBottom
+          userPosts={userPosts}
+          getUserPosts={getUserPosts}
+        />
       }
     </SafeAreaView>
   );

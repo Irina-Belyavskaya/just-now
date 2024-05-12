@@ -1,4 +1,5 @@
 import { File } from "./file.type";
+import { Role } from "./role.type";
 
 export type User = {
   user_id: string;
@@ -9,4 +10,5 @@ export type User = {
   user_entry_date: string;
   user_created_at: string;
   file: File;
+  role: Role;
 }

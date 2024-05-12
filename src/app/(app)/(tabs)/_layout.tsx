@@ -11,10 +11,13 @@ import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { Badge } from 'react-native-paper';
 import { Text } from '@/src/components/Themed';
+import { useAppSelector } from '@/src/redux/hooks';
+import { RoleType } from '@/src/types/role.type';
 
 export default function TabLayout() {
   const { user } = useAuth();
   const [isNotifications, setIsNotifications] = useState(false);
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   useEffect(() => {
     if (!user)
@@ -123,7 +126,10 @@ export default function TabLayout() {
                   marginLeft: 10
                 }}
               >
-                <Text style={{ fontSize: 9 }}>Upgrade</Text>
+                <Text style={{ fontSize: 9 }}>
+                  {userInfo?.role.role_type === RoleType.USER_START && 'Upgrade'}
+                  {userInfo?.role.role_type === RoleType.USER_MONTHLY_PRO && 'PRO'}
+                </Text>
               </View>
               <Octicons
                 name="person"

@@ -8,9 +8,10 @@ import { setNickname } from "../redux/sign-up/sign-up.reducer";
 import { useState } from "react";
 import SignUpButtons from "./SignUpButtons";
 import repository from "../repository";
+import { router } from "expo-router";
 
-export default function SignUpNicknameScreen ({
-  handleNext, 
+export default function SignUpNicknameScreen({
+  handleNext,
   onMain
 }: BaseStepType) {
   const dispatch = useAppDispatch();
@@ -22,14 +23,14 @@ export default function SignUpNicknameScreen ({
   }
 
   const schema = yup.object().shape({
-    nickname:yup.string()
+    nickname: yup.string()
       .required('Required')
       .min(2, 'Nickname must contain at least 2 characters'),
   });
 
   const handleSubmitForm = async ({ nickname }: FieldValues) => {
     try {
-      const {data: isTaken} = await repository.get(`/auth/nickname-is-taken/${nickname}`);
+      const { data: isTaken } = await repository.get(`/auth/nickname-is-taken/${nickname}`);
       if (isTaken) {
         setIsUniquenessError(true);
         return;
@@ -40,6 +41,9 @@ export default function SignUpNicknameScreen ({
       const err = error as any;
       console.error(err.message);
       console.error(err.code);
+      if (err.code === 401) {
+        router.replace('/');
+      }
     }
   }
 
@@ -52,36 +56,36 @@ export default function SignUpNicknameScreen ({
       }}
       validationSchema={schema}
     >
-      {({ 
-        handleChange, 
-        handleBlur, 
-        handleSubmit, 
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
         setFieldValue,
-        values, 
-        errors, 
-        touched 
+        values,
+        errors,
+        touched
       }) => (
-      <>
-        <AppInput
-          onChangeText={(text) => {
-            setFieldValue('nickname', text);
-            setIsUniquenessError(false);
-          }}
-          onBlur={handleBlur('nickname')}
-          value={values.nickname}             
-          placeholder={'Nickname'}
-          isTouched={touched.nickname || isUniquenessError}
-          errorMessage={errors.nickname || ( isUniquenessError ? 'This nickname is already taken' : '')}
-        />
-        <SignUpButtons
-          handleNext={handleNext}
-          onMain={onMain}
-          handleSubmit={() => handleSubmit()}
-        />
-        
-      </>
-    )}
-  </Formik>
+        <>
+          <AppInput
+            onChangeText={(text) => {
+              setFieldValue('nickname', text);
+              setIsUniquenessError(false);
+            }}
+            onBlur={handleBlur('nickname')}
+            value={values.nickname}
+            placeholder={'Nickname'}
+            isTouched={touched.nickname || isUniquenessError}
+            errorMessage={errors.nickname || (isUniquenessError ? 'This nickname is already taken' : '')}
+          />
+          <SignUpButtons
+            handleNext={handleNext}
+            onMain={onMain}
+            handleSubmit={() => handleSubmit()}
+          />
+
+        </>
+      )}
+    </Formik>
   )
 }
 

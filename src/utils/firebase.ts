@@ -43,7 +43,7 @@ export const sendToFirebase = async (blob: Blob, path: string): Promise<Firebase
     }
     return null;
   } catch (error) {
-    console.log(error);
+    console.log('ERROR IN sendToFirebase: ', error);
     return null;
   }
 }
@@ -54,6 +54,6 @@ export const deleteFileFromFirebase = async (fullPath: string) => {
   deleteObject(desertRef).then(() => {
     return;
   }).catch((error) => {
-    console.log(error);
+    console.log('ERROR IN deleteFileFromFirebase: ', error);
   });
 }

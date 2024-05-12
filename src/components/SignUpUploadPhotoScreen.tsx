@@ -85,8 +85,8 @@ export default function SignUpUploadPhotoScreen({
       router.replace('/')
     } catch (error) {
       const err = error as any;
-      console.error(err.message);
-      console.error(err.code);
+      console.error('ERROR IN SIGN UP: ', err.message);
+      console.error('ERROR CODE IN SIGN UP: ', err.code);
       setIsLoading(false);
     }
   }

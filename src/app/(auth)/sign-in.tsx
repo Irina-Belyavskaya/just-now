@@ -51,7 +51,13 @@ export default function SignIn() {
       setErrorMessage('Incorrect email or password');
       setModalVisible(true);
       setIsLoading(false);
-      console.log("ERROR IN SIGN IN: ", JSON.stringify(error, null, 2));
+
+      const err = error as any;
+      console.error('ERROR IN SIGN IN: ', err.message);
+      console.error(err.code);
+      if (err.code === 401) {
+        router.replace('/');
+      }
     }
   }
 

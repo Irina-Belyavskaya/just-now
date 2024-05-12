@@ -14,15 +14,18 @@ import { Feather } from '@expo/vector-icons';
 import { FriendRequestStatus, FriendRequest } from '@/src/types/friend-requests.type';
 
 export default function UserScreen() {
-  const {user_id} = useLocalSearchParams<{ user_id: string }>();
-  const {user} = useAuth();
+  const { user_id } = useLocalSearchParams<{ user_id: string }>();
+  const { user } = useAuth();
 
   const [userInfo, setUserInfo] = useState<User>();
   const [friendRequest, setFriendRequest] = useState<FriendRequest>();
   const [isLoading, setLoading] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const [isRequestSent, setIsRequestSent] = useState(false);
- 
+  const [numberOfPhotoPosts, setNumberOfPhotoPosts] = useState<number>(0);
+  const [numberOfVideoPosts, setNumberOfVideoPosts] = useState<number>(0);
+  const [numberOfUserFriends, setNumberOfUserFriends] = useState<number>(0);
+
   const checkFriendshipStatus = useCallback(async () => {
     try {
       setLoading(true);
@@ -32,18 +35,19 @@ export default function UserScreen() {
         friend_id: user_id
       }
       console.log('CHECK FRIENDSHIP STATUS');
-      const {data} = await repository.post('/friend-requests/check-friendship-status', body);
+      const { data } = await repository.post('/friend-requests/check-friendship-status', body);
+      console.log(data)
       setFriendRequest(data);
       if (!data) {
         setIsFriend(false);
         setIsRequestSent(false);
       }
-      if (data.friend_request_status === FriendRequestStatus.rejected) setIsFriend(false);
-      if (data.friend_request_status === FriendRequestStatus.request) {
+
+      if (data.friend_request_status === FriendRequestStatus.REQUEST) {
         setIsFriend(false);
         setIsRequestSent(true);
       }
-      if (data.friend_request_status === FriendRequestStatus.accepted) setIsFriend(true);
+      if (data.friend_request_status === FriendRequestStatus.ACCEPTED) setIsFriend(true);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -55,7 +59,7 @@ export default function UserScreen() {
     try {
       setLoading(true);
       console.log('GET USER PROFILE');
-      const {data} = await repository.get(`/users/${user_id}`);
+      const { data } = await repository.get(`/users/${user_id}`);
       setUserInfo(data);
       setLoading(false);
     } catch (error) {
@@ -64,13 +68,49 @@ export default function UserScreen() {
     }
   }, [user_id])
 
+  const getUserPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      console.log('GET POSTS INFO FOR PROFILE');
+      const { data } = await repository.get(`posts/profile-posts-info/${user}`);
+      setNumberOfPhotoPosts(data.numberOfPhotoPosts);
+      setNumberOfVideoPosts(data.numberOfVideoPosts);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  }, [])
+
   useEffect(() => {
+    if (!user)
+      return;
+
     getUserProfile();
+    getUserPosts();
   }, [getUserProfile])
 
   useEffect(() => {
     checkFriendshipStatus();
   }, [checkFriendshipStatus])
+
+  useEffect(() => {
+    if (!user)
+      return;
+
+    (async () => {
+      try {
+        setLoading(true);
+        console.log('GET FREINDS');
+        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user}`);
+        setNumberOfUserFriends(userFriends.length);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    })();
+  }, [])
 
   const handleAddFriend = async () => {
     try {
@@ -103,10 +143,10 @@ export default function UserScreen() {
       setLoading(false);
     }
   }
-  
+
   return (
     <>
-      {isLoading && 
+      {isLoading &&
         <LoaderScreen />
       }
       {!isLoading && userInfo &&
@@ -117,23 +157,30 @@ export default function UserScreen() {
         >
           {isFriend &&
             <TouchableOpacity style={styles.requestWrap} onPress={handleRemoveFriend}>
-              <Text style={{textTransform: 'uppercase', marginRight: 10}}>Remove friend</Text>
-              <Ionicons name="person-remove" size={24} color="black"/>
+              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Remove friend</Text>
+              <Ionicons name="person-remove" size={24} color="black" />
             </TouchableOpacity>
           }
           {!isFriend && !isRequestSent &&
             <TouchableOpacity style={styles.requestWrap} onPress={handleAddFriend}>
-              <Text style={{textTransform: 'uppercase', marginRight: 10}}>Send Request</Text>
-              <Ionicons name="person-add" size={24} color="black"/>
+              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Send Request</Text>
+              <Ionicons name="person-add" size={24} color="black" />
             </TouchableOpacity>
           }
           {!isFriend && isRequestSent &&
             <View style={styles.requestWrap}>
-              <Text style={{textTransform: 'uppercase', marginRight: 10}}>Waiting for answer</Text>
+              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Waiting for answer</Text>
               <Feather name="loader" size={24} color="black" />
             </View>
           }
-          { userInfo && <ProfileHead userInfo={userInfo} /> }
+          {userInfo &&
+            <ProfileHead
+              userInfo={userInfo}
+              numberOfUserFriends={numberOfUserFriends}
+              numberOfPhotos={numberOfPhotoPosts}
+              numberOfVideo={numberOfVideoPosts}
+            />
+          }
         </ImageBackground>
       }
     </>

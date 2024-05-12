@@ -14,7 +14,6 @@ export type FriendRequestSenders = {
 }
 
 export enum FriendRequestStatus {
-  request="request",
-  accepted="accepted",
-  rejected="rejected",
+  REQUEST = "REQUEST",
+  ACCEPTED = "ACCEPTED",
 }

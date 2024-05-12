@@ -9,6 +9,7 @@ import Reactions from "./Reactions";
 import { useAuth } from "../context/auth-context";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Reaction } from "../types/reaction.type";
+import { router } from "expo-router";
 
 type PostProps = {
   post: Post
@@ -34,7 +35,12 @@ export default function PostView({ post }: PostProps) {
         const { data } = await repository.get(`/reactions/${post.post_id}/${user}`);
         setReaction(data);
       } catch (error) {
-        console.error(error);
+        const err = error as any;
+        console.error('ERROR IN GET REACTIONS: ', err.message);
+        console.error(err.code);
+        if (err.code === 401) {
+          router.replace('/');
+        }
       }
     })()
   }, [])

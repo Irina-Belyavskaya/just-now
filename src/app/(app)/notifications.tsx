@@ -95,7 +95,7 @@ export default function NotificationssScreen() {
                 <Button
                   textColor={Colors.white}
                   style={styles.acceptBtn}
-                  onPress={() => handleAcceptStatus(notification.friend_request_id, FriendRequestStatus.accepted)}
+                  onPress={() => handleAcceptStatus(notification.friend_request_id, FriendRequestStatus.ACCEPTED)}
                 >
                   Accept
                 </Button>

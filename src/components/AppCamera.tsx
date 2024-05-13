@@ -1,24 +1,33 @@
 import { Stack, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useCameraPermission, useCameraDevice, Camera, PhotoFile, TakePhotoOptions, useMicrophonePermission, VideoFile, useCameraFormat } from 'react-native-vision-camera';
+import { StyleSheet, View } from 'react-native';
+import { useCameraPermission, useCameraDevice, Camera, TakePhotoOptions, useMicrophonePermission, VideoFile } from 'react-native-vision-camera';
 import LoaderScreen from '../app/loader';
 import CameraButtons from './CameraButtons';
 import { ImageResult, manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
-type TestAppCameraProps = {
+type AppCameraProps = {
   setPhoto: (photo: ImageResult) => void;
   photo: ImageResult | undefined;
 
   setVideo?: (video: VideoFile) => void;
   video?: VideoFile | undefined;
 
+  isLoading: boolean;
+
   onlyPhoto?: boolean;
 
 }
 
-export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPhoto = false }: TestAppCameraProps) {
+export default function AppCamera({
+  setPhoto,
+  photo,
+  setVideo,
+  video,
+  isLoading,
+  onlyPhoto = false
+}: AppCameraProps) {
   const { hasPermission, requestPermission } = useCameraPermission();
   const {
     hasPermission: microphonePermission,
@@ -28,21 +37,12 @@ export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPh
   const [isActive, setIsActive] = useState(false);
   const [flash, setFlash] = useState<TakePhotoOptions["flash"]>("off");
   const [isRecording, setIsRecording] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [exposure, setExposure] = useState<number>(0);
 
   const [cameraSide, setCameraSide] = useState<'back' | 'front'>('back');
 
   const device = useCameraDevice(cameraSide);
   const camera = useRef<Camera>(null);
-
-  const format = useCameraFormat(device, [
-    { videoStabilizationMode: 'cinematic-extended' },
-    { photoResolution: 'max' },
-    { videoResolution: 'max' },
-    { videoAspectRatio: 16 / 9 },
-    { videoResolution: { width: 3048, height: 2160 } },
-  ]);
 
   useEffect(() => {
     if (!hasPermission) {
@@ -66,7 +66,7 @@ export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPh
   }
 
   if (!device) {
-    return <LoaderScreen />;
+    return;
   }
 
   const onTakePicturePressed = async () => {
@@ -81,7 +81,7 @@ export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPh
       qualityPrioritization: 'speed',
       flash: flash,
       enableAutoStabilization: true,
-      enableAutoRedEyeReduction: true
+      enableAutoRedEyeReduction: true,
     });
 
     let rotation = 0;
@@ -109,6 +109,7 @@ export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPh
     camera.current.startRecording({
       fileType: 'mp4',
       flash: flash === 'on' ? 'on' : 'off',
+      videoBitRate: 'low',
       onRecordingFinished: (video) => {
         setVideo(video);
         setIsRecording(false);
@@ -140,7 +141,6 @@ export default function TestAppCamera({ setPhoto, photo, setVideo, video, onlyPh
           video={!onlyPhoto}
           audio={!onlyPhoto}
           enableZoomGesture
-          format={format}
           exposure={exposure}
           videoStabilizationMode={'cinematic-extended'}
         />

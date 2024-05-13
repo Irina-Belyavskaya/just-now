@@ -7,6 +7,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
 import { useAuth } from '@/src/context/auth-context';
+import { StatusBar } from 'expo-status-bar';
 
 export default function TabOneScreen() {
   const { user } = useAuth();
@@ -46,6 +47,7 @@ export default function TabOneScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='light' />
       <ImageBackground
         style={styles.backgroundImage}
         source={require("../../../../assets/yellow_background.jpg")}

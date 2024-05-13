@@ -1,13 +1,12 @@
 import { Formik } from 'formik';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FieldValues } from 'react-hook-form';
 import * as yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setNickname, setPhotoUrl } from '../redux/sign-up/sign-up.reducer';
+import { setPhotoUrl } from '../redux/sign-up/sign-up.reducer';
 import repository from '../repository';
 import AppInput from './AppInput';
-import SignUpButtons from './SignUpButtons';
-import { StyleSheet, Image, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Button, Snackbar } from 'react-native-paper';
 import { User } from '../types/user.type';
@@ -18,7 +17,7 @@ import { useAuth } from '../context/auth-context';
 import { Stack } from 'expo-router';
 import { getUser } from '../redux/user/users.actions';
 import { uploadToFirebaseAndUpdateFile } from '../redux/actions';
-import TestAppCamera from './TestAppCamera';
+import AppCamera from './AppCamera';
 import { ImageResult } from 'expo-image-manipulator';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -118,10 +117,11 @@ export default function SettingInputs() {
   return (
     <>
       {camera &&
-        <TestAppCamera
+        <AppCamera
           onlyPhoto
           setPhoto={setPhoto}
           photo={photo}
+          isLoading={isLoading}
         />
       }
 

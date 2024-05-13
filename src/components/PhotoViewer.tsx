@@ -32,7 +32,6 @@ export default function PhotoViewer({
       setPhoto(undefined);
       setIsLoading(false);
       if (navigate) {
-        console.log('Navigate!')
         navigate();
       } else {
         router.replace('/');

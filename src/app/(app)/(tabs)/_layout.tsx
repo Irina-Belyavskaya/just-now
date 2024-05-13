@@ -54,18 +54,46 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <AntDesign name="home" color={color} size={25} />,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Link href="/chats" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <Feather
-                      name="message-circle"
-                      size={25}
-                      color={'white'}
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
-              </Link>
+              {userInfo?.role.role_type === RoleType.USER_START &&
+                <>
+                  <Feather
+                    name="message-circle"
+                    size={25}
+                    color={'white'}
+                    style={{ marginRight: 15 }}
+                  />
+                  <Ionicons
+                    name="lock-closed"
+                    size={16}
+                    color="white"
+                    style={{
+                      position: 'absolute',
+                      backgroundColor: Colors.alt,
+                      borderRadius: 10,
+                      padding: 7,
+                      right: 12,
+                      bottom: 0
+                    }}
+                  />
+                </>
+              }
+              {userInfo?.role.role_type === RoleType.USER_MONTHLY_PRO &&
+                <Link href="/chats" asChild>
+                  <Pressable>
+                    {({ pressed }) => (
+
+                      <Feather
+                        name="message-circle"
+                        size={25}
+                        color={'white'}
+                        style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                      />
+
+
+                    )}
+                  </Pressable>
+                </Link>
+              }
               <Link href="/notifications" asChild>
                 <Pressable>
                   {({ pressed }) => (

@@ -34,6 +34,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
   const [[isLoadingAccessToken, accessToken], setAccessToken] = useStorageState('accessToken');
   const [[isLoadingRefreshToken, refreshToken], setRefreshToken] = useStorageState('refreshToken');
   const [[isLoadingUser, user], setUser] = useStorageState('user');
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   const rootSegment = useSegments()[0];
 
@@ -59,6 +60,12 @@ export function AuthProvider(props: React.PropsWithChildren) {
       router.replace("/");
     }
   }, [accessToken, rootSegment, isLoadingAccessToken, isLoadingUser])
+
+  useEffect(() => {
+    if (!userInfo && user && accessToken) {
+      dispatch(getUser({ id: user }));
+    }
+  }, [userInfo, user, accessToken])
 
   return (
     <AuthContext.Provider

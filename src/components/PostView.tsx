@@ -10,6 +10,10 @@ import { useAuth } from "../context/auth-context";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Reaction } from "../types/reaction.type";
 import { router } from "expo-router";
+import { useAppSelector } from "../redux/hooks";
+import { RoleType } from "../types/role.type";
+import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 type PostProps = {
   post: Post
@@ -25,9 +29,10 @@ function convertToKebabCase(input: string): any {
 export default function PostView({ post }: PostProps) {
   const { user } = useAuth();
   const [reaction, setReaction] = useState<Reaction>();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   useEffect(() => {
-    if (!user || !post)
+    if (!user || !post || userInfo?.role.role_type === RoleType.USER_START)
       return;
 
     (async () => {
@@ -81,7 +86,7 @@ export default function PostView({ post }: PostProps) {
           :
           <VideoPost post={post} />
       }
-      {reaction &&
+      {reaction && userInfo?.role.role_type === RoleType.USER_MONTHLY_PRO &&
         <Entypo
           name={convertToKebabCase(reaction.reaction_type)}
           size={30}
@@ -95,7 +100,37 @@ export default function PostView({ post }: PostProps) {
           }}
         />
       }
-      <Reactions postId={post.post_id} setReaction={setReaction} />
+      {userInfo?.role.role_type === RoleType.USER_MONTHLY_PRO &&
+        <Reactions postId={post.post_id} setReaction={setReaction} />
+      }
+      {userInfo?.role.role_type === RoleType.USER_START &&
+        <>
+          <MaterialIcons
+            name="add-reaction"
+            size={40}
+            color={Colors.pickedYelllow}
+            style={{
+              position: 'absolute',
+              // padding: 7,
+              right: 12,
+              bottom: 10
+            }}
+          />
+          <Ionicons
+            name="lock-closed"
+            size={20}
+            color="white"
+            style={{
+              position: 'absolute',
+              backgroundColor: Colors.alt,
+              borderRadius: 100,
+              padding: 14,
+              right: 8,
+              bottom: 8
+            }}
+          />
+        </>
+      }
     </View>
   )
 }

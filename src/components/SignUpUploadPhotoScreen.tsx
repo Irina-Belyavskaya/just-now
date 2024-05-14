@@ -80,7 +80,6 @@ export default function SignUpUploadPhotoScreen({
       // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       setIsLoading(false);
       signUp(responseInfo.accessToken, responseInfo.refreshToken);
-      dispatch(setUserInfo(responseInfo.user));
       dispatch(setSignUpFromReset());
       router.replace('/')
     } catch (error) {

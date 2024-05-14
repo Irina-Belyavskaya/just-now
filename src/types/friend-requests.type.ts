@@ -6,6 +6,8 @@ export type FriendRequest = {
   receiver_id: string,
   friend_request_status: FriendRequestStatus,
   friend_request_created_at: string,
+  sender: User,
+  receiver: User
 }
 
 export type FriendRequestSenders = {

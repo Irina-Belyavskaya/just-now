@@ -1,5 +1,6 @@
 import { User } from "./user.type";
 import { File } from "./file.type";
+import { Reaction } from "./reaction.type";
 
 export type Post = {
   post_id: string;
@@ -10,6 +11,7 @@ export type Post = {
   likes: number;
   user: User;
   file: File;
+  reactions: Reaction[];
 }
 
 export enum PostType {

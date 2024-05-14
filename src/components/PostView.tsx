@@ -35,19 +35,8 @@ export default function PostView({ post }: PostProps) {
     if (!user || !post || userInfo?.role.role_type === RoleType.USER_START)
       return;
 
-    (async () => {
-      try {
-        const { data } = await repository.get(`/reactions/${post.post_id}/${user}`);
-        setReaction(data);
-      } catch (error) {
-        const err = error as any;
-        console.error('ERROR IN GET REACTIONS: ', err.message);
-        console.error(err.code);
-        if (err.code === 401) {
-          router.replace('/');
-        }
-      }
-    })()
+    const reaction = post.reactions.find(reaction => reaction.user_id === user);
+    setReaction(reaction);
   }, [])
 
   return (

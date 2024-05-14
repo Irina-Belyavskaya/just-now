@@ -40,7 +40,7 @@ export default function ProfileHead({
               position: 'absolute',
               right: 65,
               top: 0,
-              zIndex: 10,
+              zIndex: 400,
               display: 'flex',
               flexDirection: 'row',
             }}
@@ -50,7 +50,8 @@ export default function ProfileHead({
               style={{
                 fontSize: 20,
                 color: Colors.white,
-                marginRight: 5
+                marginRight: 5,
+                zIndex: 400,
               }}
             >
               {userInfo.role.role_type === RoleType.USER_START && 'Upgrade'}

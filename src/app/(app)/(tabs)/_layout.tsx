@@ -55,7 +55,7 @@ export default function TabLayout() {
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
               {userInfo?.role.role_type === RoleType.USER_START &&
-                <>
+                <View>
                   <Feather
                     name="message-circle"
                     size={25}
@@ -75,21 +75,18 @@ export default function TabLayout() {
                       bottom: 0
                     }}
                   />
-                </>
+                </View>
               }
               {userInfo?.role.role_type === RoleType.USER_MONTHLY_PRO &&
                 <Link href="/chats" asChild>
                   <Pressable>
                     {({ pressed }) => (
-
                       <Feather
                         name="message-circle"
                         size={25}
                         color={'white'}
                         style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                       />
-
-
                     )}
                   </Pressable>
                 </Link>

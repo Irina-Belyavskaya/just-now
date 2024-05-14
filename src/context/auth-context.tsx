@@ -65,7 +65,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
     if (!userInfo && user && accessToken) {
       dispatch(getUser({ id: user }));
     }
-  }, [userInfo, user, accessToken])
+  }, [userInfo, user, accessToken]);
 
   return (
     <AuthContext.Provider

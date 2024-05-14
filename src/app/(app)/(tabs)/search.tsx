@@ -7,7 +7,8 @@ import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
 import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/src/context/auth-context';
-import { FriendRequestSenders } from '@/src/types/friend-requests.type';
+import { FriendRequest, FriendRequestSenders } from '@/src/types/friend-requests.type';
+import { getUserFriend } from '@/src/utils/getUserFriend';
 
 export default function SearchScreen() {
   ;
@@ -43,7 +44,13 @@ export default function SearchScreen() {
           console.log('GET FRIENDS');
 
           const { data: friends } = await repository.get(`/friend-requests/friends/${user}`);
-          setFriends(friends);
+          const userFriends: FriendRequestSenders[] = friends.map((friend: FriendRequest) => {
+            return {
+              sender: getUserFriend(friend, user),
+              friend_request_id: friend.friend_request_id
+            };
+          });
+          setFriends(userFriends);
           // setLoading(false);
         } catch (error) {
           console.error(error);

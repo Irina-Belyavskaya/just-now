@@ -44,7 +44,6 @@ export default function SignIn() {
       // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       resetForm();
       await signIn(responseInfo.accessToken, responseInfo.refreshToken);
-      dispatch(setUserInfo(responseInfo.user));
       setIsLoading(false);
       router.replace('/');
     } catch (error) {

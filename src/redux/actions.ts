@@ -10,7 +10,7 @@ export const uploadToFirebaseAndCreateFile = async (photoUrl: string, basePath: 
     console.log("path: ", path);
 
     const response = await sendToFirebase(blob, path);
-    console.log("response: ", response);
+    // console.log("response: ", response);
     if (!response) {
       throw new Error('Something go wrong');
     }

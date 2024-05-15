@@ -1,5 +1,5 @@
 import EmptyScreen from '@/src/components/EmptyScreen';
-import ProfileHead from '@/src/components/ProfileHead';
+import ProfileHead from '@/src/components/ProfileInfo';
 import Sizes from '@/src/constants/Sizes';
 import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
@@ -150,38 +150,38 @@ export default function UserScreen() {
         <LoaderScreen />
       }
       {!isLoading && userInfo &&
-        <ImageBackground
-          style={styles.backgroundImage}
-          source={require("../../../assets/yellow_background.jpg")}
-          blurRadius={8}
-        >
-          {isFriend &&
-            <TouchableOpacity style={styles.requestWrap} onPress={handleRemoveFriend}>
-              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Remove friend</Text>
-              <Ionicons name="person-remove" size={24} color="black" />
-            </TouchableOpacity>
-          }
-          {!isFriend && !isRequestSent &&
-            <TouchableOpacity style={styles.requestWrap} onPress={handleAddFriend}>
-              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Send Request</Text>
-              <Ionicons name="person-add" size={24} color="black" />
-            </TouchableOpacity>
-          }
-          {!isFriend && isRequestSent &&
-            <View style={styles.requestWrap}>
-              <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Waiting for answer</Text>
-              <Feather name="loader" size={24} color="black" />
-            </View>
-          }
-          {userInfo &&
-            <ProfileHead
-              userInfo={userInfo}
-              numberOfUserFriends={numberOfUserFriends}
-              numberOfPhotos={numberOfPhotoPosts}
-              numberOfVideo={numberOfVideoPosts}
-            />
-          }
-        </ImageBackground>
+        // <ImageBackground
+        //   style={styles.backgroundImage}
+        //   source={require("../../../assets/yellow_background.jpg")}
+        //   blurRadius={8}
+        // >
+        isFriend &&
+        <TouchableOpacity style={styles.requestWrap} onPress={handleRemoveFriend}>
+          <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Remove friend</Text>
+          <Ionicons name="person-remove" size={24} color="black" />
+        </TouchableOpacity>
+      }
+      {!isFriend && !isRequestSent &&
+        <TouchableOpacity style={styles.requestWrap} onPress={handleAddFriend}>
+          <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Send Request</Text>
+          <Ionicons name="person-add" size={24} color="black" />
+        </TouchableOpacity>
+      }
+      {!isFriend && isRequestSent &&
+        <View style={styles.requestWrap}>
+          <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Waiting for answer</Text>
+          <Feather name="loader" size={24} color="black" />
+        </View>
+      }
+      {userInfo &&
+        <ProfileHead
+          userInfo={userInfo}
+          numberOfUserFriends={numberOfUserFriends}
+          numberOfPhotos={numberOfPhotoPosts}
+          numberOfVideo={numberOfVideoPosts}
+        />
+
+        // </ImageBackground>
       }
     </>
   );

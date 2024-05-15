@@ -126,7 +126,7 @@ export default function SettingInputs() {
       }
 
       {!camera && !isLoading &&
-        <ScrollView style={{ flex: 1, backgroundColor: Colors.pickedYelllow }}>
+        <ScrollView style={{ flex: 1, backgroundColor: Colors.lightBlue }}>
           <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: true }} />
             {!isLoading && errorMessage &&
@@ -259,14 +259,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.pickedYelllow,
+    backgroundColor: Colors.lightBlue,
     paddingTop: 20
   },
   button: {
     borderRadius: 30,
     paddingVertical: 10,
     width: 300,
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     position: 'absolute',
     borderRadius: 30,
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
     color: Colors.white,
     right: 10,
     top: 10,
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 200,
     borderWidth: 2,
-    borderColor: "black"
+    borderColor: Colors.darkBlue
   },
   title: {
     fontSize: 20,

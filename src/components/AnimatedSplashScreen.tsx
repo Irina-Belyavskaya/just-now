@@ -1,7 +1,7 @@
 import LottieView from "lottie-react-native";
 import { useEffect, useRef } from "react";
-import { Easing, ImageBackground, View } from "react-native";
 import { Animated } from "react-native";
+import Colors from "../constants/Colors";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
@@ -19,15 +19,8 @@ export default function AnimationScreen({
   useEffect(() => {
     if (!loop)
       animation.current?.play(0, 40);
-    else 
+    else
       animation.current?.play(0, 1000);
-    // animation.current?.play(0, 1000);
-    // Animated.timing(animationProgress, {
-    //   toValue: 1,
-    //   duration: 4000,
-    //   easing: Easing.linear,
-    //   useNativeDriver: true,
-    // }).start();
   }, []);
 
   return (
@@ -36,7 +29,7 @@ export default function AnimationScreen({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'black'
+        backgroundColor: Colors.lightBlue
       }}
     >
       <AnimatedLottieView
@@ -44,11 +37,11 @@ export default function AnimationScreen({
         onAnimationFinish={onAnimationFinish}
         loop={loop}
         style={{
-          width: '80%',
+          width: '100%',
           maxWidth: 400,
-          height: 400,
+          height: 400
         }}
-        source={require('@/assets/lottie/calendar.json')}
+        source={require('@/assets/lottie/animated-splash.json')}
       />
     </Animated.View>
   )

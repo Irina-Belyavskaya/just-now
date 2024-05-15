@@ -44,8 +44,8 @@ export default function Reactions({ postId, setReaction }: ReactionsProps) {
   return (
     <SpeedDial
       isOpen={open}
-      icon={{ name: 'add-reaction', color: Colors.pickedYelllow, size: 40 }}
-      openIcon={{ name: 'close', color: Colors.pickedYelllow, size: 40 }}
+      icon={{ name: 'add-reaction', color: Colors.lightBlue, size: 40 }}
+      openIcon={{ name: 'close', color: Colors.lightBlue, size: 40 }}
       onOpen={() => setOpen(!open)}
       onClose={() => setOpen(!open)}
       color={Colors.alt}

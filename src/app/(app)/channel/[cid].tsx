@@ -25,7 +25,7 @@ export default function ChannelScreen() {
   }
 
   return (
-    <Channel channel={channel} audioRecordingEnabled>
+    <Channel channel={channel} audioRecordingEnabled keyboardVerticalOffset={60}>
       <MessageList />
       <SafeAreaView edges={['bottom']}>
         <MessageInput />

@@ -11,6 +11,7 @@ import { PostType } from "../types/post.type";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
 import { useAppDispatch } from "../redux/hooks";
 import { getUser } from "../redux/user/users.actions";
+import { deleteFile } from "../utils/deleteFile";
 
 type VideoPlayerProps = {
   videoPath: string,
@@ -62,6 +63,9 @@ export default function VideoPlayer({
 
       // Reset states
       setVideo(undefined);
+      const filePath = video?.path.split('///').pop();
+      if (filePath)
+        deleteFile(filePath);
       setIsLoading(false);
 
       // Redirect with refresh

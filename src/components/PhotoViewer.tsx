@@ -1,8 +1,8 @@
 import { AntDesign } from "@expo/vector-icons";
 import { View, StyleSheet, Image } from "react-native";
 import { router } from "expo-router";
-import { useAuth } from "../context/auth-context";
 import { ImageResult } from "expo-image-manipulator";
+import { deleteFile } from "../utils/deleteFile";
 
 type PhotoViewerProps = {
   photoPath: string,
@@ -21,15 +21,17 @@ export default function PhotoViewer({
   handlePhoto,
   navigate
 }: PhotoViewerProps) {
-
   const uploadPhoto = async () => {
     try {
       if (!photo)
         return;
 
       setIsLoading(true);
-      await handlePhoto(`file://${photo?.uri}`);
+      await handlePhoto(photo?.uri);
       setPhoto(undefined);
+      const filePath = photo?.uri.split('///').pop();
+      if (filePath)
+        deleteFile(filePath);
       setIsLoading(false);
       if (navigate) {
         navigate();

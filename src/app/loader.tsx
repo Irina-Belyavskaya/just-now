@@ -1,5 +1,6 @@
 import LottieView from "lottie-react-native";
 import { Animated } from "react-native";
+import Colors from "../constants/Colors";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
@@ -10,7 +11,7 @@ export default function LoaderScreen() {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'black'
+        backgroundColor: Colors.lightBlue
       }}
     >
       <AnimatedLottieView

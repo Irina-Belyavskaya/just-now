@@ -3,8 +3,54 @@ import { StreamChat } from 'stream-chat';
 import { OverlayProvider, Chat } from "stream-chat-expo";
 import { useAppSelector } from "../redux/hooks";
 import { RoleType } from "../types/role.type";
+import Colors from "../constants/Colors";
 
 const client = StreamChat.getInstance(`${process.env.EXPO_PUBLIC_STREAM_API_KEY}`);
+
+const theme = {
+  channelListMessenger: {
+    flatListContent: {
+      backgroundColor: Colors.lightBlue
+    }
+  },
+  channelPreview: {
+    container: {
+      backgroundColor: Colors.lightBlue
+    },
+    contentContainer: {
+      backgroundColor: Colors.lightBlue
+
+    },
+  },
+  messageSimple: {
+    content: {
+      textContainer: {
+        backgroundColor: Colors.darkBlue,
+      },
+      markdown: {
+        text: {
+          color: Colors.white
+        }
+      },
+    },
+
+  },
+  messageList: {
+    contentContainer: {
+      backgroundColor: Colors.lightBlue
+    }
+  },
+  messageInput: {
+    container: {
+      backgroundColor: Colors.lightBlue
+    },
+    inputBoxContainer: {
+      backgroundColor: Colors.white,
+      borderColor: Colors.white
+    }
+  }
+};
+
 
 export default function ChatProvider({ children }: PropsWithChildren) {
   const [isReady, setIsReady] = useState(false);
@@ -43,7 +89,7 @@ export default function ChatProvider({ children }: PropsWithChildren) {
   }, [userInfo?.user_id]);
 
   return (
-    <OverlayProvider>
+    <OverlayProvider value={{ style: theme }}>
       <Chat client={client}>
         {children}
       </Chat>

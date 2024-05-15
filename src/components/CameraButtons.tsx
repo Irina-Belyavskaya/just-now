@@ -41,7 +41,7 @@ export default function CameraButtons({
           onPress={() => setFlash((curValue) => curValue === 'off' ? 'on' : 'off')}
           name={flash === 'off' ? "flash-off" : "flash"}
           size={24}
-          color={flash === 'off' ? Colors.white : Colors.pickedYelllow}
+          color={flash === 'off' ? Colors.white : Colors.lightBlue}
         />
       </View>
       <View
@@ -60,9 +60,9 @@ export default function CameraButtons({
           maximumValue={50}
           value={exposure}
           onValueChange={(value) => setExposure(value)}
-          minimumTrackTintColor={Colors.pickedYelllow}
-          maximumTrackTintColor={Colors.pickedYelllow}
-          thumbTintColor={Colors.pickedYelllow}
+          minimumTrackTintColor={Colors.lightBlue}
+          maximumTrackTintColor={Colors.lightBlue}
+          thumbTintColor={Colors.lightBlue}
         />
       </View>
       <Pressable

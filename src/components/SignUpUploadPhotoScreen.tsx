@@ -8,7 +8,7 @@ import {
   StyleSheet
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Button } from 'react-native-paper';
+import { Button, Snackbar } from 'react-native-paper';
 import Colors from "../constants/Colors";
 import SignUpButtons from "./SignUpButtons";
 import repository from "../repository";
@@ -94,11 +94,27 @@ export default function SignUpUploadPhotoScreen({
     <>
       {/* {isLoading && <LoaderScreen />} */}
       {!isLoading && showModalWindow &&
-        <ModalWindow
-          modalVisible
-          handleCloseModalWindow={() => setShowModalWindow(false)}
-          message={'Please fill in all data'}
-        />
+        // <ModalWindow
+        //   modalVisible
+        //   handleCloseModalWindow={() => setShowModalWindow(false)}
+        //   message={'Please fill in all data'}
+        // />
+        <Snackbar
+          visible={showModalWindow}
+          onDismiss={() => () => setShowModalWindow(false)}
+          action={{
+            label: 'Close',
+            textColor: Colors.white
+          }}
+          style={{
+            zIndex: 100,
+            backgroundColor: Colors.deniedColor,
+          }}
+
+          elevation={5}
+        >
+          Please fill in all data
+        </Snackbar>
       }
       {!isLoading && !showModalWindow &&
         <View style={styles.container}>
@@ -131,7 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 10,
     width: 300,
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
     color: Colors.white
   },
   image: {
@@ -140,6 +156,6 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 200,
     borderWidth: 2,
-    borderColor: "black"
+    borderColor: Colors.darkBlue
   },
 });

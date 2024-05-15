@@ -69,47 +69,47 @@ export default function NotificationssScreen() {
         <EmptyScreen text='No notifications(' />
       }
       {!isLoading && notifications.length !== 0 &&
-        <ImageBackground
-          style={styles.backgroundImage}
-          source={require("../../../assets/yellow_background.jpg")}
-          blurRadius={8}
-        >
-          {notifications.map((notification) => (
+        // <ImageBackground
+        //   style={styles.backgroundImage}
+        //   source={require("../../../assets/yellow_background.jpg")}
+        //   blurRadius={8}
+        // >
+        notifications.map((notification) => (
+          <View
+            key={notification.friend_request_id}
+            style={styles.requestWrap}
+          >
             <View
               key={notification.friend_request_id}
-              style={styles.requestWrap}
+              style={styles.nicknameWrap}
             >
-              <View
-                key={notification.friend_request_id}
-                style={styles.nicknameWrap}
-              >
-                <Image
-                  style={styles.userImage}
-                  source={{ uri: notification.sender.file.file_url }}
-                />
-                <Text style={styles.requestText}>
-                  {notification.sender.user_nickname}
-                </Text>
-              </View>
-              <View style={styles.btnWrap}>
-                <Button
-                  textColor={Colors.white}
-                  style={styles.acceptBtn}
-                  onPress={() => handleAcceptStatus(notification.friend_request_id, FriendRequestStatus.ACCEPTED)}
-                >
-                  Accept
-                </Button>
-                <Button
-                  textColor={Colors.white}
-                  style={styles.deniedBtn}
-                  onPress={() => handleDeniedStatus(notification.friend_request_id)}
-                >
-                  Denied
-                </Button>
-              </View>
+              <Image
+                style={styles.userImage}
+                source={{ uri: notification.sender.file.file_url }}
+              />
+              <Text style={styles.requestText}>
+                {notification.sender.user_nickname}
+              </Text>
             </View>
-          ))}
-        </ImageBackground>
+            <View style={styles.btnWrap}>
+              <Button
+                textColor={Colors.white}
+                style={styles.acceptBtn}
+                onPress={() => handleAcceptStatus(notification.friend_request_id, FriendRequestStatus.ACCEPTED)}
+              >
+                Accept
+              </Button>
+              <Button
+                textColor={Colors.white}
+                style={styles.deniedBtn}
+                onPress={() => handleDeniedStatus(notification.friend_request_id)}
+              >
+                Denied
+              </Button>
+            </View>
+          </View>
+        ))
+        // </ImageBackground>
       }
     </>
   );
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   requestWrap: {
     margin: 10,
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
     padding: 10,
     borderRadius: 10,
     display: 'flex',
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   nicknameWrap: {
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.darkBlue,
   },
   acceptBtn: {
     backgroundColor: Colors.acceptColor,

@@ -8,17 +8,17 @@ type EmptyScreenProps = {
   text: string
 }
 
-export default function EmptyScreen({text}: EmptyScreenProps) {
+export default function EmptyScreen({ text }: EmptyScreenProps) {
   return (
     <Animated.View
       style={{
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: Colors.pickedYelllow
+        backgroundColor: Colors.lightBlue
       }}
     >
-      <Text 
+      <Text
         style={{
           color: Colors.darkGray,
           fontFamily: 'Raleway_700Bold',

@@ -12,7 +12,7 @@ type VideoPostProps = {
   width?: number | null
 }
 
-export default function VideoPost({ post, height = 340, width = null }: VideoPostProps) {
+export default function VideoPost({ post, height = null, width = null }: VideoPostProps) {
   const video = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -34,7 +34,11 @@ export default function VideoPost({ post, height = 340, width = null }: VideoPos
     <Pressable onPress={onPress}>
       <Video
         ref={video}
-        style={{ height, width }}
+        style={{
+          height,
+          width,
+          aspectRatio: 1,
+        }}
         resizeMode={ResizeMode.CONTAIN}
         source={{ uri: post.file.file_url }}
         onPlaybackStatusUpdate={setStatus}
@@ -53,7 +57,7 @@ export default function VideoPost({ post, height = 340, width = null }: VideoPos
       {isLoading &&
         <ActivityIndicator
           size={'large'}
-          color={Colors.yellow}
+          color={Colors.darkBlue}
           style={{
             position: 'absolute', alignSelf: 'center', top: '30%'
           }}

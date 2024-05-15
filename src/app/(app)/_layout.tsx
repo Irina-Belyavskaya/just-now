@@ -10,71 +10,72 @@ export default function AppEntry() {
           name="(tabs)"
           options={{
             headerShown: false,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue,
+            statusBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="chats"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="settings"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
             headerShown: true,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="user"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="notifications"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="paywall"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="channel"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
         <Stack.Screen
           name="users"
           options={{
             presentation: 'modal',
-            headerStyle: { backgroundColor: Colors.black },
+            headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.black
+            navigationBarColor: Colors.darkBlue
           }}
         />
       </Stack>

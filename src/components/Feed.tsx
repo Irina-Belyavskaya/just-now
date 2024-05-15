@@ -19,19 +19,19 @@ export default function FeedScreen({ posts, getPosts }: FeedScreenProps) {
       <FlatList
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={async () => {
-              setLoading(true)
-              await getPosts()
-              setLoading(false)
-            }} 
+            setLoading(true)
+            await getPosts()
+            setLoading(false)
+          }}
           />
         }
         data={posts}
         showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}
-        renderItem={({ item }) => 
-          <PostView post={item}/>
+        renderItem={({ item }) =>
+          <PostView post={item} />
         }
-        keyExtractor={(item) => (item.post_created_at + "")}
+        keyExtractor={item => item.post_id}
       />
     </View>
   )

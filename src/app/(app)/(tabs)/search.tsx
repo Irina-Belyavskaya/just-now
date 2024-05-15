@@ -9,6 +9,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/src/context/auth-context';
 import { FriendRequest, FriendRequestSenders } from '@/src/types/friend-requests.type';
 import { getUserFriend } from '@/src/utils/getUserFriend';
+import LoaderScreen from '../../loader';
 
 export default function SearchScreen() {
   ;
@@ -17,6 +18,7 @@ export default function SearchScreen() {
   const [users, setUsers] = useState<User[]>([]);
   const [friends, setFriends] = useState<FriendRequestSenders[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -40,7 +42,7 @@ export default function SearchScreen() {
 
       (async () => {
         try {
-          // setLoading(true);
+          setIsLoading(true);
           console.log('GET FRIENDS');
 
           const { data: friends } = await repository.get(`/friend-requests/friends/${user}`);
@@ -51,10 +53,10 @@ export default function SearchScreen() {
             };
           });
           setFriends(userFriends);
-          // setLoading(false);
+          setIsLoading(false);
         } catch (error) {
           console.error(error);
-          // setLoading(false);
+          setIsLoading(false);
         }
       })();
     }, [])
@@ -125,11 +127,12 @@ export default function SearchScreen() {
         <Text style={styles.friendsTitle}>
           Friends
         </Text>
-        {friends.length === 0 &&
+        {!isLoading && friends.length === 0 &&
           <Text>{'No friends('}</Text>
         }
+        {isLoading && <LoaderScreen />}
 
-        {friends.map((friend) =>
+        {!isLoading && friends.map((friend) =>
           <TouchableOpacity
             style={styles.friendWrap}
             key={friend.friend_request_id}
@@ -144,7 +147,6 @@ export default function SearchScreen() {
             </Text>
           </TouchableOpacity>
         )}
-
       </View>
     </View>
   );
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     padding: 10,
-    backgroundColor: Colors.pickedYelllow
+    backgroundColor: Colors.lightBlue
   },
   separator: {
     marginVertical: 10,

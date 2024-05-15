@@ -63,7 +63,7 @@ export default function SignIn() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require('../../../assets/cat.jpg')}
+        source={require('../../../assets/images/cat-background.jpg')}
         style={styles.imageBackground}
         resizeMode='cover'
       >

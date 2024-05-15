@@ -61,7 +61,7 @@ export default function OnboardingScreen() {
         <SafeAreaView style={styles.page}>
           <Stack.Screen options={{ headerShown: false }} />
           <ImageBackground
-            source={require('../../../assets/cat.jpg')}
+            source={require('../../../assets/images/cat-background.jpg')}
             style={styles.imageBackground}
             resizeMode='cover'
           >
@@ -71,7 +71,7 @@ export default function OnboardingScreen() {
                   key={index}
                   style={[
                     styles.stepIndicator,
-                    { backgroundColor: index === screenIndex ? Colors.black : Colors.darkGray },
+                    { backgroundColor: index === screenIndex ? Colors.darkBlue : Colors.darkGray },
                   ]}
                 />
               ))}
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     marginTop: 70,
   },
   title: {
-    color: Colors.black,
+    color: Colors.darkBlue,
     fontSize: 30,
     letterSpacing: 1.3,
     marginVertical: 10,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   button: {
-    backgroundColor: Colors.pickedYelllow,
+    backgroundColor: Colors.lightBlue,
     borderRadius: 50,
     alignItems: 'center',
     flex: 1,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'Raleway_400Regular',
     fontSize: 16,
-    color: Colors.black,
+    color: Colors.darkBlue,
     padding: 15,
     paddingHorizontal: 25,
     textTransform: 'uppercase',

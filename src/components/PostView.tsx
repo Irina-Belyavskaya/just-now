@@ -1,19 +1,18 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { View, TouchableOpacity, Image, Text, Pressable } from "react-native";
+import { View, Image } from "react-native";
+import { Text } from "@/src/components/Themed";
 import { Post, PostType } from "../types/post.type";
 import VideoPost from "./VideoPost";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
-import repository from "../repository";
 import Reactions from "./Reactions";
 import { useAuth } from "../context/auth-context";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Reaction } from "../types/reaction.type";
-import { router } from "expo-router";
 import { useAppSelector } from "../redux/hooks";
 import { RoleType } from "../types/role.type";
 import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import PhotoPost from "./PhotoPost";
 
 type PostProps = {
   post: Post
@@ -24,6 +23,38 @@ function convertToKebabCase(input: string): any {
   const words = lowerCaseInput.split('_');
   const kebabCaseString = words.join('-');
   return kebabCaseString;
+}
+
+function getCurrentLocalTime(): Date {
+  const now = new Date();
+  const localOffset = now.getTimezoneOffset() * 60000;
+  const localTime = new Date(now.getTime() - localOffset);
+  return localTime;
+}
+
+function getTimeAgo(post_created_at: string): string {
+  const now = getCurrentLocalTime().getTime();
+  const postCreatedAt = new Date(post_created_at).getTime();
+
+  const timeDiff = now - postCreatedAt;
+
+  const millisecondsInMinute = 1000 * 60;
+  const millisecondsInHour = millisecondsInMinute * 60;
+  const millisecondsInDay = millisecondsInHour * 24;
+
+  if (timeDiff < millisecondsInMinute) {
+    const secondsDiff = Math.floor(timeDiff / 1000);
+    return `${secondsDiff} ${secondsDiff === 1 ? 'second ago' : 'seconds ago'}`;
+  } else if (timeDiff < millisecondsInHour) {
+    const minutesDiff = Math.floor(timeDiff / millisecondsInMinute);
+    return `${minutesDiff} ${minutesDiff === 1 ? 'minute ago' : 'minutes ago'}`;
+  } else if (timeDiff < millisecondsInDay) {
+    const hoursDiff = Math.floor(timeDiff / millisecondsInHour);
+    return `${hoursDiff} ${hoursDiff === 1 ? 'hour ago' : 'hours ago'}`;
+  } else {
+    const daysDiff = Math.floor(timeDiff / millisecondsInDay);
+    return `${daysDiff} ${daysDiff === 1 ? 'day ago' : 'days ago'}`;
+  }
 }
 
 export default function PostView({ post }: PostProps) {
@@ -42,36 +73,36 @@ export default function PostView({ post }: PostProps) {
   return (
     <View
       style={{
-        margin: 10, borderRadius: 7, elevation: 5, backgroundColor: "black", shadowColor: 'white',
+        marginTop: 10, borderRadius: 7, shadowColor: Colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 2,
-
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 10, }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          margin: 10,
+        }}
+      >
         <Image
           source={{ uri: post.user.file.file_url }}
           style={{ height: 50, width: 50, borderRadius: 50 }}
         />
         <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 20, color: 'white' }}>{post.user.user_nickname}</Text>
+          <Text style={{ fontSize: 20, color: Colors.black }}>{post.user.user_nickname}</Text>
           <View style={{ flexDirection: "row" }}>
-            <Text style={{ fontSize: 12, color: 'white' }}>
-              {new Date(post.post_created_at).toString().substring(0, 16)}
-            </Text>
-            <Text style={{ fontSize: 12, marginLeft: 5, color: 'white' }}>
-              {post.post_created_at.split('T')[1].slice(0, 5)}
+            <Text style={{ fontSize: 12, color: Colors.black }}>
+              {getTimeAgo(post.post_created_at)}
             </Text>
           </View>
         </View>
       </View>
       {
         post.post_type === PostType.PHOTO
-          ? <Image
-            source={{ uri: post.file.file_url }}
-            style={{ height: 454, resizeMode: 'contain' }}
-          />
+          ?
+          <PhotoPost imageUrl={post.file.file_url} />
           :
           <VideoPost post={post} />
       }
@@ -79,7 +110,7 @@ export default function PostView({ post }: PostProps) {
         <Entypo
           name={convertToKebabCase(reaction.reaction_type)}
           size={30}
-          color={Colors.pickedYelllow}
+          color={Colors.lightBlue}
           style={{
             position: 'absolute',
             bottom: 10,
@@ -97,10 +128,9 @@ export default function PostView({ post }: PostProps) {
           <MaterialIcons
             name="add-reaction"
             size={40}
-            color={Colors.pickedYelllow}
+            color={Colors.lightBlue}
             style={{
               position: 'absolute',
-              // padding: 7,
               right: 12,
               bottom: 10
             }}

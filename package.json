@@ -45,6 +45,7 @@
     "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.51.2",
     "react-native": "0.73.6",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-paper": "^5.12.3",
     "react-native-reanimated": "~3.6.2",

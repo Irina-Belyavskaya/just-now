@@ -5,10 +5,10 @@
     "scheme": "just_now",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/camera_icon_3.jpg",
+    "icon": "./assets/images/app_icon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash_1.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/camera_icon_3.jpg",
+        "foregroundImage": "./assets/images/app_icon.jpg",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -32,7 +32,7 @@
       "package": "com.anonymous.JUST_NOW"
     },
     "web": {
-      "favicon": "./assets/camera_icon_3.jpg",
+      "favicon": "./assets/images/app_icon.jpg",
       "bundler": "metro"
     },
     "plugins": [

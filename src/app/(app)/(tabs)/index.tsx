@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Post } from '@/src/types/post.type';
 import repository from '@/src/repository';
@@ -8,6 +8,7 @@ import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
 import { useAuth } from '@/src/context/auth-context';
 import { StatusBar } from 'expo-status-bar';
+import Colors from '@/src/constants/Colors';
 
 export default function TabOneScreen() {
   const { user } = useAuth();
@@ -48,32 +49,23 @@ export default function TabOneScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='light' />
-      <ImageBackground
-        style={styles.backgroundImage}
-        source={require("../../../../assets/yellow_background.jpg")}
-        blurRadius={8}
-      >
-        {!isLoading && posts.length === 0 &&
-          <EmptyScreen text='No posts(' />
-        }
-        {isLoading &&
-          <LoaderScreen />
-        }
-        {!isLoading && posts.length !== 0 &&
-          <FeedScreen posts={posts} getPosts={getPosts} />
-        }
-      </ImageBackground>
+      {!isLoading && posts.length === 0 &&
+        <EmptyScreen text='No posts(' />
+      }
+      {isLoading &&
+        <LoaderScreen />
+      }
+      {!isLoading && posts.length !== 0 &&
+        <FeedScreen posts={posts} getPosts={getPosts} />
+      }
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-  },
   container: {
-    height: '100%'
+    height: '100%',
+    backgroundColor: Colors.lightBlue,
   },
   title: {
     fontSize: 20,

@@ -7,16 +7,16 @@ type SignUpButtonsType = Partial<BaseStepType> & {
   handleSubmit: () => void,
 }
 
-export default function SignUpButtons ({onMain, handleSubmit}: SignUpButtonsType) {
+export default function SignUpButtons({ onMain, handleSubmit }: SignUpButtonsType) {
   return (
     <View style={styles.buttonsRow}>
       <Text onPress={onMain} style={styles.buttonText}>
         On main
       </Text>
 
-      <Pressable 
-        onPress={handleSubmit} 
-        style={styles.button} 
+      <Pressable
+        onPress={handleSubmit}
+        style={styles.button}
       >
         <Text style={styles.buttonText}>Next</Text>
       </Pressable>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'Raleway_400Regular',
     fontSize: 16,
-    color: Colors.black,
+    color: Colors.darkBlue,
     padding: 15,
     paddingHorizontal: 25,
     textTransform: 'uppercase',

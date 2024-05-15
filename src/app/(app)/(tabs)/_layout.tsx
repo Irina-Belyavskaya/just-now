@@ -40,12 +40,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.pickedYelllow,
+        tabBarActiveTintColor: Colors.lightBlue,
+        tabBarInactiveTintColor: Colors.white,
         headerShown: useClientOnlyValue(false, true),
-        tabBarStyle: { backgroundColor: Colors.black },
-        headerStyle: { backgroundColor: Colors.black },
-        headerTintColor: Colors.white
-      }}>
+        tabBarStyle: { backgroundColor: Colors.darkBlue },
+        headerStyle: { backgroundColor: Colors.darkBlue },
+        headerTintColor: Colors.white,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -144,7 +146,7 @@ export default function TabLayout() {
             <>
               <View
                 style={{
-                  backgroundColor: Colors.pickedYelllow,
+                  backgroundColor: Colors.lightBlue,
                   paddingHorizontal: 3,
                   borderRadius: 100,
                   transform: [{ rotate: '10deg' }],

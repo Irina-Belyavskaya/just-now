@@ -26,7 +26,7 @@ export default function SignOut() {
 
   return (
     <View style={styles.centeredView}>
-      <Stack.Screen options={{ headerStyle: { backgroundColor: 'black' } }} />
+      <Stack.Screen options={{ headerStyle: { backgroundColor: Colors.darkBlue } }} />
       <Modal
         animationType="slide"
         transparent={true}
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-    backgroundColor: Colors.pickedYelllow,
+    backgroundColor: Colors.lightBlue,
   },
   modalView: {
     backgroundColor: 'white',

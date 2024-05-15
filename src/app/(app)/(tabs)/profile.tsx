@@ -1,14 +1,10 @@
-import { ImageBackground, StyleSheet } from 'react-native';
-import Sizes from '@/src/constants/Sizes';
-import ProfileHead from '@/src/components/ProfileHead';
+import ProfileInfo from '@/src/components/ProfileInfo';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
-import { User } from '@/src/types/user.type';
 import LoaderScreen from '../../loader';
 import { Post } from '@/src/types/post.type';
-import ProfileBottom from '@/src/components/ProfileBottom';
-import { useIsFocused } from '@react-navigation/native';
+import ProfilePosts from '@/src/components/ProfilePosts';
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { getUser } from '@/src/redux/user/users.actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +12,6 @@ import Colors from '@/src/constants/Colors';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
-  // const [userInfo, setUserInfo] = useState<User>();
   const [userPosts, setUserPosts] = useState<Post[]>();
 
   const [numberOfPhotoPosts, setNumberOfPhotoPosts] = useState<number>(0);
@@ -24,9 +19,6 @@ export default function ProfileScreen() {
 
   const [numberOfUserFriends, setNumberOfUserFriends] = useState<number>(0);
   const [isLoading, setLoading] = useState(false);
-
-  const isFocused = useIsFocused();
-  const [refreshCount, setRefreshCount] = useState(0);
 
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
   const dispatch = useAppDispatch();
@@ -36,12 +28,6 @@ export default function ProfileScreen() {
       dispatch(getUser({ id: user }));
     }
   }, [userInfo, user])
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     setRefreshCount((prevCount) => prevCount + 1);
-  //   }
-  // }, [isFocused]);
 
   useEffect(() => {
     if (!user)
@@ -84,12 +70,12 @@ export default function ProfileScreen() {
   }, [])
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.pickedYelllow }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.lightBlue }}>
       {isLoading &&
         <LoaderScreen />
       }
       {!isLoading && userInfo &&
-        <ProfileHead
+        <ProfileInfo
           userInfo={userInfo}
           numberOfUserFriends={numberOfUserFriends}
           numberOfPhotos={numberOfPhotoPosts}
@@ -99,7 +85,7 @@ export default function ProfileScreen() {
       }
 
       {!isLoading && userPosts && userPosts.length > 0 &&
-        <ProfileBottom
+        <ProfilePosts
           userPosts={userPosts}
           getUserPosts={getUserPosts}
         />
@@ -107,14 +93,3 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-  },
-  container: {
-    marginHorizontal: Sizes.medium,
-    marginTop: Sizes.safe,
-  },
-});

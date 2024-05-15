@@ -17,7 +17,7 @@ export default function SpeedDialAction({ iconName, onPress }: SpeedDialActionPr
         <Entypo
           name={iconName}
           size={30}
-          color={Colors.pickedYelllow}
+          color={Colors.lightBlue}
         />
       }
       onPress={() => onPress(iconName)}

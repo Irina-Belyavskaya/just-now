@@ -36,9 +36,9 @@ export default function HomeScreen() {
         userInfo &&
         userInfo.role &&
         userInfo.role.role_type === RoleType.USER_START &&
-        getDiffrenceInDays(userInfo.user_entry_date) >= 3
+        getDiffrenceInDays(userInfo.user_last_activity_date) >= 3
       ) {
-        const days = getDiffrenceInDays(userInfo.user_entry_date);
+        const days = getDiffrenceInDays(userInfo.user_last_activity_date);
         console.log('User has been active for 3 or more days', days);
         setShouldUpdateActivity(true);
         return;

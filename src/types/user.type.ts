@@ -7,7 +7,7 @@ export type User = {
   user_password: string;
   user_nickname: string;
   user_profile_picture_id: string;
-  user_entry_date: string;
+  user_last_activity_date: string;
   user_created_at: string;
   file: File;
   role: Role;

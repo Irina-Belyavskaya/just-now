@@ -20,7 +20,7 @@ const initialState: UserStateType = {
     user_password: '',
     user_nickname: '',
     user_profile_picture_url: '',
-    user_entry_date: '',    
+    user_last_activity_date: '',    
     user_created_at: ''
   }
 */
@@ -39,13 +39,13 @@ const userSlice = createSlice({
     //   state.userState.user_email = action.payload;
     // },
     // setUserEntryDate(state, action: PayloadAction<string>) {
-    //   state.userState.user_entry_date = action.payload;
+    //   state.userState.user_last_activity_date = action.payload;
     // },
     // setUserFromReset(state) {
     //   state.userState.user_profile_picture_url = '';
     //   state.userState.user_nickname = '';
     //   state.userState.user_email = '';
-    //   state.userState.user_entry_date = '';
+    //   state.userState.user_last_activity_date = '';
     // }
     setUserReset(state) {
       state.userInfo = null;

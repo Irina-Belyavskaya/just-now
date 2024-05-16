@@ -24,7 +24,7 @@ export default function PhotoPost({ imageUrl, imageStyles }: PhotoPostProps) {
           size={'large'}
           color={Colors.darkBlue}
           style={{
-            position: 'absolute', alignSelf: 'center', top: '30%'
+            position: 'absolute', alignSelf: 'center', top: '45%'
           }}
         />
       }

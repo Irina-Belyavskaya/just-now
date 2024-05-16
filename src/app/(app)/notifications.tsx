@@ -8,6 +8,7 @@ import { Text, View } from '@/src/components/Themed';
 import { ImageBackground, StyleSheet, Image } from 'react-native';
 import Colors from '@/src/constants/Colors';
 import { Button } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NotificationssScreen() {
   const { user } = useAuth();
@@ -61,7 +62,7 @@ export default function NotificationssScreen() {
   }, [])
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       {isLoading &&
         <LoaderScreen />
       }
@@ -69,11 +70,6 @@ export default function NotificationssScreen() {
         <EmptyScreen text='No notifications(' />
       }
       {!isLoading && notifications.length !== 0 &&
-        // <ImageBackground
-        //   style={styles.backgroundImage}
-        //   source={require("../../../assets/yellow_background.jpg")}
-        //   blurRadius={8}
-        // >
         notifications.map((notification) => (
           <View
             key={notification.friend_request_id}
@@ -109,16 +105,15 @@ export default function NotificationssScreen() {
             </View>
           </View>
         ))
-        // </ImageBackground>
       }
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  container: {
     flex: 1,
-    resizeMode: "cover",
+    backgroundColor: Colors.lightBlue
   },
   requestWrap: {
     margin: 10,

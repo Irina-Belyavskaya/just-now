@@ -1,10 +1,8 @@
-import EmptyScreen from "@/src/components/EmptyScreen";
 import { Text } from "@/src/components/Themed";
 import Colors from "@/src/constants/Colors";
 import { TouchableOpacity, View, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { FontAwesome6 } from '@expo/vector-icons';
-import { Button } from "react-native-paper";
 import repository from "@/src/repository";
 import { useStripe } from "@stripe/stripe-react-native";
 import { router } from "expo-router";

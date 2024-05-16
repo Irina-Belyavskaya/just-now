@@ -14,12 +14,9 @@ import SignUpButtons from "./SignUpButtons";
 import repository from "../repository";
 import { useAuth } from "../context/auth-context";
 import { router } from "expo-router";
-import { generatePath, sendToFirebase } from "../utils/firebase";
 import LoaderScreen from "../app/loader";
-import ModalWindow from "./ModalWindow";
 import { SignUpDto } from "../redux/sign-up/types/sign-up.dto";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
-import { setUserInfo } from "../redux/user/user.reducer";
 
 export default function SignUpUploadPhotoScreen({
   handleNext,
@@ -34,7 +31,6 @@ export default function SignUpUploadPhotoScreen({
   const signUpData = useAppSelector(state => state.signUpReducer);
 
   const [image, setImage] = useState<any>(photoUrl);
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showModalWindow, setShowModalWindow] = useState<boolean>(false);
 
   const pickImage = async () => {
@@ -77,7 +73,6 @@ export default function SignUpUploadPhotoScreen({
       };
       console.log('AUTH SIGN UP');
       const { data: responseInfo } = await repository.post("/auth/sign-up", signUpDto);
-      // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       setIsLoading(false);
       signUp(responseInfo.accessToken, responseInfo.refreshToken);
       dispatch(setSignUpFromReset());
@@ -92,16 +87,11 @@ export default function SignUpUploadPhotoScreen({
 
   return (
     <>
-      {/* {isLoading && <LoaderScreen />} */}
+      {isLoading && <LoaderScreen />}
       {!isLoading && showModalWindow &&
-        // <ModalWindow
-        //   modalVisible
-        //   handleCloseModalWindow={() => setShowModalWindow(false)}
-        //   message={'Please fill in all data'}
-        // />
         <Snackbar
           visible={showModalWindow}
-          onDismiss={() => () => setShowModalWindow(false)}
+          onDismiss={() => setShowModalWindow(false)}
           action={{
             label: 'Close',
             textColor: Colors.white

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Modal, StyleSheet } from "react-native";
+import { Pressable, Modal, StyleSheet, Image, View } from "react-native";
 import { Post, PostType } from "../types/post.type";
 import PhotoPost from "./PhotoPost";
 import VideoPost from "./VideoPost";
@@ -7,6 +7,9 @@ import { ResizeMode, Video } from "expo-av";
 import Colors from "../constants/Colors";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ActivityIndicator } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
+import Entypo from '@expo/vector-icons/Entypo';
+import { TypeOfReactions } from "../types/reaction.type";
 
 type UserPostViewer = {
   post: Post
@@ -14,6 +17,21 @@ type UserPostViewer = {
 
 const height = 200;
 const width = 200;
+
+const mapReactionTypeToEnum = (reactionType: string): TypeOfReactions => {
+  switch (reactionType) {
+    case 'EMOJI_FLIRT':
+      return TypeOfReactions.EMOJI_FLIRT;
+    case 'EMOJI_HAPPY':
+      return TypeOfReactions.EMOJI_HAPPY;
+    case 'EMOJI_NEUTRAL':
+      return TypeOfReactions.EMOJI_NEUTRAL;
+    case 'EMOJI_SAD':
+      return TypeOfReactions.EMOJI_SAD;
+    default:
+      return TypeOfReactions.EMOJI_NEUTRAL;
+  }
+}
 
 export default function UserPostViewer({ post }: UserPostViewer) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -74,9 +92,40 @@ export default function UserPostViewer({ post }: UserPostViewer) {
               />
             }
           </>
-
         }
       </Pressable>
+      <ScrollView
+        style={{
+          position: 'absolute',
+          bottom: 5,
+          right: 20
+        }}
+      >
+        {post.reactions.map(reaction =>
+          <View key={reaction.user_id}>
+            <Entypo
+              name={mapReactionTypeToEnum(reaction.reaction_type)}
+              size={30}
+              color={Colors.lightBlue}
+              style={{
+                marginBottom: 5
+              }}
+            />
+            <Image
+              source={{ uri: reaction.user.file.file_url }}
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 100,
+                position: 'absolute',
+                bottom: 0,
+                right: 0
+              }}
+            />
+          </View>
+
+        )}
+      </ScrollView>
       <Modal visible={modalVisible} transparent={true} onRequestClose={handleCloseModal}>
         <Pressable style={styles.modalContainer} onPress={handleCloseModal}>
           {post.post_type === PostType.PHOTO

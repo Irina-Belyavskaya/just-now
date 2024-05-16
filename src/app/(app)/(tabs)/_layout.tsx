@@ -35,7 +35,7 @@ export default function TabLayout() {
         console.error(error);
       }
     })();
-  }, [])
+  })
 
   return (
     <Tabs

@@ -11,7 +11,8 @@ export type Post = {
   likes: number;
   user: User;
   file: File;
-  reactions: Reaction[];
+  // reactions: Reaction[];
+  reactions: any[];
 }
 
 export enum PostType {

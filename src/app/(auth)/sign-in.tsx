@@ -41,7 +41,6 @@ export default function SignIn() {
       };
       console.log('AUTH SIGN IN');
       const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
-      // console.log("responseInfo: ", JSON.stringify(responseInfo, null, 2));
       resetForm();
       await signIn(responseInfo.accessToken, responseInfo.refreshToken);
       setIsLoading(false);
@@ -54,9 +53,6 @@ export default function SignIn() {
       const err = error as any;
       console.error('ERROR IN SIGN IN: ', err.message);
       console.error(err.code);
-      if (err.code === 401) {
-        router.replace('/');
-      }
     }
   }
 

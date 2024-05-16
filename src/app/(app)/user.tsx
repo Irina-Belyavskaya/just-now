@@ -6,12 +6,14 @@ import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import LoaderScreen from '../loader';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/src/components/Themed';
 import { Feather } from '@expo/vector-icons';
 import { FriendRequestStatus, FriendRequest } from '@/src/types/friend-requests.type';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '@/src/constants/Colors';
 
 export default function UserScreen() {
   const { user_id } = useLocalSearchParams<{ user_id: string }>();
@@ -72,7 +74,7 @@ export default function UserScreen() {
     try {
       setLoading(true);
       console.log('GET POSTS INFO FOR PROFILE');
-      const { data } = await repository.get(`posts/profile-posts-info/${user}`);
+      const { data } = await repository.get(`posts/profile-posts-info/${user_id}`);
       setNumberOfPhotoPosts(data.numberOfPhotoPosts);
       setNumberOfVideoPosts(data.numberOfVideoPosts);
       setLoading(false);
@@ -145,17 +147,11 @@ export default function UserScreen() {
   }
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       {isLoading &&
         <LoaderScreen />
       }
-      {!isLoading && userInfo &&
-        // <ImageBackground
-        //   style={styles.backgroundImage}
-        //   source={require("../../../assets/yellow_background.jpg")}
-        //   blurRadius={8}
-        // >
-        isFriend &&
+      {!isLoading && userInfo && isFriend &&
         <TouchableOpacity style={styles.requestWrap} onPress={handleRemoveFriend}>
           <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Remove friend</Text>
           <Ionicons name="person-remove" size={24} color="black" />
@@ -180,21 +176,15 @@ export default function UserScreen() {
           numberOfPhotos={numberOfPhotoPosts}
           numberOfVideo={numberOfVideoPosts}
         />
-
-        // </ImageBackground>
       }
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-  },
   container: {
-    marginHorizontal: Sizes.medium,
-    marginTop: Sizes.safe,
+    backgroundColor: Colors.lightBlue,
+    flex: 1
   },
   requestWrap: {
     display: 'flex',

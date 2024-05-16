@@ -9,6 +9,8 @@ import PhotoViewer from "@/src/components/PhotoViewer";
 import AppCamera from "@/src/components/AppCamera";
 import VideoPlayer from "@/src/components/VideoPlayer";
 import { StatusBar } from "react-native";
+import { useAppDispatch } from "@/src/redux/hooks";
+import { getUser } from "@/src/redux/user/users.actions";
 
 export default function CameraScreen() {
   const { user } = useAuth();
@@ -16,6 +18,8 @@ export default function CameraScreen() {
   const [photo, setPhoto] = useState<ImageResult>();
   const [video, setVideo] = useState<VideoFile>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
 
   const handlePhoto = async (photoUrl: string) => {
     if (!user)
@@ -30,6 +34,7 @@ export default function CameraScreen() {
     }
 
     await repository.post('/posts/', postDto);
+    dispatch(getUser({ id: user }));
   }
 
   return (

@@ -22,7 +22,8 @@ export default function EmptyScreen({ text }: EmptyScreenProps) {
         style={{
           color: Colors.darkGray,
           fontFamily: 'Raleway_700Bold',
-          fontSize: 25
+          fontSize: 25,
+          textAlign: 'center'
         }}
       >
         {text}

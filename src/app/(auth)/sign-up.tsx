@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     letterSpacing: 1.3,
     marginVertical: 10,
+    fontFamily: "Raleway_400Regular",
   },
   content: {
     marginBottom: 'auto',

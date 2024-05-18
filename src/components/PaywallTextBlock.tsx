@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import { Text } from "@/src/components/Themed";
+import Colors from "../constants/Colors";
 
 type PaywallTextBlockProps = {
   Icon: any,
@@ -21,14 +22,15 @@ export default function PaywallTextBlock({ Icon, text, iconName }: PaywallTextBl
       <Icon
         name={iconName}
         size={24}
-        color="black"
+        color={Colors.orange}
         style={{
           marginRight: 15
         }}
       />
       <Text
         style={{
-          fontSize: 25
+          fontSize: 25,
+          color: Colors.darkBlue
         }}
       >
         {text}

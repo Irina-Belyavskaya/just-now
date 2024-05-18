@@ -1,9 +1,11 @@
-import { Text, Image, StyleSheet, Pressable } from 'react-native';
+import { Image, StyleSheet, Pressable } from 'react-native';
 import React from 'react';
 import { useChatContext } from 'stream-chat-expo';
-import { router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { useAuth } from '../context/auth-context';
 import { User } from '../types/user.type';
+import Colors from '../constants/Colors';
+import { Text } from './Themed';
 
 type UserListItemProps = {
   user: User
@@ -36,10 +38,11 @@ const UserListItem = ({ user }: UserListItemProps) => {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: 'white'
+        backgroundColor: Colors.lightBlue,
       }}
       onPress={onPress}
     >
+      <Stack.Screen options={{ headerTitle: 'Friends' }} />
       <Image
         style={styles.userImage}
         source={{ uri: user.file.file_url }}

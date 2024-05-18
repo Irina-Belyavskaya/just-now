@@ -1,16 +1,17 @@
-import { Text, TextInput, View, StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
-import { Formik, FormikState, useFormik } from 'formik';
+import { TextInput, View, StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
+import { Formik, FormikState } from 'formik';
 import { useAuth } from '../../context/auth-context';
 import * as yup from 'yup';
 import { Button } from 'react-native-paper';
 import { FieldValues } from 'react-hook-form';
-import { Link, router } from 'expo-router';
+import { Link, Stack, router } from 'expo-router';
 import repository from '@/src/repository';
 import { useState } from 'react';
 import { ErrorText } from '@/src/components/Themed';
 import { SignInDto } from '@/src/redux/sign-up/types/sign-in.dto';
-import { setUserInfo } from '@/src/redux/user/user.reducer';
+import { Text } from "@/src/components/Themed";
 import { useAppDispatch } from '@/src/redux/hooks';
+import Colors from '@/src/constants/Colors';
 
 export default function SignIn() {
   const { signIn } = useAuth();
@@ -95,7 +96,7 @@ export default function SignIn() {
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
                   value={values.password}
-                  style={[styles.input, [styles.input, touched.password && errors.password ? styles.errorInput : null]]}
+                  style={[styles.input, touched.password && errors.password ? styles.errorInput : null]}
                   placeholder="Password"
                   autoCapitalize={'none'}
                   autoCorrect={false}
@@ -117,7 +118,8 @@ export default function SignIn() {
                 labelStyle={{ color: 'white' }}
                 uppercase
               >
-                Sign In
+                <Text style={styles.buttonText}>Sign In</Text>
+
               </Button>
               {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
             </View>
@@ -150,7 +152,6 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 24,
     marginTop: 50,
-    fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 40,
     fontFamily: "Raleway_700Bold"
@@ -175,7 +176,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: '#fff',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: "Raleway_400Regular",
   },
   errorInput: {
     borderColor: '#cc0000',
@@ -186,12 +188,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     width: '80%',
     paddingVertical: 5,
-    fontSize: 20
+  },
+  buttonText: {
+    fontSize: 20,
+    fontFamily: "Raleway_700Bold",
+    color: Colors.white
   },
   promt: {
+    fontFamily: "Raleway_700Bold",
     fontSize: 18,
     textAlign: 'center',
-    fontWeight: 'bold',
     marginTop: 35,
   },
 });

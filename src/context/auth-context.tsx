@@ -81,7 +81,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
             const decoded: JwtPayload = JWT.decode(accessToken, key);
             setUser(decoded.user_id);
           } catch (error) {
-            console.log(error)
+            console.error('signIn auth: ', error)
           }
         },
         signUp: (accessToken: string, refreshToken: string) => {

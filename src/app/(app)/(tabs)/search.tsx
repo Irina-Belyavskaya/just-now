@@ -128,7 +128,7 @@ export default function SearchScreen() {
           Friends
         </Text>
         {!isLoading && friends.length === 0 &&
-          <Text>{'No friends('}</Text>
+          <Text style={{ fontSize: 18, textAlign: 'center', marginTop: '50%' }}>{'No friends('}</Text>
         }
         {isLoading && <LoaderScreen />}
 

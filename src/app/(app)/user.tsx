@@ -104,7 +104,7 @@ export default function UserScreen() {
       try {
         setLoading(true);
         console.log('GET FREINDS');
-        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user}`);
+        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user_id}`);
         setNumberOfUserFriends(userFriends.length);
         setLoading(false);
       } catch (error) {

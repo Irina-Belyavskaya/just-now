@@ -32,7 +32,7 @@ export default function CameraButtons({
         style={{
           position: 'absolute',
           right: 10,
-          top: 30,
+          top: 40,
           backgroundColor: 'rgba(0,0,0,0.4)',
           borderRadius: 5
         }}
@@ -41,7 +41,7 @@ export default function CameraButtons({
           onPress={() => setFlash((curValue) => curValue === 'off' ? 'on' : 'off')}
           name={flash === 'off' ? "flash-off" : "flash"}
           size={24}
-          color={flash === 'off' ? Colors.white : Colors.lightBlue}
+          color={Colors.lightBlue}
         />
       </View>
       <View
@@ -73,7 +73,7 @@ export default function CameraButtons({
           bottom: 10,
           width: 70,
           height: 70,
-          backgroundColor: isRecording ? 'red' : 'white',
+          backgroundColor: isRecording ? Colors.darkBlue : Colors.lightBlue,
           alignSelf: 'center',
           borderRadius: 75
         }}
@@ -82,7 +82,7 @@ export default function CameraButtons({
         <AntDesign
           name="retweet"
           size={35}
-          color="white"
+          color={Colors.lightBlue}
           style={{
             position: 'absolute',
             bottom: 25,

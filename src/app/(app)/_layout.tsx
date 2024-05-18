@@ -61,12 +61,13 @@ export default function AppEntry() {
           }}
         />
         <Stack.Screen
-          name="channel"
+          name="channel/[cid]"
           options={{
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
-            navigationBarColor: Colors.darkBlue
+            navigationBarColor: Colors.darkBlue,
+            headerTitle: 'Loading...'
           }}
         />
         <Stack.Screen

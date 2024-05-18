@@ -76,8 +76,29 @@ export default function ChatProvider({ children }: PropsWithChildren) {
       setIsReady(true);
     }
 
+    const update = async () => {
+      try {
+        if (!client.user)
+          return;
+        await client.partialUpdateUser({
+          id: client.user.id,
+          set: {
+            name: userInfo.user_nickname,
+            image: userInfo.file.file_url,
+          }
+        });
+        console.log('User updated!');
+        setIsReady(true);
+      } catch (error) {
+        console.error('Update failed: ', error);
+      }
+    }
+
+    console.log(JSON.stringify(client.user, null, 2))
     if (client.user === undefined) {
       connect();
+    } else {
+      update();
     }
 
     return () => {

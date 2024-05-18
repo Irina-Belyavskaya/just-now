@@ -30,5 +30,6 @@ export default {
   acceptColor: "#4CBB17",
   deniedColor: "#FF4433",
   transparent: "rgba(255, 255, 255, 0)",
-  altYelllow: "rgba(245, 209, 2, 0.5)"
+  altYelllow: "rgba(245, 209, 2, 0.5)",
+  orange: '#ff8503'
 };

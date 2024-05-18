@@ -3,6 +3,7 @@ import { View, StyleSheet, Image } from "react-native";
 import { router } from "expo-router";
 import { ImageResult } from "expo-image-manipulator";
 import { deleteFile } from "../utils/deleteFile";
+import Colors from "../constants/Colors";
 
 type PhotoViewerProps = {
   photoPath: string,
@@ -57,9 +58,9 @@ export default function PhotoViewer({
         color="white"
         style={{
           position: 'absolute',
-          top: 15,
+          top: 40,
           left: 15,
-          backgroundColor: 'rgba(0,0,0,0.8)',
+          backgroundColor: Colors.darkBlue,
           borderRadius: 50,
           padding: 5
         }}
@@ -81,7 +82,7 @@ export default function PhotoViewer({
           size={40}
           color="white"
           style={{
-            backgroundColor: 'rgba(0,0,0,0.8)',
+            backgroundColor: Colors.darkBlue,
             borderRadius: 50,
             padding: 10
           }}

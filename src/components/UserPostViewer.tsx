@@ -166,6 +166,6 @@ const styles = StyleSheet.create({
   modalImage: {
     width: '80%',
     height: '80%',
-    resizeMode: 'contain',
+    resizeMode: 'contain'
   },
 });

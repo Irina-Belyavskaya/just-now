@@ -17,6 +17,7 @@ import { router } from "expo-router";
 import LoaderScreen from "../app/loader";
 import { SignUpDto } from "../redux/sign-up/types/sign-up.dto";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
+import { Text } from "@/src/components/Themed";
 
 export default function SignUpUploadPhotoScreen({
   handleNext,
@@ -109,7 +110,7 @@ export default function SignUpUploadPhotoScreen({
       {!isLoading && !showModalWindow &&
         <View style={styles.container}>
           <Button style={styles.button} onPress={pickImage} textColor={Colors.white}>
-            Pick an image from camera roll
+            <Text style={styles.buttonText}>Pick an image</Text>
           </Button>
           {image &&
             <Image
@@ -136,9 +137,11 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 30,
     paddingVertical: 10,
-    width: 300,
+    width: 200,
     backgroundColor: Colors.darkBlue,
-    color: Colors.white
+  },
+  buttonText: {
+    color: Colors.white,
   },
   image: {
     marginTop: 40,

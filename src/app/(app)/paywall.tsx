@@ -17,6 +17,7 @@ import { setUserInfo } from "@/src/redux/user/user.reducer";
 import { useAuth } from "@/src/context/auth-context";
 import { useState } from "react";
 import LoaderScreen from "../loader";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
@@ -72,32 +73,51 @@ export default function Paywall() {
     <>
       {isLoading && <LoaderScreen />}
       {!isLoading &&
-        <ScrollView
+        <View
           style={{
             backgroundColor: Colors.lightBlue,
-          }}
-          contentContainerStyle={{
+            flex: 1,
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column'
           }}
-        >
+        // contentContainerStyle={{
 
+        // }}
+        >
+          <View style={{ marginBottom: 40, }}>
+            <Text
+              style={{
+                fontSize: 30,
+                fontFamily: 'Raleway_700Bold',
+                color: Colors.darkBlue
+              }}
+            >
+              Upgrade
+            </Text>
+            <AnimatedLottieView
+              loop
+              autoPlay
+              style={{
+                width: 60,
+                height: 60,
+                position: 'absolute',
+                right: -40,
+                top: -25,
+                transform: [{ rotate: '30deg' }]
+              }}
+              source={require('@/assets/lottie/pro.json')}
+            />
+          </View>
           <Text
             style={{
-              fontSize: 30,
-              fontFamily: 'Raleway_700Bold',
-              marginTop: 30,
-              marginBottom: 10
+              fontSize: 18,
+              color: Colors.darkBlue,
+              marginBottom: 20
             }}
           >
-            Upgrade
-          </Text>
-          <Text
-            style={{
-              fontSize: 18
-            }}
-          >
-            Upgrade to Pro to Access all the Features
+            Upgrade to Pro to access all features
           </Text>
           <View
             style={{
@@ -125,40 +145,62 @@ export default function Paywall() {
               text={'Unlimited feed viewing'}
               iconName={'unlock'}
             />
-            <AnimatedLottieView
-              loop
-              autoPlay
-              style={{
-                width: '80%',
-                maxWidth: 200,
-                height: 200,
-              }}
-              source={require('@/assets/lottie/pro.json')}
-            />
+
           </View>
           <TouchableOpacity
             onPress={() => handleUpgrade()}
             style={{
-              borderColor: 'orange',
+              borderColor: Colors.orange,
               borderWidth: 1,
               borderRadius: 30,
               paddingHorizontal: 25,
               paddingVertical: 15,
-              backgroundColor: 'orange',
-              marginTop: 20
+              backgroundColor: Colors.orange,
+              marginTop: 60,
             }}
           >
             <Text
               style={{
                 fontSize: 22,
                 textTransform: 'uppercase',
-                fontFamily: 'Raleway_700Bold'
+                fontFamily: 'Raleway_700Bold',
+                color: Colors.white,
               }}
             >
               Upgrate
             </Text>
           </TouchableOpacity>
-        </ScrollView>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginLeft: 'auto',
+              marginTop: 100,
+              marginRight: 30
+            }}
+          >
+            <Text
+              style={{
+                color: Colors.darkBlue,
+                marginRight: 10
+              }}
+            >
+              Pay with
+            </Text>
+            <FontAwesome5
+              name="stripe"
+              size={40}
+              color={Colors.darkBlue}
+            />
+            <MaterialIcons
+              name="security"
+              size={30}
+              color={Colors.darkBlue}
+            />
+          </View>
+
+        </View>
       }
     </>
   )

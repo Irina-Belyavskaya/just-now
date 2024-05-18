@@ -7,12 +7,12 @@ export type AppInputProps = {
   onBlur?: ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) | undefined,
   value: string | undefined,
   placeholder?: string,
-  isTouched?:  boolean | undefined,
+  isTouched?: boolean | undefined,
   errorMessage?: string | undefined,
 } & TextInputProps;
 
-export default function AppInput ({
-  onChangeText, onBlur, value, placeholder, isTouched, errorMessage, ...props}: AppInputProps) {
+export default function AppInput({
+  onChangeText, onBlur, value, placeholder, isTouched, errorMessage, ...props }: AppInputProps) {
   return (
     <View style={styles.wrapInput}>
       <TextInput
@@ -24,12 +24,12 @@ export default function AppInput ({
         autoCapitalize={'none'}
         {...props}
       />
-      {isTouched && errorMessage 
-        ? 
+      {isTouched && errorMessage
+        ?
         <Text style={styles.error}>
           {errorMessage}
         </Text>
-        : 
+        :
         null
       }
     </View>
@@ -51,19 +51,12 @@ const styles = StyleSheet.create({
   imageBackground: {
     flex: 1,
   },
-  title: {
-    marginBottom: 24,
-    marginTop: 50,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 40,
-    fontFamily: "Raleway_700Bold"
-  },
   error: {
     fontSize: 14,
     color: '#cc0000',
     fontWeight: 'bold',
-    marginLeft: 3
+    marginLeft: 3,
+    fontFamily: "Raleway_400Regular",
   },
   wrapInput: {
     width: '80%',
@@ -79,7 +72,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: '#fff',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: "Raleway_400Regular"
   },
   errorInput: {
     borderColor: '#cc0000',

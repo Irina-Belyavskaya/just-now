@@ -7,6 +7,7 @@ import { FriendRequest } from '@/src/types/friend-requests.type';
 import { RoleType } from '@/src/types/role.type';
 import { User } from '@/src/types/user.type';
 import { getUserFriend } from '@/src/utils/getUserFriend';
+import Colors from '@/src/constants/Colors';
 
 export default function UsersScreen() {
   const [users, setUsers] = useState<User[]>([]);
@@ -28,7 +29,7 @@ export default function UsersScreen() {
   return (
     <FlatList
       data={users}
-      contentContainerStyle={{ gap: 5 }}
+      contentContainerStyle={{ gap: 5, backgroundColor: Colors.lightBlue, flex: 1 }}
       renderItem={({ item }) => <UserListItem user={item} />}
     />
   );

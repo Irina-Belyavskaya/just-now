@@ -1,7 +1,6 @@
 import { Text } from "@/src/components/Themed";
 import Colors from "@/src/constants/Colors";
 import { TouchableOpacity, View, Image } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { FontAwesome6 } from '@expo/vector-icons';
 import repository from "@/src/repository";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -145,7 +144,6 @@ export default function Paywall() {
               text={'Unlimited feed viewing'}
               iconName={'unlock'}
             />
-
           </View>
           <TouchableOpacity
             onPress={() => handleUpgrade()}
@@ -167,7 +165,12 @@ export default function Paywall() {
                 color: Colors.white,
               }}
             >
-              Upgrate
+              Subscribe 8
+              <FontAwesome6
+                name="dollar-sign"
+                size={24}
+                color={Colors.white}
+              />
             </Text>
           </TouchableOpacity>
           <View

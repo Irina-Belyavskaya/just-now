@@ -48,14 +48,13 @@ export default function HomeScreen() {
 
       console.log('GET POSTS');
       const { data: postsData } = await repository.get('/posts');
-
-      setPosts(postsData);
+      if (postsData)
+        setPosts(postsData);
       setLoading(false);
     } catch (error) {
       setLoading(false);
       const err = error as any;
       console.error('ERROR IN GET POSTS: ', err.message);
-      console.error(err.code);
 
       if (err.code === 401) {
         router.replace('/');

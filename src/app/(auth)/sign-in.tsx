@@ -41,7 +41,7 @@ export default function SignIn() {
         user_password: data.password
       };
       console.log('AUTH SIGN IN');
-      const { data: responseInfo, status } = await repository.post("/auth/sign-in", dto);
+      const { data: responseInfo } = await repository.post("/auth/sign-in", dto);
       resetForm();
       await signIn(responseInfo.accessToken, responseInfo.refreshToken);
       setIsLoading(false);

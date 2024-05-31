@@ -28,13 +28,21 @@ export default function Paywall() {
   const handleUpgrade = async () => {
     try {
       setLoading(true);
-      // 1. Create a payment intent
-      const { data } = await repository.post(`/payments/intents`, { amount: 800 });
+      // 1. Create a customer and get customerId
+      const { data: customer } = await repository.post(`/payments/customers`);
+      const customerId = customer.id;
 
-      // 2. Initialize the Payment sheet
+      // 2. Create a subscription and get clientSecret
+      const { data: subscription } = await repository.post(`/payments/subscriptions`, {
+        customerId
+      });
+
+      // 3. Initialize the Payment sheet
       const initResponse = await initPaymentSheet({
+        customerId,
+        customerEphemeralKeySecret: subscription.clientSecret,
+        paymentIntentClientSecret: subscription.clientSecret,
         merchantDisplayName: 'JustNow',
-        paymentIntentClientSecret: data
       });
 
       if (initResponse.error) {
@@ -43,7 +51,7 @@ export default function Paywall() {
         return;
       }
 
-      // 3. Present the Payment Sheet from Stripe
+      // 4. Present the Payment Sheet from Stripe
       const paymentResponse = await presentPaymentSheet();
 
       if (paymentResponse.error) {
@@ -52,7 +60,7 @@ export default function Paywall() {
         return;
       }
 
-      // 4. If payment ok 
+      // 5. If payment ok 
       const { data: updatedUser } = await repository.put(
         `/users/upgrade`,
         { role_type: RoleType.USER_MONTHLY_PRO }
@@ -153,6 +161,9 @@ export default function Paywall() {
               paddingVertical: 15,
               backgroundColor: Colors.orange,
               marginTop: 60,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
           >
             <Text
@@ -163,13 +174,22 @@ export default function Paywall() {
                 color: Colors.white,
               }}
             >
-              Subscribe 8
-              <FontAwesome6
-                name="dollar-sign"
-                size={24}
-                color={Colors.white}
-              />
+              Subscribe
             </Text>
+            <FontAwesome6
+              name="4"
+              size={22}
+              color={Colors.white}
+              style={{
+                marginRight: 3,
+                marginLeft: 10,
+              }}
+            />
+            <FontAwesome6
+              name="dollar-sign"
+              size={22}
+              color={Colors.white}
+            />
           </TouchableOpacity>
           <View
             style={{

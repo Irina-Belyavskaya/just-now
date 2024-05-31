@@ -1,13 +1,14 @@
 
 import Colors from '@/src/constants/Colors';
-import { useAuth } from '@/src/context/auth-context';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Link, Stack, router } from 'expo-router';
 import { ChannelList } from 'stream-chat-expo';
 import LoaderScreen from '../loader';
+import { useAppSelector } from '@/src/redux/hooks';
 
 export default function ChatsScreen() {
-  const { user } = useAuth();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
+
   return (
     <>
       <Stack.Screen
@@ -23,11 +24,13 @@ export default function ChatsScreen() {
           )
         }}
       />
-      <ChannelList
-        filters={{ members: { $in: [user] } }}
-        onSelect={(channel) => router.push(`/channel/${channel.cid}`)}
-        LoadingIndicator={() => <LoaderScreen />}
-      />
+      {userInfo &&
+        <ChannelList
+          filters={{ members: { $in: [userInfo.user_id] } }}
+          onSelect={(channel) => router.push(`/channel/${channel.cid}`)}
+          LoadingIndicator={() => <LoaderScreen />}
+        />
+      }
     </>
 
   );

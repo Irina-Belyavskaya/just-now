@@ -13,7 +13,6 @@ import Animated from "react-native-reanimated";
 import { RoleType } from "@/src/types/role.type";
 import { useAppDispatch } from "@/src/redux/hooks";
 import { setUserInfo } from "@/src/redux/user/user.reducer";
-import { useAuth } from "@/src/context/auth-context";
 import { useState } from "react";
 import LoaderScreen from "../loader";
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -23,7 +22,6 @@ const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 export default function Paywall() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const dispatch = useAppDispatch();
-  const { user } = useAuth();
 
   const [isLoading, setLoading] = useState(false);
 
@@ -56,7 +54,7 @@ export default function Paywall() {
 
       // 4. If payment ok 
       const { data: updatedUser } = await repository.put(
-        `/users/upgrade/${user}`,
+        `/users/upgrade`,
         { role_type: RoleType.USER_MONTHLY_PRO }
       )
       dispatch(setUserInfo(updatedUser));

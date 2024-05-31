@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import { useStorageState } from './useStorageState';
 import JWT from 'expo-jwt';
@@ -10,14 +10,14 @@ type AuthContexttype = {
   signIn: (accessToken: string, refreshToken: string) => void;
   signUp: (accessToken: string, refreshToken: string) => void;
   signOut: () => void;
-  user: string | null;
+  accessToken: string | null
 }
 
 const AuthContext = React.createContext<AuthContexttype>({
   signIn: () => null,
   signUp: () => null,
   signOut: () => null,
-  user: null,
+  accessToken: null
 });
 
 export function useAuth() {
@@ -33,7 +33,6 @@ export type JwtPayload = {
 export function AuthProvider(props: React.PropsWithChildren) {
   const [[isLoadingAccessToken, accessToken], setAccessToken] = useStorageState('accessToken');
   const [[isLoadingRefreshToken, refreshToken], setRefreshToken] = useStorageState('refreshToken');
-  const [[isLoadingUser, user], setUser] = useStorageState('user');
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   const rootSegment = useSegments()[0];
@@ -47,25 +46,23 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
     console.log("-----------------------------------------------");
     console.log("TOKEN IN AUTH PROVIDER: ", accessToken);
-    console.log("USER IN AUTH PROVIDER: ", user);
     console.log("IS LOADING TOKEN IN AUTH PROVIDER: ", isLoadingAccessToken);
-    console.log("IS LOADING USER IN AUTH PROVIDER: ", isLoadingUser);
     console.log("-----------------------------------------------");
 
-    if (isLoadingAccessToken || isLoadingUser) {
+    if (isLoadingAccessToken) {
       router.replace("/loader");
     } else if (!accessToken && rootSegment !== "(auth)") {
       router.replace("/(auth)/sign-in");
     } else if (accessToken && rootSegment !== "(app)") {
       router.replace("/");
     }
-  }, [accessToken, rootSegment, isLoadingAccessToken, isLoadingUser])
+  }, [accessToken, rootSegment, isLoadingAccessToken])
 
   useEffect(() => {
-    if (!userInfo && user && accessToken) {
-      dispatch(getUser({ id: user }));
+    if (!userInfo && accessToken) {
+      dispatch(getUser());
     }
-  }, [userInfo, user, accessToken]);
+  }, [userInfo, accessToken]);
 
   return (
     <AuthContext.Provider
@@ -75,11 +72,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
             console.log('SIGN IN AUTH PROVIDER');
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
-
-            // TODO: remove
-            const key = 'SECRET';
-            const decoded: JwtPayload = JWT.decode(accessToken, key);
-            setUser(decoded.user_id);
           } catch (error) {
             console.error('signIn auth: ', error)
           }
@@ -89,22 +81,16 @@ export function AuthProvider(props: React.PropsWithChildren) {
             console.log('SIGN IN AUTH PROVIDER');
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
-
-            // TODO: remove
-            const key = 'SECRET';
-            const decoded: JwtPayload = JWT.decode(accessToken, key);
-            setUser(decoded.user_id);
           } catch (error) {
-            console.log(error)
+            console.log('ERROR IN SIGN UP', error)
           }
         },
         signOut: () => {
           setAccessToken(null);
           setRefreshToken(null);
-          setUser(null);
           dispatch(setUserReset());
         },
-        user,
+        accessToken
       }}>
       {props.children}
     </AuthContext.Provider>

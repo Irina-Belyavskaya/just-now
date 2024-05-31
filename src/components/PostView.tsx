@@ -5,7 +5,6 @@ import VideoPost from "./VideoPost";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import Reactions from "./Reactions";
-import { useAuth } from "../context/auth-context";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Reaction } from "../types/reaction.type";
 import { useAppSelector } from "../redux/hooks";
@@ -58,15 +57,14 @@ function getTimeAgo(post_created_at: string): string {
 }
 
 export default function PostView({ post }: PostProps) {
-  const { user } = useAuth();
   const [reaction, setReaction] = useState<Reaction>();
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   useEffect(() => {
-    if (!user || !post || userInfo?.role.role_type === RoleType.USER_START)
+    if (!userInfo || !post || userInfo?.role.role_type === RoleType.USER_START)
       return;
 
-    const reaction = post.reactions.find(reaction => reaction.user_id === user);
+    const reaction = post.reactions.find(reaction => reaction.user_id === userInfo.user_id);
     setReaction(reaction);
   }, [])
 

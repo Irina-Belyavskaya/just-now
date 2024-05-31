@@ -6,14 +6,13 @@ import Colors from '@/src/constants/Colors';
 import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
 import { router, useFocusEffect } from 'expo-router';
-import { useAuth } from '@/src/context/auth-context';
 import { FriendRequest, FriendRequestSenders } from '@/src/types/friend-requests.type';
 import { getUserFriend } from '@/src/utils/getUserFriend';
 import LoaderScreen from '../../loader';
+import { useAppSelector } from '@/src/redux/hooks';
 
 export default function SearchScreen() {
-  ;
-  const { user } = useAuth();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [friends, setFriends] = useState<FriendRequestSenders[]>([]);
@@ -26,7 +25,7 @@ export default function SearchScreen() {
         // setLoading(true);
         console.log('GET USERS');
         const { data } = await repository.get('/users');
-        setUsers(data.filter((item: User) => item.user_id !== user));
+        setUsers(data.filter((item: User) => item.user_id !== userInfo?.user_id));
         // setLoading(false);
       } catch (error) {
         console.error(error);
@@ -37,18 +36,18 @@ export default function SearchScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (!user)
-        return;
-
       (async () => {
         try {
+          if (!userInfo)
+            return;
+
           setIsLoading(true);
           console.log('GET FRIENDS');
 
-          const { data: friends } = await repository.get(`/friend-requests/friends/${user}`);
+          const { data: friends } = await repository.get('/friend-requests/friends');
           const userFriends: FriendRequestSenders[] = friends.map((friend: FriendRequest) => {
             return {
-              sender: getUserFriend(friend, user),
+              sender: getUserFriend(friend, userInfo.user_id),
               friend_request_id: friend.friend_request_id
             };
           });
@@ -130,7 +129,7 @@ export default function SearchScreen() {
         {!isLoading && friends.length === 0 &&
           <Text style={{ fontSize: 18, textAlign: 'center', marginTop: '50%' }}>{'No friends('}</Text>
         }
-        {isLoading && <LoaderScreen />}
+        {isLoading && <LoaderScreen style={{ marginTop: '50%' }} />}
 
         {!isLoading && friends.map((friend) =>
           <TouchableOpacity

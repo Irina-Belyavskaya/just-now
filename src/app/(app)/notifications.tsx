@@ -1,5 +1,4 @@
 import EmptyScreen from '@/src/components/EmptyScreen';
-import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { FriendRequestSenders, FriendRequestStatus } from '@/src/types/friend-requests.type';
 import { useCallback, useEffect, useState } from 'react';
@@ -11,7 +10,6 @@ import { Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NotificationssScreen() {
-  const { user } = useAuth();
   const [isLoading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<FriendRequestSenders[]>([]);
 
@@ -19,7 +17,7 @@ export default function NotificationssScreen() {
     try {
       setLoading(true);
       console.log('GET NOTIFICATIONS');
-      const { data } = await repository.get(`/friend-requests/${user}`);
+      const { data } = await repository.get(`/friend-requests`);
       setNotifications(data);
       setLoading(false);
     } catch (error) {

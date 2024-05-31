@@ -6,11 +6,11 @@ import FeedScreen from '@/src/components/Feed';
 import { router, useLocalSearchParams } from 'expo-router';
 import LoaderScreen from '../../loader';
 import EmptyScreen from '@/src/components/EmptyScreen';
-import { useAuth } from '@/src/context/auth-context';
 import { StatusBar } from 'expo-status-bar';
 import Colors from '@/src/constants/Colors';
 import { useAppSelector } from '@/src/redux/hooks';
 import { RoleType } from '@/src/types/role.type';
+import { useAuth } from '@/src/context/auth-context';
 
 const getDiffrenceInDays = (dateString: string) => {
   const userEntryDate = new Date(dateString).getTime();
@@ -20,7 +20,7 @@ const getDiffrenceInDays = (dateString: string) => {
 };
 
 export default function HomeScreen() {
-  const { user } = useAuth();
+  const { accessToken } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [shouldUpdateActivity, setShouldUpdateActivity] = useState(false);
@@ -29,9 +29,6 @@ export default function HomeScreen() {
 
   const getPosts = useCallback(async () => {
     try {
-      if (!user || user === '') {
-        return;
-      }
       if (
         userInfo &&
         userInfo.role &&
@@ -60,13 +57,13 @@ export default function HomeScreen() {
         router.replace('/');
       }
     }
-  }, [user, repository, userInfo]);
+  }, [repository, userInfo]);
 
   useEffect(() => {
-    if (user && user !== '') {
-      getPosts();
-    }
-  }, [refresh, user, getPosts]);
+    if (!accessToken)
+      return;
+    getPosts();
+  }, [refresh, getPosts]);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -4,7 +4,6 @@ import Colors from '../constants/Colors';
 import SpeedDialAction from './SpeedDialAction';
 import { Reaction, TypeOfReactions } from '../types/reaction.type';
 import repository from '../repository';
-import { useAuth } from '../context/auth-context';
 
 type ReactionsProps = {
   postId: string,
@@ -21,20 +20,17 @@ function convertToUpperCase(input: string): string {
 }
 
 export default function Reactions({ postId, setReaction }: ReactionsProps) {
-  const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
   const handlePressReaction = async (reaction_type: TypeOfReactions) => {
     try {
       const body = {
         post_id: postId,
-        user_id: user,
         reaction_type: convertToUpperCase(reaction_type)
       }
       const { data } = await repository.post('/reactions', body);
       setOpen(false);
       setReaction(data);
-      // console.log('response: ', JSON.stringify(data, null, 2));
     } catch (error) {
       console.error(error);
       setOpen(false);

@@ -9,11 +9,11 @@ const headers = {
   }
 }
 
-export const getUser = createAsyncThunk<User, { id: string }>(
+export const getUser = createAsyncThunk<User>(
   'users/info',
-  async ({ id }, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const response = await repository.get(`/users/${id}`, headers);
+      const response = await repository.get('/users/user-info', headers);
       return response.data;
     } catch (e) {
       return thunkAPI.rejectWithValue('Can\'t get user info')

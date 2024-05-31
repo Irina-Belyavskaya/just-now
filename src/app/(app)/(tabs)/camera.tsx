@@ -1,4 +1,3 @@
-import { useAuth } from "@/src/context/auth-context";
 import repository from "@/src/repository";
 import { PostType } from "@/src/types/post.type";
 import { uploadToFirebaseAndCreateFile } from "@/src/redux/actions";
@@ -9,11 +8,11 @@ import PhotoViewer from "@/src/components/PhotoViewer";
 import AppCamera from "@/src/components/AppCamera";
 import VideoPlayer from "@/src/components/VideoPlayer";
 import { StatusBar } from "react-native";
-import { useAppDispatch } from "@/src/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import { getUser } from "@/src/redux/user/users.actions";
 
 export default function CameraScreen() {
-  const { user } = useAuth();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   const [photo, setPhoto] = useState<ImageResult>();
   const [video, setVideo] = useState<VideoFile>();
@@ -22,19 +21,18 @@ export default function CameraScreen() {
   const dispatch = useAppDispatch();
 
   const handlePhoto = async (photoUrl: string) => {
-    if (!user)
+    if (!userInfo)
       return;
 
-    const file = await uploadToFirebaseAndCreateFile(photoUrl, `post/${user}/`);
+    const file = await uploadToFirebaseAndCreateFile(photoUrl, `post/${userInfo.user_id}/`);
 
     const postDto = {
       post_content_id: file.file_id,
-      user_id: user,
       post_type: PostType.PHOTO
     }
 
-    await repository.post('/posts/', postDto);
-    dispatch(getUser({ id: user }));
+    await repository.post('/posts', postDto);
+    dispatch(getUser());
   }
 
   return (

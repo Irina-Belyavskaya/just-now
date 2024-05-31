@@ -32,8 +32,6 @@ export const sendToFirebase = async (blob: Blob, path: string): Promise<Firebase
     const snapshot = await uploadBytes(storageRef, blob);
 
     if (snapshot) {
-      console.log(JSON.stringify(snapshot, null, 2));
-
       const downloadURL = await getDownloadURL(storageRef);
       return {
         url: downloadURL,

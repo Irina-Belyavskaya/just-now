@@ -13,7 +13,6 @@ import { User } from '../types/user.type';
 import { Text } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
-import { useAuth } from '../context/auth-context';
 import { Stack } from 'expo-router';
 import { getUser } from '../redux/user/users.actions';
 import { uploadToFirebaseAndUpdateFile } from '../redux/actions';
@@ -25,8 +24,6 @@ import { UpdateUserDTO } from '../redux/sign-up/types/update-info.dto';
 import LoaderScreen from '../app/loader';
 
 export default function SettingInputs() {
-  const { user } = useAuth();
-
   const dispatch = useAppDispatch();
   const userState: User | null = useAppSelector(state => state.userReducer.userInfo);
   const [isUniquenessError, setIsUniquenessError] = useState(false);
@@ -86,16 +83,13 @@ export default function SettingInputs() {
         dto.user_currentPassword = currentPassword;
       }
 
-      await repository.put(`/users/${user}`, dto);
+      await repository.put('/users/user-info', dto);
 
-      if (image && image !== userState?.file.file_url && user && userState) {
-        console.log('here')
+      if (image && image !== userState?.file.file_url && userState) {
         await uploadToFirebaseAndUpdateFile(image, userState.file.file_id);
       }
 
-      if (user)
-        dispatch(getUser({ id: user }));
-
+      dispatch(getUser());
       setIsLoading(false);
     } catch (error) {
       const err = error as any;

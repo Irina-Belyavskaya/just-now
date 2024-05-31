@@ -7,35 +7,36 @@ import { Link, Tabs } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import Colors from '@/src/constants/Colors';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
-import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { Badge } from 'react-native-paper';
 import { Text } from '@/src/components/Themed';
 import { useAppSelector } from '@/src/redux/hooks';
 import { RoleType } from '@/src/types/role.type';
+import { useAuth } from '@/src/context/auth-context';
 
 export default function TabLayout() {
-  const { user } = useAuth();
+  const { accessToken } = useAuth();
   const [isNotifications, setIsNotifications] = useState(false);
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   useEffect(() => {
-    if (!user)
+    if (!accessToken)
       return;
 
-    (async () => {
+    const getNotifications = async () => {
       try {
-        console.log('GET USER NOTIFICATIONS IN TABS');
-        const { data } = await repository.get(`/friend-requests/notifications/${user}`);
+        console.log('GET USER NOTIFICATIONS');
+        const { data } = await repository.get('/friend-requests/notifications');
         if (data && data.length > 0)
           setIsNotifications(true);
         else
           setIsNotifications(false);
       } catch (error) {
-        console.error(error);
+        console.error('ERROR IN GET NOTIFICATIONS: ', error);
       }
-    })();
-  })
+    }
+    getNotifications();
+  }, [])
 
   return (
     <Tabs

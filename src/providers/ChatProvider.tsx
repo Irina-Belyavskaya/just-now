@@ -94,7 +94,6 @@ export default function ChatProvider({ children }: PropsWithChildren) {
       }
     }
 
-    console.log(JSON.stringify(client.user, null, 2))
     if (client.user === undefined) {
       connect();
     } else {

@@ -63,8 +63,6 @@ export default function SignUpUploadPhotoScreen({
       setIsLoading(true);
 
       const file = await uploadToFirebaseAndCreateFile(photoUrl, 'profile');
-      console.log(file);
-      console.log(file.file_id);
 
       const signUpDto: SignUpDto = {
         user_email: signUpData.user_email,

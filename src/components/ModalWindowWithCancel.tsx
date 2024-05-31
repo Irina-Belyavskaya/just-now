@@ -1,7 +1,4 @@
 import Colors from "@/src/constants/Colors";
-import { useAuth } from "@/src/context/auth-context";
-import { getStorageItem } from "@/src/context/useStorageState";
-import repository from "@/src/repository";
 import { Stack, router } from "expo-router";
 import { Dispatch, useState } from "react";
 import { Modal, Pressable, View, StyleSheet, Text } from "react-native";

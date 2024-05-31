@@ -2,10 +2,10 @@ import { Image, StyleSheet, Pressable } from 'react-native';
 import React from 'react';
 import { useChatContext } from 'stream-chat-expo';
 import { Stack, router } from 'expo-router';
-import { useAuth } from '../context/auth-context';
 import { User } from '../types/user.type';
 import Colors from '../constants/Colors';
 import { Text } from './Themed';
+import { useAppSelector } from '../redux/hooks';
 
 type UserListItemProps = {
   user: User
@@ -13,16 +13,16 @@ type UserListItemProps = {
 
 const UserListItem = ({ user }: UserListItemProps) => {
   const { client } = useChatContext();
-  const { user: me } = useAuth();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   const onPress = async () => {
     try {
-      if (!me)
+      if (!userInfo)
         return;
 
       // Start a chat with him
       const channel = client.channel('messaging', {
-        members: [me, user.user_id],
+        members: [userInfo.user_id, user.user_id],
       });
       await channel.watch();
       router.replace(`/(app)/channel/${channel.cid}`);

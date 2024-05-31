@@ -1,7 +1,4 @@
-import EmptyScreen from '@/src/components/EmptyScreen';
 import ProfileHead from '@/src/components/ProfileInfo';
-import Sizes from '@/src/constants/Sizes';
-import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import { User } from '@/src/types/user.type';
 import { useLocalSearchParams } from 'expo-router';
@@ -17,7 +14,6 @@ import Colors from '@/src/constants/Colors';
 
 export default function UserScreen() {
   const { user_id } = useLocalSearchParams<{ user_id: string }>();
-  const { user } = useAuth();
 
   const [userInfo, setUserInfo] = useState<User>();
   const [friendRequest, setFriendRequest] = useState<FriendRequest>();
@@ -33,12 +29,10 @@ export default function UserScreen() {
       setLoading(true);
       setIsRequestSent(false);
       const body = {
-        user_id: user,
         friend_id: user_id
       }
       console.log('CHECK FRIENDSHIP STATUS');
       const { data } = await repository.post('/friend-requests/check-friendship-status', body);
-      console.log(data)
       setFriendRequest(data);
       if (!data) {
         setIsFriend(false);
@@ -55,13 +49,16 @@ export default function UserScreen() {
       console.error(error);
       setLoading(false);
     }
-  }, [user_id, user])
+  }, [user_id])
 
   const getUserProfile = useCallback(async () => {
     try {
       setLoading(true);
       console.log('GET USER PROFILE');
-      const { data } = await repository.get(`/users/${user_id}`);
+      const params = {
+        user_id
+      }
+      const { data } = await repository.get('/users/user-info', { params });
       setUserInfo(data);
       setLoading(false);
     } catch (error) {
@@ -74,7 +71,10 @@ export default function UserScreen() {
     try {
       setLoading(true);
       console.log('GET POSTS INFO FOR PROFILE');
-      const { data } = await repository.get(`posts/profile-posts-info/${user_id}`);
+      const params = {
+        user_id
+      }
+      const { data } = await repository.get('posts/profile-posts-info', { params });
       setNumberOfPhotoPosts(data.numberOfPhotoPosts);
       setNumberOfVideoPosts(data.numberOfVideoPosts);
       setLoading(false);
@@ -85,9 +85,6 @@ export default function UserScreen() {
   }, [])
 
   useEffect(() => {
-    if (!user)
-      return;
-
     getUserProfile();
     getUserPosts();
   }, [getUserProfile])
@@ -97,18 +94,18 @@ export default function UserScreen() {
   }, [checkFriendshipStatus])
 
   useEffect(() => {
-    if (!user)
-      return;
-
     (async () => {
       try {
         setLoading(true);
         console.log('GET FREINDS');
-        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user_id}`);
+        const params = {
+          user_id
+        }
+        const { data: userFriends } = await repository.get('/friend-requests/friends', { params });
         setNumberOfUserFriends(userFriends.length);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error('ERROR IN GET FRIENDS: ', error);
         setLoading(false);
       }
     })();
@@ -118,7 +115,6 @@ export default function UserScreen() {
     try {
       setLoading(true);
       const body = {
-        sender_id: user,
         receiver_id: user_id
       }
       console.log('CREATE FRIEND REQUEST');
@@ -157,13 +153,13 @@ export default function UserScreen() {
           <Ionicons name="person-remove" size={24} color="black" />
         </TouchableOpacity>
       }
-      {!isFriend && !isRequestSent &&
+      {!isFriend && userInfo && !isRequestSent &&
         <TouchableOpacity style={styles.requestWrap} onPress={handleAddFriend}>
           <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Send Request</Text>
           <Ionicons name="person-add" size={24} color="black" />
         </TouchableOpacity>
       }
-      {!isFriend && isRequestSent &&
+      {!isFriend && userInfo && isRequestSent &&
         <View style={styles.requestWrap}>
           <Text style={{ textTransform: 'uppercase', marginRight: 10 }}>Waiting for answer</Text>
           <Feather name="loader" size={24} color="black" />

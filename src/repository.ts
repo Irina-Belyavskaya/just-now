@@ -8,50 +8,95 @@ const repository = axios.create({
   baseURL: REACT_APP_API_URL
 });
 
+let isRefreshing = false;
+let failedQueue: any = [];
+
+const processQueue = (error: any, token = null) => {
+  failedQueue.forEach((prom: any) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 repository.interceptors.request.use(
   async (config) => {
     const accessToken = getStorageItem('accessToken');
 
     if (accessToken && accessToken !== '') {
-      config.headers.set('Authorization', `Bearer ${accessToken}`);
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    // console.log("CONFIG REQUEST: ", JSON.stringify(config.headers, null, 2));
     console.log("CONFIG URL: ", config.url);
-
     return config;
   },
 );
 
-repository.interceptors.response.use((config) => {
-  return config;
-}, async (error) => {
-  const originalRequest = error.config;
-  console.error('ERROR IN REPOSITORY: ', JSON.stringify(error.config, null, 2));
-  if (error.response.status == 401 && originalRequest && !originalRequest._isRetry) {
-    originalRequest._isRetry = true;
-    const refreshToken = getStorageItem('refreshToken');
-    if (refreshToken) {
-      try {
-        console.log('REFRESH -> ......');
-        const response = await axios.post(`${REACT_APP_API_URL}/auth/refresh`, { refreshToken });
-        const newAccessToken = response.data.accessToken;
-        setStorageItem('accessToken', newAccessToken);
-        setStorageItem('refreshToken', response.data.refreshToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+const resetTokens = () => {
+  console.warn('RESET TOKENS');
+  setStorageItem('accessToken', null);
+  setStorageItem('refreshToken', null);
+  router.replace("/");
+};
 
-        return repository.request(originalRequest);
-      } catch (e) {
-        console.log('UNAUTHORIZED!');
-        setStorageItem('accessToken', null);
-        setStorageItem('refreshToken', null);
-        setStorageItem('user', null);
-        router.replace("/");
+repository.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers['Authorization'] = 'Bearer ' + token;
+          return axios(originalRequest);
+        }).catch(err => {
+          return Promise.reject(err);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = getStorageItem('refreshToken');
+      console.log('REFRESH TOKEN FROM STORE: ', refreshToken);
+      if (refreshToken) {
+        try {
+          console.log('REFRESH -> ......');
+          console.log("CONFIG URL IN ERROR: ", originalRequest.url);
+
+          const response = await axios.post(`${REACT_APP_API_URL}/auth/refresh`, { refreshToken });
+
+          const newAccessToken = response.data.accessToken;
+          setStorageItem('accessToken', newAccessToken);
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          console.log('REFRESH TOKEN', response.data.refreshToken);
+          console.log('ACCESS TOKEN', response.data.accessToken);
+          setStorageItem('refreshToken', response.data.refreshToken);
+
+          processQueue(null, newAccessToken);
+          isRefreshing = false;
+
+          return repository(originalRequest);
+        } catch (e) {
+          console.error('UNAUTHORIZED!');
+          processQueue(e, null);
+          isRefreshing = false;
+          resetTokens();
+        }
+      } else {
+        resetTokens();
       }
     }
-  }
 
-  throw error;
-})
+    throw error;
+  }
+);
 
 export default repository;

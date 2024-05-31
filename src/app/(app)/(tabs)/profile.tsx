@@ -1,6 +1,5 @@
 import ProfileInfo from '@/src/components/ProfileInfo';
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@/src/context/auth-context';
 import repository from '@/src/repository';
 import LoaderScreen from '../../loader';
 import { Post } from '@/src/types/post.type';
@@ -11,7 +10,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/src/constants/Colors';
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
   const [userPosts, setUserPosts] = useState<Post[]>();
 
   const [numberOfPhotoPosts, setNumberOfPhotoPosts] = useState<number>(0);
@@ -24,20 +22,17 @@ export default function ProfileScreen() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!userInfo && user) {
-      dispatch(getUser({ id: user }));
+    if (!userInfo) {
+      dispatch(getUser());
     }
-  }, [userInfo, user])
+  }, [userInfo])
 
   useEffect(() => {
-    if (!user)
-      return;
-
     (async () => {
       try {
         setLoading(true);
         console.log('GET FREINDS');
-        const { data: userFriends } = await repository.get(`/friend-requests/friends/${user}`);
+        const { data: userFriends } = await repository.get('/friend-requests/friends');
         setNumberOfUserFriends(userFriends.length);
         setLoading(false);
       } catch (error) {
@@ -51,7 +46,7 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
       console.log('GET POSTS INFO FOR PROFILE');
-      const { data } = await repository.get(`posts/profile-posts-info/${user}`);
+      const { data } = await repository.get('posts/profile-posts-info');
       setNumberOfPhotoPosts(data.numberOfPhotoPosts);
       setNumberOfVideoPosts(data.numberOfVideoPosts);
       setUserPosts(data.userPosts);
@@ -63,9 +58,6 @@ export default function ProfileScreen() {
   }, [])
 
   useEffect(() => {
-    if (!user)
-      return;
-
     getUserPosts();
   }, [])
 

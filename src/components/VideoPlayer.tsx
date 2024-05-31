@@ -3,13 +3,11 @@ import { ResizeMode, Video } from "expo-av";
 import { useState } from "react";
 import { Dimensions, View, ViewStyle } from "react-native";
 import { VideoFile } from "react-native-vision-camera";
-import { sendToFirebase } from "../utils/firebase";
 import repository from "../repository";
-import { useAuth } from "../context/auth-context";
 import { router } from "expo-router";
 import { PostType } from "../types/post.type";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { getUser } from "../redux/user/users.actions";
 import { deleteFile } from "../utils/deleteFile";
 
@@ -27,7 +25,7 @@ export default function VideoPlayer({
   setIsLoading
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const { user } = useAuth();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
   const dispatch = useAppDispatch();
 
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window")
@@ -44,22 +42,21 @@ export default function VideoPlayer({
 
   const uploadVideo = async () => {
     try {
-      if (!video || !user)
+      if (!video || !userInfo)
         return;
 
       setIsLoading(true);
 
-      const file = await uploadToFirebaseAndCreateFile(`file://${video?.path}`, `post/${user}/`);
+      const file = await uploadToFirebaseAndCreateFile(`file://${video?.path}`, `post/${userInfo.user_id}/`);
 
       const postDto = {
         post_content_id: file.file_id,
-        user_id: user,
         post_type: PostType.VIDEO
       }
 
-      await repository.post('/posts/', postDto);
+      await repository.post('/posts', postDto);
 
-      dispatch(getUser({ id: user }));
+      dispatch(getUser());
 
       // Reset states
       setVideo(undefined);

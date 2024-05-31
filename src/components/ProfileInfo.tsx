@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { useAuth } from "../context/auth-context";
 import repository from "../repository";
 import { User } from "../types/user.type";
 import { router } from "expo-router";
@@ -28,12 +27,11 @@ export default function ProfileInfo({
 }: ProfileInfoProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const roleType = userInfo.role.role_type;
-  const { user } = useAuth();
   const dispatch = useAppDispatch();
 
   const handleYesPressed = async () => {
     const { data: updatedUser } = await repository.put(
-      `/users/upgrade/${user}`,
+      `/users/upgrade`,
       { role_type: RoleType.USER_START }
     )
     dispatch(setUserInfo(updatedUser));

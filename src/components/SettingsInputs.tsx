@@ -13,7 +13,7 @@ import { User } from '../types/user.type';
 import { Text } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { getUser } from '../redux/user/users.actions';
 import { uploadToFirebaseAndUpdateFile } from '../redux/actions';
 import AppCamera from './AppCamera';
@@ -83,7 +83,7 @@ export default function SettingInputs() {
         dto.user_currentPassword = currentPassword;
       }
 
-      await repository.put('/users/user-info', dto);
+      await repository.put('/users', dto);
 
       if (image && image !== userState?.file.file_url && userState) {
         await uploadToFirebaseAndUpdateFile(image, userState.file.file_id);
@@ -91,6 +91,7 @@ export default function SettingInputs() {
 
       dispatch(getUser());
       setIsLoading(false);
+      router.replace('/profile');
     } catch (error) {
       const err = error as any;
       setIsLoading(false);

@@ -3,6 +3,7 @@ import { getStorageItem, setStorageItem } from "./context/useStorageState";
 import { router } from "expo-router";
 
 const REACT_APP_API_URL = 'http://192.168.100.38:3000';
+// const REACT_APP_API_URL = 'https://89da-37-214-37-77.ngrok-free.app';
 
 const repository = axios.create({
   baseURL: REACT_APP_API_URL

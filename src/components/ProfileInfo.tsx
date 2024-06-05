@@ -28,14 +28,24 @@ export default function ProfileInfo({
   const [modalVisible, setModalVisible] = useState(false);
   const roleType = userInfo.role.role_type;
   const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleYesPressed = async () => {
-    const { data: updatedUser } = await repository.put(
-      `/users/upgrade`,
-      { role_type: RoleType.USER_START }
-    )
-    dispatch(setUserInfo(updatedUser));
-    setModalVisible(false);
+    try {
+      setIsLoading(true);
+      const { data: updatedUser } = await repository.put(
+        `/users/upgrade`,
+        { role_type: RoleType.USER_START }
+      )
+
+      await repository.post('/payments/subscriptions/cancel');
+      dispatch(setUserInfo(updatedUser));
+      setModalVisible(false);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('ERROR IN handleYesPressed:', error);
+    }
   }
 
   return (
@@ -123,6 +133,7 @@ export default function ProfileInfo({
         handleYesPressed={handleYesPressed}
         handleNoPressed={() => setModalVisible(false)}
         text={'Are you sure you want to unsibscribe?'}
+        isLoading={isLoading}
       />
     </View>
   );

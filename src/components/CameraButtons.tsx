@@ -4,6 +4,8 @@ import { TakePhotoOptions } from "react-native-vision-camera";
 import { AntDesign } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import Colors from "../constants/Colors";
+import { useEffect, useState } from "react";
+import { Text } from "@/src/components/Themed";
 
 type CameraButtonsProps = {
   onTakePicturePressed: () => Promise<void>,
@@ -26,6 +28,32 @@ export default function CameraButtons({
   exposure,
   setExposure
 }: CameraButtonsProps) {
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [remainingTime, setRemainingTime] = useState(5);
+
+  useEffect(() => {
+    console.log('INTERVAL: ', remainingTime);
+    if (remainingTime === 0) {
+      if (timer) {
+        console.log('CLEAR TIMER!');
+        clearInterval(timer);
+      }
+      setRemainingTime(0);
+    }
+  }, [remainingTime]);
+
+  const startRecording = () => {
+    onStartRecording();
+    setRemainingTime(5);
+
+    const timer = setInterval(() => {
+      console.log('INTERVAL: ', remainingTime);
+      setRemainingTime((prev) => prev - 1);
+    }, 1000);
+
+    setTimer(timer);
+  };
+
   return (
     <>
       <View
@@ -65,19 +93,25 @@ export default function CameraButtons({
           thumbTintColor={Colors.lightBlue}
         />
       </View>
-      <Pressable
-        onPress={onTakePicturePressed}
-        onLongPress={onStartRecording}
-        style={{
-          position: 'absolute',
-          bottom: 10,
-          width: 70,
-          height: 70,
-          backgroundColor: isRecording ? Colors.darkBlue : Colors.lightBlue,
-          alignSelf: 'center',
-          borderRadius: 75
-        }}
-      />
+      <View style={{ position: 'absolute', bottom: 10, alignSelf: 'center' }}>
+        <Pressable
+          onPress={onTakePicturePressed}
+          onLongPress={startRecording}
+          style={({ pressed }) => ({
+            width: 70,
+            height: 70,
+            borderRadius: 75,
+            backgroundColor: isRecording ? Colors.darkBlue : Colors.lightBlue,
+            transform: [{ scale: pressed ? 0.95 : 1 }],
+            justifyContent: 'center',
+            alignItems: 'center',
+          })}
+        >
+          <Text style={{ color: 'white', fontSize: 16 }}>
+            {isRecording ? `${remainingTime}s` : ''}
+          </Text>
+        </Pressable>
+      </View>
       {!isRecording &&
         <AntDesign
           name="retweet"

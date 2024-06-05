@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/Themed";
 import Colors from "@/src/constants/Colors";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { FontAwesome6 } from '@expo/vector-icons';
 import repository from "@/src/repository";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -69,7 +69,7 @@ export default function Paywall() {
       setLoading(false);
       router.replace('/profile');
     } catch (error) {
-      console.error('ERROR IN handleUpgrade: ', error);
+      console.error('ERROR IN handleUpgrade: ', JSON.stringify(error, null, 2));
     }
 
   };
@@ -87,9 +87,6 @@ export default function Paywall() {
             justifyContent: 'center',
             flexDirection: 'column'
           }}
-        // contentContainerStyle={{
-
-        // }}
         >
           <View style={{ marginBottom: 40, }}>
             <Text
@@ -197,7 +194,7 @@ export default function Paywall() {
               flexDirection: 'row',
               alignItems: 'center',
               marginLeft: 'auto',
-              marginTop: 100,
+              marginTop: 150,
               marginRight: 30
             }}
           >

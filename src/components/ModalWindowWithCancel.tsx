@@ -2,13 +2,15 @@ import Colors from "@/src/constants/Colors";
 import { Stack, router } from "expo-router";
 import { Dispatch, useState } from "react";
 import { Modal, Pressable, View, StyleSheet, Text } from "react-native";
+import LoaderScreen from "../app/loader";
 
 type ModalWindowWithCancelProps = {
   modalVisible: boolean,
   setModalVisible: Dispatch<React.SetStateAction<boolean>>,
   handleYesPressed: () => void,
   handleNoPressed: () => void,
-  text: string
+  text: string,
+  isLoading?: boolean
 }
 
 export default function ModalWindowWithCancel({
@@ -16,7 +18,8 @@ export default function ModalWindowWithCancel({
   setModalVisible,
   handleYesPressed,
   handleNoPressed,
-  text
+  text,
+  isLoading = false
 }: ModalWindowWithCancelProps) {
   return (
     <View style={styles.centeredView}>
@@ -30,25 +33,28 @@ export default function ModalWindowWithCancel({
           router.replace("/profile");
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={[styles.modalView, { width: '90%' }]}>
-            <Text style={styles.modalText}>
-              {text}
-            </Text>
-            <View style={styles.buttonsWrap}>
-              <Pressable
-                style={[styles.button, styles.buttonNo]}
-                onPress={handleNoPressed}>
-                <Text style={styles.textStyle}>No</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonYes]}
-                onPress={handleYesPressed}>
-                <Text style={styles.textStyle}>Yes</Text>
-              </Pressable>
+        {isLoading && <LoaderScreen />}
+        {!isLoading &&
+          <View style={styles.centeredView}>
+            <View style={[styles.modalView, { width: '90%' }]}>
+              <Text style={styles.modalText}>
+                {text}
+              </Text>
+              <View style={styles.buttonsWrap}>
+                <Pressable
+                  style={[styles.button, styles.buttonNo]}
+                  onPress={handleNoPressed}>
+                  <Text style={styles.textStyle}>No</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonYes]}
+                  onPress={handleYesPressed}>
+                  <Text style={styles.textStyle}>Yes</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
+        }
       </Modal>
     </View>
   );

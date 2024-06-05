@@ -103,11 +103,12 @@ export default function UserPostViewer({ post }: UserPostViewer) {
           style={{
             position: 'absolute',
             bottom: 5,
-            right: 20
+            right: 20,
+            height: height - 25
           }}
         >
           {post.reactions.map(reaction =>
-            <View key={reaction.user_id}>
+            <View key={reaction.user_id} style={{ marginTop: 5 }}>
               <Entypo
                 name={mapReactionTypeToEnum(reaction.reaction_type)}
                 size={30}
@@ -128,7 +129,6 @@ export default function UserPostViewer({ post }: UserPostViewer) {
                 }}
               />
             </View>
-
           )}
         </ScrollView>
       }

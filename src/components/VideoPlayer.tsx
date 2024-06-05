@@ -129,7 +129,7 @@ export default function VideoPlayer({
         color="black"
         style={{
           position: 'absolute',
-          top: 20,
+          top: 40,
           left: 15,
         }}
       />

@@ -39,6 +39,8 @@ export default function AppCamera({
   const [isRecording, setIsRecording] = useState(false);
   const [exposure, setExposure] = useState<number>(0);
 
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
   const [cameraSide, setCameraSide] = useState<'back' | 'front'>('back');
 
   const device = useCameraDevice(cameraSide);
@@ -72,6 +74,8 @@ export default function AppCamera({
   const onTakePicturePressed = async () => {
     if (isRecording) {
       camera.current?.stopRecording();
+      clearTimeout(timer!);
+      setTimer(null);
       return;
     }
     console.log('PICTURE TAKEN');
@@ -121,6 +125,25 @@ export default function AppCamera({
     })
   }
 
+  const handleStopRecording = () => {
+    clearTimeout(timer!);
+    setTimer(null);
+
+    camera.current?.stopRecording();
+  };
+
+  const handleStartRecording = async () => {
+    onStartRecording();
+
+    const timer = setTimeout(() => {
+      handleStopRecording();
+    }, 5000);
+
+    setTimer(timer);
+  };
+
+
+
   const changeCameraSide = () => {
     if (cameraSide === 'back') setCameraSide('front');
     if (cameraSide === 'front') setCameraSide('back');
@@ -153,7 +176,7 @@ export default function AppCamera({
       {!photo && !video && !isLoading &&
         <CameraButtons
           onTakePicturePressed={onTakePicturePressed}
-          onStartRecording={onStartRecording}
+          onStartRecording={handleStartRecording}
           setFlash={setFlash}
           flash={flash}
           isRecording={isRecording}

@@ -29,6 +29,7 @@
       "permissions": [
         "android.permission.CAMERA"
       ],
+      "googleServicesFile": "./google-services.json",
       "package": "com.anonymous.JUST_NOW"
     },
     "web": {
@@ -57,7 +58,8 @@
         {
           "photosPermission": "Selecct and upload images."
         }
-      ]
+      ],
+      "@react-native-firebase/app"
     ]
   }
 }

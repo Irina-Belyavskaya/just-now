@@ -1,6 +1,7 @@
+import { Platform } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot } from 'expo-router';
+import { Slot, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { useColorScheme } from '@/src/components/useColorScheme';
@@ -14,6 +15,23 @@ import { store } from '../redux/store';
 import { ErrorHandler } from '../components/ErrorBoundary';
 import { StatusBar } from 'expo-status-bar';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import * as Notifications from 'expo-notifications';
+import { StreamChat } from 'stream-chat';
+import { useRef } from "react";
+
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
+
+const client = StreamChat.getInstance(`${process.env.EXPO_PUBLIC_STREAM_API_KEY}`);
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export {
   ErrorBoundary,
@@ -26,9 +44,158 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
 
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    // Learn more about projectId:
+    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+    // EAS projectId is used here.
+    try {
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('Project ID not found');
+      }
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(token);
+    } catch (e) {
+      token = `${e}`;
+    }
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  return token;
+}
+
+async function schedulePushNotification(title: string, body: string, url: string) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title,
+      body,
+      data: { data: 'goes here', url },
+    },
+    trigger: null,
+  });
+}
+let messageHandledIds = new Set<string>();
+
+const handleReceivedMessage = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+  if (remoteMessage.data && remoteMessage.data.id && remoteMessage.messageId && !messageHandledIds.has(remoteMessage.messageId)) {
+    messageHandledIds.add(remoteMessage.messageId);
+    const message = await client.getMessage(remoteMessage.data.id as string);
+
+    if (message) {
+      await schedulePushNotification(
+        '✉️ from ' + message.message.user?.name,
+        message.message?.text ?? '',
+        '/chats'
+      );
+    }
+  }
+
+  if (remoteMessage.data && remoteMessage.data.body && remoteMessage.data.title) {
+    await schedulePushNotification(
+      '🙋🏼 ' + remoteMessage.data.title,
+      remoteMessage.data.body as string,
+      '/notifications'
+    );
+  }
+}
+
+messaging().onMessage(async (remoteMessage) => {
+  console.log('Message handled!', JSON.stringify(remoteMessage, null, 2));
+
+  if (remoteMessage.sentTime && remoteMessage.sentTime > 0) {
+    console.log("remoteMessage.sentTime: ", remoteMessage.sentTime)
+    await handleReceivedMessage(remoteMessage);
+  }
+});
+
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  console.log('Message handled in the background!', JSON.stringify(remoteMessage, null, 2));
+  if (remoteMessage.sentTime && remoteMessage.sentTime > 0) {
+    console.log("remoteMessage.sentTime: ", remoteMessage.sentTime)
+    await handleReceivedMessage(remoteMessage);
+  }
+});
+
+
 export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
   const [splashAnimationFinished, setSplashAnimationFinished] = useState(false);
+
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
+
+  function redirect(notification: Notifications.Notification) {
+    const url = notification.request.content.data?.url;
+    if (url) {
+      router.push(url);
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true;
+
+    registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notification recieved!')
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+      redirect(response.notification);
+    });
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) {
+        return;
+      }
+      redirect(response?.notification);
+    });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+      isMounted = false;
+    };
+  }, []);
+
+  console.log('expoPushToken: ', expoPushToken);
+  console.log('notification: ', notification);
 
   const [loaded, error] = useFonts({
     Raleway_700Bold: Raleway_700Bold,

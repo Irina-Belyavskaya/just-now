@@ -6,6 +6,7 @@ import { RoleType } from "../types/role.type";
 import Colors from "../constants/Colors";
 import messaging from '@react-native-firebase/messaging';
 import { User } from "../types/user.type";
+import repository from "../repository";
 
 const client = StreamChat.getInstance(`${process.env.EXPO_PUBLIC_STREAM_API_KEY}`);
 
@@ -62,6 +63,8 @@ export default function ChatProvider({ children }: PropsWithChildren) {
   const registerDevice = async (user_id: string) => {
     console.log('-----------Register-------------');
     const token = await messaging().getToken();
+
+    await repository.post('notifications/check-device-token', { token });
     const push_provider = 'firebase';
     const push_provider_name = 'JustNowFirebaseConfiguration';
     // client.setLocalDevice({

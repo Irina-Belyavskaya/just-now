@@ -12,13 +12,13 @@ import { SignInDto } from '@/src/redux/sign-up/types/sign-in.dto';
 import { Text } from "@/src/components/Themed";
 import { useAppDispatch } from '@/src/redux/hooks';
 import Colors from '@/src/constants/Colors';
+import messaging from '@react-native-firebase/messaging';
 
 export default function SignIn() {
   const { signIn } = useAuth();
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [modalVisible, setModalVisible] = useState(false);
 
   const schema = yup.object().shape({
     email: yup.string()
@@ -36,9 +36,11 @@ export default function SignIn() {
     try {
       setIsLoading(true);
       setErrorMessage('');
+      const token = await messaging().getToken();
       const dto: SignInDto = {
         user_email: data.email,
-        user_password: data.password
+        user_password: data.password,
+        user_device_token: token
       };
       console.log('AUTH SIGN IN');
       const { data: responseInfo } = await repository.post("/auth/sign-in", dto);
@@ -48,7 +50,6 @@ export default function SignIn() {
       router.replace('/');
     } catch (error) {
       setErrorMessage('Incorrect email or password');
-      setModalVisible(true);
       setIsLoading(false);
 
       const err = error as any;

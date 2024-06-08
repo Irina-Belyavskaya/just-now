@@ -18,6 +18,7 @@ import LoaderScreen from "../app/loader";
 import { SignUpDto } from "../redux/sign-up/types/sign-up.dto";
 import { uploadToFirebaseAndCreateFile } from "../redux/actions";
 import { Text } from "@/src/components/Themed";
+import messaging from '@react-native-firebase/messaging';
 
 export default function SignUpUploadPhotoScreen({
   handleNext,
@@ -63,12 +64,13 @@ export default function SignUpUploadPhotoScreen({
       setIsLoading(true);
 
       const file = await uploadToFirebaseAndCreateFile(photoUrl, 'profile');
-
+      const token = await messaging().getToken();
       const signUpDto: SignUpDto = {
         user_email: signUpData.user_email,
         user_password: signUpData.user_password,
         user_nickname: signUpData.user_nickname,
-        user_profile_picture_id: file.file_id
+        user_profile_picture_id: file.file_id,
+        user_device_token: token
       };
       console.log('AUTH SIGN UP');
       const { data: responseInfo } = await repository.post("/auth/sign-up", signUpDto);

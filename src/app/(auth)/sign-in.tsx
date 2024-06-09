@@ -4,7 +4,7 @@ import { useAuth } from '../../context/auth-context';
 import * as yup from 'yup';
 import { Button } from 'react-native-paper';
 import { FieldValues } from 'react-hook-form';
-import { Link, Stack, router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import repository from '@/src/repository';
 import { useState } from 'react';
 import { ErrorText } from '@/src/components/Themed';

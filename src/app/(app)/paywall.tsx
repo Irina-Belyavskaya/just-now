@@ -16,6 +16,7 @@ import { setUserInfo } from "@/src/redux/user/user.reducer";
 import { useState } from "react";
 import LoaderScreen from "../loader";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { SetupParams } from "@stripe/stripe-react-native/lib/typescript/src/types/PaymentSheet";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
@@ -36,6 +37,9 @@ export default function Paywall() {
       const { data: subscription } = await repository.post(`/payments/subscriptions`, {
         customerId
       });
+      const p = (ram: SetupParams) => {
+
+      }
 
       // 3. Initialize the Payment sheet
       const initResponse = await initPaymentSheet({

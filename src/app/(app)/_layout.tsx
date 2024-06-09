@@ -17,6 +17,7 @@ export default function AppEntry() {
         <Stack.Screen
           name="chats"
           options={{
+            title: 'Chats',
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
@@ -26,6 +27,7 @@ export default function AppEntry() {
         <Stack.Screen
           name="settings"
           options={{
+            title: 'Settings',
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
@@ -36,6 +38,7 @@ export default function AppEntry() {
         <Stack.Screen
           name="user"
           options={{
+            title: 'User',
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
@@ -45,6 +48,7 @@ export default function AppEntry() {
         <Stack.Screen
           name="notifications"
           options={{
+            title: 'Notifications',
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,
@@ -54,6 +58,7 @@ export default function AppEntry() {
         <Stack.Screen
           name="paywall"
           options={{
+            title: '',
             presentation: 'modal',
             headerStyle: { backgroundColor: Colors.darkBlue },
             headerTintColor: Colors.white,

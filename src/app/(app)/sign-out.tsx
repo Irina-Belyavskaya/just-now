@@ -5,6 +5,7 @@ import repository from "@/src/repository";
 import { Stack, router } from "expo-router";
 import { useState } from "react";
 import { Modal, Pressable, View, StyleSheet, Text } from "react-native";
+import messaging from '@react-native-firebase/messaging';
 
 export default function SignOut() {
   const { signOut } = useAuth();
@@ -12,8 +13,9 @@ export default function SignOut() {
 
   const handleYesPressed = async () => {
     const refreshToken = getStorageItem('refreshToken');
+    const deviceToken = await messaging().getToken();
     if (refreshToken)
-      await repository.post('/auth/sign-out', { refreshToken });
+      await repository.post('/auth/sign-out', { refreshToken, deviceToken });
     signOut();
     setModalVisible(!modalVisible);
     router.replace("/");

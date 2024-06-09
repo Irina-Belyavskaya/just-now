@@ -8,7 +8,7 @@ import messaging from '@react-native-firebase/messaging';
 import { User } from "../types/user.type";
 import repository from "../repository";
 
-const client = StreamChat.getInstance(`${process.env.EXPO_PUBLIC_STREAM_API_KEY}`);
+const client = StreamChat.getInstance(`panhwp4pcwu3`);
 
 const theme = {
   channelListMessenger: {

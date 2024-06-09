@@ -23,7 +23,7 @@ import { useRef } from "react";
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 
-const client = StreamChat.getInstance(`${process.env.EXPO_PUBLIC_STREAM_API_KEY}`);
+const client = StreamChat.getInstance(`panhwp4pcwu3`);
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

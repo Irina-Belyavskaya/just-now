@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { getUser } from '@/src/redux/user/users.actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/src/constants/Colors';
+import { Text } from '@/src/components/Themed';
 
 export default function ProfileScreen() {
   const [userPosts, setUserPosts] = useState<Post[]>();
@@ -75,7 +76,20 @@ export default function ProfileScreen() {
           isPersonalAccount
         />
       }
-
+      {!isLoading && userPosts && userPosts.length === 0 &&
+        <Text
+          style={{
+            fontSize: 25,
+            fontFamily: 'Raleway_700Bold',
+            color: Colors.darkGray,
+            textAlign: 'center',
+            marginTop: 'auto',
+            marginBottom: 'auto'
+          }}
+        >
+          {'No posts('}
+        </Text>
+      }
       {!isLoading && userPosts && userPosts.length > 0 &&
         <ProfilePosts
           userPosts={userPosts}

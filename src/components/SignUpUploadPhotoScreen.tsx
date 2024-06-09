@@ -97,17 +97,21 @@ export default function SignUpUploadPhotoScreen({
             label: 'Close',
             textColor: Colors.white
           }}
-          style={{
+          wrapperStyle={{
             zIndex: 100,
+            position: 'absolute',
+            top: 570
+          }}
+          style={{
             backgroundColor: Colors.deniedColor,
           }}
-
+          duration={7000}
           elevation={5}
         >
           Please fill in all data
         </Snackbar>
       }
-      {!isLoading && !showModalWindow &&
+      {!isLoading &&
         <View style={styles.container}>
           <Button style={styles.button} onPress={pickImage} textColor={Colors.white}>
             <Text style={styles.buttonText}>Pick an image</Text>

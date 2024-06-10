@@ -5,12 +5,13 @@ import { Link, Stack, router } from 'expo-router';
 import { ChannelList } from 'stream-chat-expo';
 import LoaderScreen from '../loader';
 import { useAppSelector } from '@/src/redux/hooks';
+import ChatProvider from '@/src/providers/ChatProvider';
 
 export default function ChatsScreen() {
   const userInfo = useAppSelector(state => state.userReducer.userInfo);
 
   return (
-    <>
+    <ChatProvider>
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -31,7 +32,7 @@ export default function ChatsScreen() {
           LoadingIndicator={() => <LoaderScreen />}
         />
       }
-    </>
+    </ChatProvider>
 
   );
 }

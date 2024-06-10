@@ -29,7 +29,7 @@ export default function CameraButtons({
   setExposure
 }: CameraButtonsProps) {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const [remainingTime, setRemainingTime] = useState(5);
+  const [remainingTime, setRemainingTime] = useState(10);
 
   useEffect(() => {
     console.log('INTERVAL: ', remainingTime);
@@ -44,7 +44,7 @@ export default function CameraButtons({
 
   const startRecording = () => {
     onStartRecording();
-    setRemainingTime(5);
+    setRemainingTime(10);
 
     const timer = setInterval(() => {
       console.log('INTERVAL: ', remainingTime);
@@ -93,7 +93,7 @@ export default function CameraButtons({
           thumbTintColor={Colors.lightBlue}
         />
       </View>
-      <View style={{ position: 'absolute', bottom: 10, alignSelf: 'center' }}>
+      <View style={{ position: 'absolute', bottom: 30, alignSelf: 'center' }}>
         <Pressable
           onPress={onTakePicturePressed}
           onLongPress={startRecording}
@@ -119,7 +119,7 @@ export default function CameraButtons({
           color={Colors.lightBlue}
           style={{
             position: 'absolute',
-            bottom: 25,
+            bottom: 40,
             left: 50
           }}
           onPress={changeCameraSide}

@@ -11,24 +11,39 @@ import PaywallTextBlock from "@/src/components/PaywallTextBlock";
 import LottieView from "lottie-react-native";
 import Animated from "react-native-reanimated";
 import { RoleType } from "@/src/types/role.type";
-import { useAppDispatch } from "@/src/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import { setUserInfo } from "@/src/redux/user/user.reducer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoaderScreen from "../loader";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SetupParams } from "@stripe/stripe-react-native/lib/typescript/src/types/PaymentSheet";
+import { getUser } from "@/src/redux/user/users.actions";
+import { Snackbar } from "react-native-paper";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
 export default function Paywall() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const dispatch = useAppDispatch();
+  const userInfo = useAppSelector(state => state.userReducer.userInfo);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const [isLoading, setLoading] = useState(false);
 
+  useEffect(() => {
+    dispatch(getUser())
+  }, [])
+
   const handleUpgrade = async () => {
     try {
+      setErrorMessage('');
+      if (userInfo && !userInfo.user_is_activated) {
+        setErrorMessage('Please, activate email.');
+        return;
+      }
+
       setLoading(true);
+
       // 1. Create a customer and get customerId
       const { data: customer } = await repository.post(`/payments/customers`);
       const customerId = customer.id;
@@ -37,9 +52,6 @@ export default function Paywall() {
       const { data: subscription } = await repository.post(`/payments/subscriptions`, {
         customerId
       });
-      const p = (ram: SetupParams) => {
-
-      }
 
       // 3. Initialize the Payment sheet
       const initResponse = await initPaymentSheet({
@@ -81,6 +93,24 @@ export default function Paywall() {
   return (
     <>
       {isLoading && <LoaderScreen />}
+      {!isLoading && errorMessage &&
+        <Snackbar
+          visible={!!errorMessage}
+          onDismiss={() => setErrorMessage(undefined)}
+          action={{
+            label: 'Close',
+            textColor: Colors.white
+          }}
+          style={{
+            zIndex: 100,
+            backgroundColor: Colors.deniedColor,
+          }}
+
+          elevation={5}
+        >
+          {errorMessage}
+        </Snackbar>
+      }
       {!isLoading &&
         <View
           style={{

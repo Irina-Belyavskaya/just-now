@@ -97,7 +97,7 @@ async function schedulePushNotification(title: string, body: string, url: string
     content: {
       title,
       body,
-      data: { data: 'goes here', url },
+      data: { data: 'goes here', url: url ?? '/' },
     },
     trigger: null,
   });
@@ -118,11 +118,11 @@ const handleReceivedMessage = async (remoteMessage: FirebaseMessagingTypes.Remot
     }
   }
 
-  if (remoteMessage.data && remoteMessage.data.body && remoteMessage.data.title) {
+  if (remoteMessage.data && remoteMessage.data.title && remoteMessage.data.url) {
     await schedulePushNotification(
       '🙋🏼 ' + remoteMessage.data.title,
       remoteMessage.data.body as string,
-      '/notifications'
+      remoteMessage.data.url as string
     );
   }
 }

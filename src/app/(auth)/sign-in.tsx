@@ -38,7 +38,7 @@ export default function SignIn() {
       setErrorMessage('');
       const token = await messaging().getToken();
       const dto: SignInDto = {
-        user_email: data.email,
+        user_email: data.email.toLowerCase(),
         user_password: data.password,
         user_device_token: token
       };

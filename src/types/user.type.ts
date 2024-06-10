@@ -9,6 +9,7 @@ export type User = {
   user_profile_picture_id: string;
   user_last_activity_date: string;
   user_created_at: string;
+  user_is_activated: string;
   file: File;
   role: Role;
 }

@@ -137,7 +137,7 @@ export default function AppCamera({
 
     const timer = setTimeout(() => {
       handleStopRecording();
-    }, 5000);
+    }, 10000);
 
     setTimer(timer);
   };

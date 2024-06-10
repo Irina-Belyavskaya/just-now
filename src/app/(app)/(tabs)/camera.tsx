@@ -7,7 +7,7 @@ import { VideoFile } from "react-native-vision-camera";
 import PhotoViewer from "@/src/components/PhotoViewer";
 import AppCamera from "@/src/components/AppCamera";
 import VideoPlayer from "@/src/components/VideoPlayer";
-import { StatusBar } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import { getUser } from "@/src/redux/user/users.actions";
 
@@ -36,7 +36,7 @@ export default function CameraScreen() {
   }
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, overflow: 'hidden' }}>
       <AppCamera
         setPhoto={setPhoto}
         photo={photo}
@@ -66,7 +66,7 @@ export default function CameraScreen() {
         />
       }
 
-      <StatusBar hidden />
-    </>
+      <StatusBar hidden={true} />
+    </SafeAreaView>
   );
 }

@@ -8,6 +8,7 @@ import { User } from '@/src/types/user.type';
 import { getUserFriend } from '@/src/utils/getUserFriend';
 import Colors from '@/src/constants/Colors';
 import { useAppSelector } from '@/src/redux/hooks';
+import ChatProvider from '@/src/providers/ChatProvider';
 
 export default function UsersScreen() {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,10 +28,12 @@ export default function UsersScreen() {
   }, []);
 
   return (
-    <FlatList
-      data={users}
-      contentContainerStyle={{ gap: 5, backgroundColor: Colors.lightBlue, flex: 1 }}
-      renderItem={({ item }) => <UserListItem user={item} />}
-    />
+    <ChatProvider>
+      <FlatList
+        data={users}
+        contentContainerStyle={{ gap: 5, backgroundColor: Colors.lightBlue, flex: 1 }}
+        renderItem={({ item }) => <UserListItem user={item} />}
+      />
+    </ChatProvider>
   );
 }
